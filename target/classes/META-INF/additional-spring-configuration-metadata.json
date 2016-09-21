@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "trdr.tws.host",
+    "type": "java.lang.String",
+    "description": "Hostname/IP Address of TWS Client"
+  },
+  {
+    "name": "trdr.tws.port",
+    "type": "java.lang.Integer",
+    "description": "Port of TWS Client"
+  },
+  {
+    "name": "trdr.tws.account",
+    "type": "java.lang.String",
+    "description": "Account name to connect"
+  }
+]}
