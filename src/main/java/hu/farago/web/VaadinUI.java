@@ -2,108 +2,78 @@ package hu.farago.web;
 
 import hu.farago.ib.dto.IBError;
 import hu.farago.ib.dto.OpenOrder;
-import hu.farago.web.dto.editor.OrderContractEditor;
+import hu.farago.web.component.OrderPasteGrid;
+import hu.farago.web.component.dtoeditor.OrderContractEditor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.ib.client.ContractDetails;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.Position;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringUI
-@Theme("valo")
+@Theme("mytheme")
 @Title("IB Trader")
 public class VaadinUI extends UI {
 
 	private static final long serialVersionUID = 673516373579025498L;
-
-	private TextField ticker;
-	private Button sendTicker;
-	
-	private Label response;
 	
 	@Autowired
 	private OrderContractEditor ocEditor;
+	private Label response;
 	
-//	@Autowired
-//	private EWrapperImpl wrapper;
-
 	@Autowired
 	private EventBus eventBus;
+	
+	@Autowired
+	private OrderPasteGrid orderPasteGrid;
 
+	private TabSheet tabSheet;
+	
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
 		eventBus.register(this);
 		
-//		FormLayout form = buildForm();
-//		response = new Label("Contract details...");
-//		
-//		response.setSizeFull();
-//
-//		VerticalLayout mainLayout = new VerticalLayout(form, response);
-//		mainLayout.setMargin(true);
-//		mainLayout.setSpacing(true);
-//
-//		setContent(mainLayout);
-		response = new Label("IB client response...");
-		response.setSizeFull();
+		tabSheet = new TabSheet();
+
+		buildOrderEditorSampleTab();
+		buildCVTSTab();
 		
-		VerticalLayout mainLayout = new VerticalLayout(ocEditor, response);
+		VerticalLayout mainLayout = new VerticalLayout(tabSheet);
 		mainLayout.setMargin(true);
 		mainLayout.setSpacing(true);
 
 		setContent(mainLayout);
 	}
 
-	/*
-	private FormLayout buildForm() {
-		FormLayout form = new FormLayout();
-		ticker = new TextField("Ticker symbol: ");
-		ticker.setIcon(FontAwesome.TICKET);
-		ticker.setRequired(true);
-		ticker.addValidator(new NullValidator("Must be given", false));
-
-		sendTicker = new Button("Go!");
-		sendTicker.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-		sendTicker.addClickListener(new ClickListener() {
-
-			private static final long serialVersionUID = 4883535706088275064L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				EClientSocket client = wrapper.getClientSocket();
-
-				Contract contract = new Contract();
-				contract.symbol(ticker.getValue());
-				contract.secType("STK");
-				contract.currency("USD");
-				contract.exchange("ISLAND");
-
-				client.reqContractDetails(wrapper.getCurrentOrderId() + 1,
-						contract);
-			}
-		});
-
-		form.addComponents(ticker, sendTicker);
-		return form;
+	private void buildOrderEditorSampleTab() {
+		response = new Label("IB client response...");
+		response.setSizeFull();
+		VerticalLayout tab = new VerticalLayout();
+		tab.addComponents(ocEditor, response);
+		tabSheet.addTab(tab, "Order Editor Sample", new ThemeResource("img/planets/Mercury.png"));
 	}
-	*/
-
-	@Subscribe
-	public void contractDetails(ContractDetails cd) {
-		response.setValue(cd.toString());
+	
+	private void buildCVTSTab() {
+		VerticalLayout tab = new VerticalLayout();
+		tab.addComponents(orderPasteGrid);
+		tabSheet.addTab(tab, "CVTS strategy", new ThemeResource("img/planets/Mars.png"));
 	}
+
+//	@Subscribe
+//	public void contractDetails(ContractDetails cd) {
+//		response.setValue(cd.toString());
+//	}
 
 	@Subscribe
 	public void ibError(IBError ibError) {

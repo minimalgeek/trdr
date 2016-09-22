@@ -1,7 +1,7 @@
-package hu.farago.web.dto.editor;
+package hu.farago.web.component.dtoeditor;
 
-import hu.farago.web.dto.OrderContract;
 import hu.farago.ib.service.OrderService;
+import hu.farago.web.dto.OrderContract;
 
 import java.util.Arrays;
 
@@ -19,7 +19,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SpringComponent
