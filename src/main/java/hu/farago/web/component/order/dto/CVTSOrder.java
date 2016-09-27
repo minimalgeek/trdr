@@ -1,4 +1,7 @@
-package hu.farago.web.dto;
+package hu.farago.web.component.order.dto;
+
+import hu.farago.ib.strategy.ActionType;
+import hu.farago.ib.strategy.Strategy;
 
 import org.joda.time.DateTime;
 
@@ -8,15 +11,10 @@ import org.joda.time.DateTime;
  * @author Balázs
  *
  */
-public class ExcelInputOrder {
-
-	public enum ActionType {
-		BUY, SELL
-	}
+public class CVTSOrder extends Order {
 
 	private String ticker;
 	private DateTime startDateTime;
-	private String strategy;
 	private ActionType action;
 	private double previousDayClosePrice;
 	private double limitPrice;
@@ -36,14 +34,6 @@ public class ExcelInputOrder {
 
 	public void setStartDateTime(DateTime startDateTime) {
 		this.startDateTime = startDateTime;
-	}
-
-	public String getStrategy() {
-		return strategy;
-	}
-
-	public void setStrategy(String strategy) {
-		this.strategy = strategy;
 	}
 
 	public ActionType getAction() {
@@ -76,6 +66,11 @@ public class ExcelInputOrder {
 
 	public void setHistoricalVolatility(double historicalVolatility) {
 		this.historicalVolatility = historicalVolatility;
+	}
+
+	@Override
+	public Strategy strategy() {
+		return Strategy.CVTS;
 	}
 
 }

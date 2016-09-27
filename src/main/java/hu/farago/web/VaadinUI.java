@@ -2,8 +2,8 @@ package hu.farago.web;
 
 import hu.farago.ib.dto.IBError;
 import hu.farago.ib.dto.OpenOrder;
-import hu.farago.web.component.OrderPasteGrid;
-import hu.farago.web.component.dtoeditor.OrderContractEditor;
+import hu.farago.web.component.OrderCommonPropertiesEditor;
+import hu.farago.web.component.order.CVTSPasteGrid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,14 +29,14 @@ public class VaadinUI extends UI {
 	private static final long serialVersionUID = 673516373579025498L;
 	
 	@Autowired
-	private OrderContractEditor ocEditor;
+	private OrderCommonPropertiesEditor ocpe;
 	private Label response;
 	
 	@Autowired
 	private EventBus eventBus;
 	
 	@Autowired
-	private OrderPasteGrid orderPasteGrid;
+	private CVTSPasteGrid orderPasteGrid;
 
 	private TabSheet tabSheet;
 	
@@ -60,14 +60,14 @@ public class VaadinUI extends UI {
 		response = new Label("IB client response...");
 		response.setSizeFull();
 		VerticalLayout tab = new VerticalLayout();
-		tab.addComponents(ocEditor, response);
-		tabSheet.addTab(tab, "Order Editor Sample", new ThemeResource("img/planets/Mercury.png"));
+		tab.addComponents(ocpe, response);
+		tabSheet.addTab(tab, "Order Editor Sample", new ThemeResource("img/planets/01.png"));
 	}
 	
 	private void buildCVTSTab() {
 		VerticalLayout tab = new VerticalLayout();
 		tab.addComponents(orderPasteGrid);
-		tabSheet.addTab(tab, "CVTS strategy", new ThemeResource("img/planets/Mars.png"));
+		tabSheet.addTab(tab, "CVTS strategy", new ThemeResource("img/planets/02.png"));
 	}
 
 //	@Subscribe
