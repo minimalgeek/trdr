@@ -13,11 +13,59 @@ public class OrderCommonProperties {
 
 	@Id
 	public Strategy id;
-	
+
 	public SecType secType;
 	public String currency;
 	public String exchange;
 	public String primaryExchange;
 	public OrderType orderType;
-	
+
+	public Strategy getId() {
+		return id;
+	}
+
+	public void setId(Strategy id) {
+		this.id = id;
+	}
+
+	public SecType getSecType() {
+		return secType;
+	}
+
+	public void setSecType(SecType secType) {
+		this.secType = secType;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public String getExchange() {
+		return exchange;
+	}
+
+	public void setExchange(String exchange) {
+		this.exchange = exchange;
+	}
+
+	public String getPrimaryExchange() {
+		return primaryExchange;
+	}
+
+	public void setPrimaryExchange(String primaryExchange) {
+		this.primaryExchange = primaryExchange;
+	}
+
+	public OrderType getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(OrderType orderType) {
+		this.orderType = orderType;
+	}
+
 }

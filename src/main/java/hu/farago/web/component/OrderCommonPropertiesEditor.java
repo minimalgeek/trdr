@@ -59,10 +59,17 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 		actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 		send.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		send.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-
-		// wire action buttons to save, delete and reset
 		send.addClickListener(e -> orderService.saveOrModifyOcp(oc));
 	}
+	
+	public interface ChangeHandler {
+		void onChange();
+	}
+	
+	public void setChangeHandler(ChangeHandler h) {
+		send.addClickListener(e -> h.onChange());
+	}
+
 	
 	public void tryToBindOrderCommonProperties(Strategy strategy) {
 		oc = orderService.loadOcp(strategy);

@@ -36,6 +36,7 @@ public abstract class PasteGrid<T extends Order> extends VerticalLayout {
 	
 	public PasteGrid(OrderCommonPropertiesEditor ocpe) {
 		this.ocpe = ocpe;
+		this.ocpe.setChangeHandler(() -> ocpeWindow.close());
 		this.grid = new Grid();
 		this.save = new Button("Save", FontAwesome.SAVE);
 		this.clear = new Button("Clear", FontAwesome.TRASH_O);
