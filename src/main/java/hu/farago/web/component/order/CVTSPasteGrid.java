@@ -1,10 +1,11 @@
 package hu.farago.web.component.order;
 
-import hu.farago.ib.strategy.ActionType;
-import hu.farago.ib.strategy.Strategy;
+import hu.farago.ib.service.order.OrderService;
+import hu.farago.ib.strategy.enums.ActionType;
+import hu.farago.ib.strategy.enums.Strategy;
 import hu.farago.web.component.OrderCommonPropertiesEditor;
 import hu.farago.web.component.PasteConverterTextBox;
-import hu.farago.web.component.PasteGrid;
+import hu.farago.web.component.OrderPasteGrid;
 import hu.farago.web.component.order.dto.CVTSOrder;
 import hu.farago.web.utils.Formatters;
 
@@ -19,13 +20,13 @@ import com.vaadin.ui.Notification;
 
 @SpringComponent
 @UIScope
-public class CVTSPasteGrid extends PasteGrid<CVTSOrder> {
+public class CVTSPasteGrid extends OrderPasteGrid<CVTSOrder> {
 
 	private static final long serialVersionUID = -797998577130962477L;
 
 	@Autowired
-	public CVTSPasteGrid(OrderCommonPropertiesEditor ocpe) {
-		super(ocpe);
+	public CVTSPasteGrid(OrderCommonPropertiesEditor ocpe, OrderService os) {
+		super(ocpe, os);
 	}
 	
 	@Override

@@ -1,6 +1,6 @@
 package hu.farago.ib.model.dto;
 
-import hu.farago.ib.strategy.Strategy;
+import hu.farago.ib.strategy.enums.Strategy;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,6 +19,8 @@ public class OrderCommonProperties {
 	public String exchange;
 	public String primaryExchange;
 	public OrderType orderType;
+	public Double positionSize;
+	public Double targetVolatility;
 
 	public Strategy getId() {
 		return id;
@@ -68,4 +70,20 @@ public class OrderCommonProperties {
 		this.orderType = orderType;
 	}
 
+	public Double getPositionSize() {
+		return positionSize;
+	}
+
+	public void setPositionSize(Double positionSize) {
+		this.positionSize = positionSize;
+	}
+
+	public Double getTargetVolatility() {
+		return targetVolatility;
+	}
+
+	public void setTargetVolatility(Double targetVolatility) {
+		this.targetVolatility = targetVolatility;
+	}
+	
 }

@@ -1,7 +1,7 @@
 package hu.farago.web.component.order.dto;
 
-import hu.farago.ib.strategy.ActionType;
-import hu.farago.ib.strategy.Strategy;
+import hu.farago.ib.strategy.enums.ActionType;
+import hu.farago.ib.strategy.enums.Strategy;
 
 import org.joda.time.DateTime;
 
@@ -11,7 +11,7 @@ import org.joda.time.DateTime;
  * @author Balázs
  *
  */
-public class CVTSOrder extends Order {
+public class CVTSOrder extends StrategyOrder {
 
 	private String ticker;
 	private DateTime startDateTime;

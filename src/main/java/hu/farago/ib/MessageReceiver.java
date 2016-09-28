@@ -38,7 +38,7 @@ public class MessageReceiver implements Runnable {
 				reader.processMsgs();
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
-				eventBus.post(new IBError(0, 0, e.getMessage()));
+				eventBus.post(new IBError(e.getMessage()));
 			}
 		}
 	}

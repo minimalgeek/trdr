@@ -1,8 +1,10 @@
 package hu.farago.web.component;
 
-import hu.farago.ib.strategy.Strategy;
-import hu.farago.web.component.order.dto.Order;
+import hu.farago.ib.service.order.OrderService;
+import hu.farago.ib.strategy.enums.Strategy;
+import hu.farago.web.component.order.dto.StrategyOrder;
 
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction;
@@ -15,7 +17,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-public abstract class PasteGrid<T extends Order> extends VerticalLayout {
+public abstract class OrderPasteGrid<T extends StrategyOrder> extends VerticalLayout {
 
 	private static final long serialVersionUID = 534910030402563189L;
 
@@ -23,7 +25,7 @@ public abstract class PasteGrid<T extends Order> extends VerticalLayout {
 	protected Button save;
 	protected Button clear;
 	private CssLayout actions;
-	private PasteConverterTextBox<T> converter;
+	protected PasteConverterTextBox<T> converter;
 	
 	private Button ocpeWindowOpener;
 	private Window ocpeWindow;
@@ -34,7 +36,7 @@ public abstract class PasteGrid<T extends Order> extends VerticalLayout {
 	protected abstract PasteConverterTextBox<T> createConverter();
 	protected abstract Strategy createStrategy();
 	
-	public PasteGrid(OrderCommonPropertiesEditor ocpe) {
+	public OrderPasteGrid(OrderCommonPropertiesEditor ocpe, OrderService os) {
 		this.ocpe = ocpe;
 		this.ocpe.setChangeHandler(() -> ocpeWindow.close());
 		this.grid = new Grid();
@@ -46,6 +48,8 @@ public abstract class PasteGrid<T extends Order> extends VerticalLayout {
 		this.actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 		this.save.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		this.save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+		this.save.addClickListener((e) -> os.placeOrders(this.converter.getConvertedItems()));
+		this.clear.addClickListener((e) -> converter.populate(Lists.newArrayList()));
 
 		setMargin(true);
 		setSpacing(true);
@@ -58,7 +62,7 @@ public abstract class PasteGrid<T extends Order> extends VerticalLayout {
 
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				PasteGrid.this.focus();
+				OrderPasteGrid.this.focus();
 				converter.selectAll();
 				converter.focus();
 				converter.selectAll();

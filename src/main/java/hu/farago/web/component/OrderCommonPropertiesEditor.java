@@ -1,8 +1,8 @@
 package hu.farago.web.component;
 
 import hu.farago.ib.model.dto.OrderCommonProperties;
-import hu.farago.ib.service.OrderService;
-import hu.farago.ib.strategy.Strategy;
+import hu.farago.ib.service.order.OrderService;
+import hu.farago.ib.strategy.enums.Strategy;
 
 import java.util.Arrays;
 
@@ -31,7 +31,7 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 	private OrderService orderService;
 
 	private OrderCommonProperties oc;
-	
+
 	// fields
 	ComboBox secType = new ComboBox("Sec Type", Arrays.asList(SecType.values()));
 	TextField currency = new TextField("Currency");
@@ -39,6 +39,8 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 	TextField primaryExchange = new TextField("Primary Exchange");
 	ComboBox orderType = new ComboBox("Order Type", Arrays.asList(OrderType
 			.values()));
+	TextField positionSize = new TextField("Position size");
+	TextField targetVolatility = new TextField("Target Volatility");
 	// fields end
 
 	// action buttons
@@ -49,28 +51,29 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 	public OrderCommonPropertiesEditor(OrderService orderService) {
 		this.orderService = orderService;
 		addComponents(secType, currency, exchange, primaryExchange, orderType,
-				actions);
+				positionSize, targetVolatility, actions);
 
 		// Configure and style components
 		setSpacing(true);
 		setStyleName("common-properties-editor");
 		setWidthUndefined();
 
+		positionSize.setConverter(Double.class);
+		targetVolatility.setConverter(Double.class);
 		actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 		send.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		send.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 		send.addClickListener(e -> orderService.saveOrModifyOcp(oc));
 	}
-	
+
 	public interface ChangeHandler {
 		void onChange();
 	}
-	
+
 	public void setChangeHandler(ChangeHandler h) {
 		send.addClickListener(e -> h.onChange());
 	}
 
-	
 	public void tryToBindOrderCommonProperties(Strategy strategy) {
 		oc = orderService.loadOcp(strategy);
 		if (oc == null) {

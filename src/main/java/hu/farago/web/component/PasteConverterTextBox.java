@@ -40,6 +40,10 @@ public abstract class PasteConverterTextBox<T> extends TextArea {
 				convertedItems.add(convertLine(line));
 		}
 	}
+	
+	public List<T> getConvertedItems() {
+		return convertedItems;
+	}
 
 	public abstract T convertLine(String line);
 
