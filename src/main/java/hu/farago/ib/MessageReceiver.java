@@ -1,6 +1,6 @@
 package hu.farago.ib;
 
-import hu.farago.ib.dto.IBError;
+import hu.farago.ib.model.dto.IBError;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

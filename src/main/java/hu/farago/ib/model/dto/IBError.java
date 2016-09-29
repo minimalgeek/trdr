@@ -1,4 +1,4 @@
-package hu.farago.ib.dto;
+package hu.farago.ib.model.dto;
 
 import org.springframework.core.style.ToStringCreator;
 

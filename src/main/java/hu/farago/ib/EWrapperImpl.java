@@ -1,7 +1,7 @@
 package hu.farago.ib;
 
-import hu.farago.ib.dto.IBError;
-import hu.farago.ib.dto.OpenOrder;
+import hu.farago.ib.model.dto.IBError;
+import hu.farago.ib.model.dto.OpenOrder;
 
 import java.util.Set;
 

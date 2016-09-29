@@ -1,6 +1,6 @@
 package hu.farago.ib.model.dto;
 
-import hu.farago.ib.strategy.enums.Strategy;
+import hu.farago.ib.order.strategy.enums.Strategy;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

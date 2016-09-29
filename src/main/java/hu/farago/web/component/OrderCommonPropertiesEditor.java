@@ -1,8 +1,8 @@
 package hu.farago.web.component;
 
 import hu.farago.ib.model.dto.OrderCommonProperties;
+import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.ib.service.order.OrderService;
-import hu.farago.ib.strategy.enums.Strategy;
 
 import java.util.Arrays;
 
@@ -19,6 +19,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -40,7 +41,7 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 	ComboBox orderType = new ComboBox("Order Type", Arrays.asList(OrderType
 			.values()));
 	TextField positionSize = new TextField("Position size");
-	TextField targetVolatility = new TextField("Target Volatility");
+	Slider targetVolatility = new Slider("Target Volatility", 0, 100);
 	// fields end
 
 	// action buttons
@@ -59,7 +60,9 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 		setWidthUndefined();
 
 		positionSize.setConverter(Double.class);
+		positionSize.setNullRepresentation("0.0");
 		targetVolatility.setConverter(Double.class);
+		targetVolatility.setImmediate(true);
 		actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 		send.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		send.setClickShortcut(ShortcutAction.KeyCode.ENTER);

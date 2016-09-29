@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.util.StringUtils;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.ui.TextArea;
 
 public abstract class PasteConverterTextBox<T> extends TextArea {
@@ -17,18 +15,28 @@ public abstract class PasteConverterTextBox<T> extends TextArea {
 
 	public PasteConverterTextBox() {
 		super();
+		
 		this.addStyleName("hiddenStuff");
+//		this.setHeight(40, Unit.PIXELS);
+//		this.setWidth(100, Unit.PERCENTAGE);
+		
 		this.focus();
 		this.setImmediate(true);
 		this.setTextChangeEventMode(TextChangeEventMode.EAGER);
-		this.addTextChangeListener(new TextChangeListener() {
-			private static final long serialVersionUID = -4033788902737982230L;
-
-			@Override
-			public void textChange(TextChangeEvent event) {
-				convertItems();
-				populate(convertedItems);
-			}
+		
+		this.addTextChangeListener((e) -> {
+			convertItems();
+			populate(convertedItems);
+		});
+		
+		this.addBlurListener((e) -> {
+			convertItems();
+			populate(convertedItems);
+		});
+		
+		this.addFocusListener((e) -> {
+			convertItems();
+			populate(convertedItems);
 		});
 	}
 
@@ -40,7 +48,7 @@ public abstract class PasteConverterTextBox<T> extends TextArea {
 				convertedItems.add(convertLine(line));
 		}
 	}
-	
+
 	public List<T> getConvertedItems() {
 		return convertedItems;
 	}

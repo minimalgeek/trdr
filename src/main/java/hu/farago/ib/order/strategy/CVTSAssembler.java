@@ -1,7 +1,7 @@
 package hu.farago.ib.order.strategy;
 
 import hu.farago.ib.model.dto.OrderCommonProperties;
-import hu.farago.ib.order.OrderAssembler;
+import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.web.component.order.dto.CVTSOrder;
 
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import com.ib.client.Contract;
 import com.ib.client.Order;
 
 @Component
-public class CVTSAssembler implements OrderAssembler<CVTSOrder> {
+public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 	
 	@Override
 	public Contract buildContract(CVTSOrder so, OrderCommonProperties ocp) {

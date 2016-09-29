@@ -1,8 +1,8 @@
 package hu.farago.web.component.order;
 
+import hu.farago.ib.order.strategy.enums.ActionType;
+import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.ib.service.order.OrderService;
-import hu.farago.ib.strategy.enums.ActionType;
-import hu.farago.ib.strategy.enums.Strategy;
 import hu.farago.web.component.OrderCommonPropertiesEditor;
 import hu.farago.web.component.PasteConverterTextBox;
 import hu.farago.web.component.OrderPasteGrid;

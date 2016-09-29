@@ -1,7 +1,7 @@
 package hu.farago.web;
 
-import hu.farago.ib.dto.IBError;
-import hu.farago.ib.dto.OpenOrder;
+import hu.farago.ib.model.dto.IBError;
+import hu.farago.ib.model.dto.OpenOrder;
 import hu.farago.web.component.OrderCommonPropertiesEditor;
 import hu.farago.web.component.order.CVTSPasteGrid;
 
@@ -19,7 +19,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.VerticalSplitPanel;
 
 @SpringUI
 @Theme("mytheme")
@@ -29,16 +29,20 @@ public class VaadinUI extends UI {
 	private static final long serialVersionUID = 673516373579025498L;
 	
 	@Autowired
-	private OrderCommonPropertiesEditor ocpe;
-	private Label response;
-	
-	@Autowired
 	private EventBus eventBus;
+	
+	// Tab content
+	@Autowired
+	private OrderCommonPropertiesEditor ocpe;
 	
 	@Autowired
 	private CVTSPasteGrid orderPasteGrid;
-
+	// End
+	
+	
 	private TabSheet tabSheet;
+	private VerticalSplitPanel vsp;
+	private Label response;
 	
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
@@ -46,35 +50,21 @@ public class VaadinUI extends UI {
 		
 		tabSheet = new TabSheet();
 
-		buildOrderEditorSampleTab();
-		buildCVTSTab();
+		buildTabs();
 		
-		VerticalLayout mainLayout = new VerticalLayout(tabSheet);
-		mainLayout.setMargin(true);
-		mainLayout.setSpacing(true);
-
-		setContent(mainLayout);
-	}
-
-	private void buildOrderEditorSampleTab() {
 		response = new Label("IB client response...");
 		response.setSizeFull();
-		VerticalLayout tab = new VerticalLayout();
-		tab.addComponents(ocpe, response);
-		tabSheet.addTab(tab, "Order Editor Sample", new ThemeResource("img/planets/01.png"));
+		
+		vsp = new VerticalSplitPanel(tabSheet, response);
+		vsp.setSplitPosition(70, Unit.PERCENTAGE);
+		setContent(vsp);
+	}
+
+	private void buildTabs() {
+		tabSheet.addTab(ocpe, "Order Editor Sample", new ThemeResource("img/planets/01.png"));
+		tabSheet.addTab(orderPasteGrid, "CVTS strategy", new ThemeResource("img/planets/02.png"));
 	}
 	
-	private void buildCVTSTab() {
-		VerticalLayout tab = new VerticalLayout();
-		tab.addComponents(orderPasteGrid);
-		tabSheet.addTab(tab, "CVTS strategy", new ThemeResource("img/planets/02.png"));
-	}
-
-//	@Subscribe
-//	public void contractDetails(ContractDetails cd) {
-//		response.setValue(cd.toString());
-//	}
-
 	@Subscribe
 	public void ibError(IBError ibError) {
 		Notification notif = new Notification("Error",
@@ -93,5 +83,4 @@ public class VaadinUI extends UI {
 	public void openOrder(OpenOrder oo){
 		response.setValue(oo.toString());
 	}
-	
 }

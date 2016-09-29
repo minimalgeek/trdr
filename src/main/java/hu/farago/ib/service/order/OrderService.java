@@ -1,16 +1,15 @@
 package hu.farago.ib.service.order;
 
-import java.util.List;
-
 import hu.farago.ib.EWrapperImpl;
-import hu.farago.ib.dto.IBError;
 import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
+import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.OrderCommonProperties;
-import hu.farago.ib.order.OrderAssembler;
+import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.ib.order.strategy.CVTSAssembler;
-import hu.farago.ib.strategy.enums.Strategy;
-import hu.farago.web.component.order.dto.CVTSOrder;
+import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.web.component.order.dto.StrategyOrder;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,7 +55,7 @@ public class OrderService {
 					+ " strategy's common properties are empty!"));
 		}
 
-		OrderAssembler<T> oa = getAssembler(strat);
+		IOrderAssembler<T> oa = getAssembler(strat);
 		wrapper.getClientSocket().placeOrder(wrapper.getCurrentOrderId() + 1,
 				oa.buildContract(so, ocp), oa.buildOrder(so, ocp));
 	}
@@ -67,37 +66,13 @@ public class OrderService {
 		}
 	}
 
-
-	private <T extends StrategyOrder> OrderAssembler<T> getAssembler(Strategy strat) {
+	@SuppressWarnings("unchecked")
+	private <T extends StrategyOrder> IOrderAssembler<T> getAssembler(Strategy strat) {
 		switch (strat) {
 		case CVTS:
-			return (OrderAssembler<T>) cvtsAssembler;
+			return (IOrderAssembler<T>) cvtsAssembler;
 		default:
 			return null;
 		}
 	}
-
-	// public void placeOrder(OrderContract oc) {
-	// wrapper.getClientSocket().placeOrder(wrapper.getCurrentOrderId() + 1,
-	// buildIBContract(oc), buildIBOrder(oc));
-	// }
-	//
-	// private Contract buildIBContract(OrderContract oc) {
-	// Contract contract = new Contract();
-	// contract.symbol(oc.getSymbol());
-	// contract.secType(oc.getSecType());
-	// contract.currency(oc.getCurrency());
-	// contract.exchange(oc.getExchange());
-	// contract.primaryExch(oc.getPrimaryExchange());
-	// return contract;
-	// }
-	//
-	// private Order buildIBOrder(OrderContract oc) {
-	// Order order = new Order();
-	// order.action(oc.getAction());
-	// order.orderType(oc.getOrderType());
-	// order.totalQuantity(oc.getTotalQuantity());
-	// order.lmtPrice(oc.getLimitPrice());
-	// return order;
-	// }
 }
