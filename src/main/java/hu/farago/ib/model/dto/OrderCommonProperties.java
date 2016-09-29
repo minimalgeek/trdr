@@ -21,6 +21,7 @@ public class OrderCommonProperties {
 	public OrderType orderType;
 	public Double positionSize;
 	public Double targetVolatility;
+	public String faProfile;
 
 	public Strategy getId() {
 		return id;
@@ -86,4 +87,11 @@ public class OrderCommonProperties {
 		this.targetVolatility = targetVolatility;
 	}
 	
+	public String getFaProfile() {
+		return faProfile;
+	}
+	
+	public void setFaProfile(String faProfile) {
+		this.faProfile = faProfile;
+	}
 }

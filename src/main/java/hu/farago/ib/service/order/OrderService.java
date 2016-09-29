@@ -56,7 +56,7 @@ public class OrderService {
 		}
 
 		IOrderAssembler<T> oa = getAssembler(strat);
-		wrapper.getClientSocket().placeOrder(wrapper.getCurrentOrderId() + 1,
+		wrapper.getClientSocket().placeOrder(wrapper.nextOrderId(),
 				oa.buildContract(so, ocp), oa.buildOrder(so, ocp));
 	}
 	

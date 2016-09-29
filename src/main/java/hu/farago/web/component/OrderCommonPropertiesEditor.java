@@ -42,6 +42,7 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 			.values()));
 	TextField positionSize = new TextField("Position size");
 	Slider targetVolatility = new Slider("Target Volatility", 0, 100);
+	TextField faProfile = new TextField("FA Profile");
 	// fields end
 
 	// action buttons
@@ -52,7 +53,7 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 	public OrderCommonPropertiesEditor(OrderService orderService) {
 		this.orderService = orderService;
 		addComponents(secType, currency, exchange, primaryExchange, orderType,
-				positionSize, targetVolatility, actions);
+				positionSize, targetVolatility, faProfile, actions);
 
 		// Configure and style components
 		setSpacing(true);

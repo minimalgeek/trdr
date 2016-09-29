@@ -14,6 +14,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.Position;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -53,7 +54,9 @@ public class VaadinUI extends UI {
 		buildTabs();
 		
 		response = new Label("IB client response...");
+		response.setImmediate(true);
 		response.setSizeFull();
+		response.setContentMode(ContentMode.TEXT);
 		
 		vsp = new VerticalSplitPanel(tabSheet, response);
 		vsp.setSplitPosition(70, Unit.PERCENTAGE);
@@ -83,4 +86,5 @@ public class VaadinUI extends UI {
 	public void openOrder(OpenOrder oo){
 		response.setValue(oo.toString());
 	}
+	
 }

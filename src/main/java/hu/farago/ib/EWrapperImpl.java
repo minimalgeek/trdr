@@ -51,7 +51,7 @@ public class EWrapperImpl implements EWrapper {
     public void init() {
 		readerSignal = new EJavaSignal();
 		clientSocket = new EClientSocket(this, readerSignal);
-		clientSocket.eConnect(host, port, 0);
+		clientSocket.eConnect(host, port, 1);
 		
 		Thread thread = new Thread(new MessageReceiver(clientSocket, readerSignal, eventBus));
 		thread.start();
@@ -66,6 +66,11 @@ public class EWrapperImpl implements EWrapper {
 	}
 	
 	public int getCurrentOrderId() {
+		return currentOrderId;
+	}
+	
+	public int nextOrderId() {
+		currentOrderId++;
 		return currentOrderId;
 	}
 	
@@ -213,8 +218,7 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void managedAccounts(String arg0) {
-		// TODO Auto-generated method stub
-		
+		LOGGER.info("Managed accounts: ["+ arg0 +"]");
 	}
 
 	@Override
@@ -225,7 +229,7 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void nextValidId(int orderId) {
-		LOGGER.debug("Next Valid Id: ["+orderId+"]");
+		LOGGER.info("Next Valid Id: ["+orderId+"]");
 		currentOrderId = orderId;		
 	}
 
@@ -236,21 +240,19 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void openOrderEnd() {
-		// TODO Auto-generated method stub
+		LOGGER.debug("openOrderEnd");
 		
 	}
 
 	@Override
 	public void orderStatus(int arg0, String arg1, double arg2, double arg3,
 			double arg4, int arg5, int arg6, double arg7, int arg8, String arg9) {
-		// TODO Auto-generated method stub
-		
+		LOGGER.debug("orderStatus");
 	}
 
 	@Override
 	public void position(String arg0, Contract arg1, double arg2, double arg3) {
-		// TODO Auto-generated method stub
-		
+		LOGGER.debug("position");
 	}
 
 	@Override

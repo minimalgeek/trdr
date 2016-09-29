@@ -15,6 +15,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 	@Override
 	public Contract buildContract(CVTSOrder so, OrderCommonProperties ocp) {
 		Contract contract = new Contract();
+		contract.conid(0);
 		contract.symbol(so.getTicker());
 		contract.secType(ocp.getSecType());
 		contract.currency(ocp.getCurrency());
@@ -26,6 +27,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 	@Override
 	public Order buildOrder(CVTSOrder so, OrderCommonProperties ocp) {
 		Order order = new Order();
+		
 		order.action(so.getAction().name());
 		order.orderType(ocp.getOrderType());
 		
@@ -34,6 +36,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		
 		order.totalQuantity(quantity.intValue());
 		order.lmtPrice(so.getLimitPrice());
+		order.faProfile(ocp.getFaProfile());
 		return order;
 	}
 
