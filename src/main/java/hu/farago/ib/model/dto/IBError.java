@@ -1,6 +1,6 @@
 package hu.farago.ib.model.dto;
 
-import org.springframework.core.style.ToStringCreator;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class IBError {
 
@@ -32,12 +32,6 @@ public class IBError {
 
 	@Override
 	public String toString() {
-		ToStringCreator tsc = new ToStringCreator(this);
-		if (arg1 == 0 && arg2 == 0) {
-			tsc.append(arg3);
-		} else {
-			tsc.append(arg1).append(arg2).append(arg3);
-		}
-		return tsc.toString();
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

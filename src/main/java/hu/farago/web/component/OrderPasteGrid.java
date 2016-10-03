@@ -49,7 +49,10 @@ public abstract class OrderPasteGrid<T extends StrategyOrder> extends VerticalLa
 		this.save.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		this.save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 		this.save.addClickListener((e) -> os.placeOrders(this.converter.getConvertedItems()));
-		this.clear.addClickListener((e) -> converter.populate(Lists.newArrayList()));
+		this.clear.addClickListener((e) -> {
+			converter.setValue("");
+			converter.populate(Lists.newArrayList());	
+		});
 
 		setMargin(true);
 		setSpacing(true);

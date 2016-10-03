@@ -47,35 +47,42 @@
 			<scope>test</scope>
 		</dependency>
 
+<!-- Vaadin -->
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring-boot-starter</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-push</artifactId>
+		</dependency>
 
+<!-- Utilities -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>19.0</version>
 		</dependency>
 		<dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
-        <dependency>
-        	<groupId>joda-time</groupId>
-        	<artifactId>joda-time</artifactId>
-        </dependency>
-
-        <dependency>
-        	<groupId>org.apache.hadoop</groupId>
-        	<artifactId>hadoop-core</artifactId>
-        	<version>1.0.0</version>
-        </dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+		
+<!-- Dafuq is this?! -->
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-core</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>

@@ -1,6 +1,6 @@
 package hu.farago.ib.model.dto;
 
-import org.springframework.core.style.ToStringCreator;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -60,10 +60,6 @@ public class OpenOrder {
 
 	@Override
 	public String toString() {
-		ToStringCreator tsc = new ToStringCreator(this);
-		tsc.append("Order id", orderId).append("Contract", contract.toString())
-				.append("Order", order.toString())
-				.append("Order state", orderState.toString());
-		return tsc.toString();
+		return ToStringBuilder.reflectionToString(this);
 	}
 }
