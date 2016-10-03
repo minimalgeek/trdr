@@ -22,6 +22,7 @@ public class OrderCommonProperties {
 	public Double positionSize;
 	public Double targetVolatility;
 	public String faProfile;
+	public Integer nBarStop;
 
 	public Strategy getId() {
 		return id;
@@ -93,5 +94,13 @@ public class OrderCommonProperties {
 	
 	public void setFaProfile(String faProfile) {
 		this.faProfile = faProfile;
+	}
+	
+	public Integer getnBarStop() {
+		return nBarStop;
+	}
+	
+	public void setnBarStop(Integer nBarStop) {
+		this.nBarStop = nBarStop;
 	}
 }

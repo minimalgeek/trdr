@@ -20,6 +20,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.Position;
 import com.vaadin.shared.communication.PushMode;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Grid;
@@ -76,6 +77,7 @@ public class VaadinUI extends UI {
 		responseGrid.setDescription("Responses sent by the IB client");
 		Grid.Column htmlColumn = responseGrid.getColumn("htmlResponse");
 		htmlColumn.setRenderer(new HtmlRenderer(""));
+		htmlColumn.setEditable(true);
 		htmlColumn.setWidthUndefined();
 	}
 
@@ -88,20 +90,20 @@ public class VaadinUI extends UI {
 
 	@Subscribe
 	public void ibError(IBError ibError) {
-		access(new Runnable() {
-			@Override
-			public void run() {
-				Notification notif = new Notification("Error",
-						ibError.toString(), Notification.Type.ERROR_MESSAGE);
-
-				// Customize it
-				notif.setDelayMsec(5000);
-				notif.setPosition(Position.BOTTOM_CENTER);
-
-				// Show it in the page
-				notif.show(VaadinUI.this.getPage());
-			}
-		});
+//		access(new Runnable() {
+//			@Override
+//			public void run() {
+//				Notification notif = new Notification("Error",
+//						ibError.toString(), Notification.Type.ERROR_MESSAGE);
+//
+//				// Customize it
+//				notif.setDelayMsec(5000);
+//				notif.setPosition(Position.BOTTOM_CENTER);
+//
+//				// Show it in the page
+//				notif.show(VaadinUI.this.getPage());
+//			}
+//		});
 		addResponseToGrid(ibError.toString(), ResponseType.ERROR);
 	}
 
@@ -120,6 +122,7 @@ public class VaadinUI extends UI {
 			public void run() {
 				Response resp = new Response(type, responseText);
 				responses.addBean(resp);
+				responseGrid.sort(responseGrid.getColumn("clientDateTime").getPropertyId(), SortDirection.DESCENDING);
 			}
 		});
 	}

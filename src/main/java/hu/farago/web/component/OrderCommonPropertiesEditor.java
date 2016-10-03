@@ -43,6 +43,7 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 	TextField positionSize = new TextField("Position size");
 	Slider targetVolatility = new Slider("Target Volatility", 0, 100);
 	TextField faProfile = new TextField("FA Profile");
+	Slider nBarStop = new Slider("N-Bar Stop", 0, 20);
 	// fields end
 
 	// action buttons
@@ -53,7 +54,7 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 	public OrderCommonPropertiesEditor(OrderService orderService) {
 		this.orderService = orderService;
 		addComponents(secType, currency, exchange, primaryExchange, orderType,
-				positionSize, targetVolatility, faProfile, actions);
+				positionSize, targetVolatility, faProfile, nBarStop, actions);
 
 		// Configure and style components
 		setSpacing(true);
@@ -64,6 +65,8 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 		positionSize.setNullRepresentation("0.0");
 		targetVolatility.setConverter(Double.class);
 		targetVolatility.setImmediate(true);
+		nBarStop.setConverter(Integer.class);
+		nBarStop.setImmediate(true);
 		actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 		send.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		send.setClickShortcut(ShortcutAction.KeyCode.ENTER);
