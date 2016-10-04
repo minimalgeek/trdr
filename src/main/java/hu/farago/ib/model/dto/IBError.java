@@ -4,30 +4,42 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class IBError {
 
-	private int arg1;
-	private int arg2;
-	private String arg3;
-
-	public IBError(String arg3) {
-		this(0, 0, arg3);
+	private int id;
+	private int errorCode;
+	private String errorMsg;
+	
+	public IBError(String errorMsg) {
+		this(0, 0, errorMsg);
 	}
 
-	public IBError(int arg1, int arg2, String arg3) {
-		this.arg1 = arg1;
-		this.arg2 = arg2;
-		this.arg3 = arg3;
+	public IBError(int id, int errorCode, String errorMsg) {
+		this.id = id;
+		this.errorCode = errorCode;
+		this.errorMsg = errorMsg;
 	}
 
-	public int getArg1() {
-		return arg1;
+	public int getId() {
+		return id;
 	}
 
-	public int getArg2() {
-		return arg2;
+	public void setId(int id) {
+		this.id = id;
 	}
 
-	public String getArg3() {
-		return arg3;
+	public int getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(int errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
 	}
 
 	@Override

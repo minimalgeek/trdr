@@ -17,12 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
+import com.ib.client.Contract;
+import com.ib.client.Order;
 import com.vaadin.spring.annotation.UIScope;
 
 @Component
 @UIScope
 public class OrderService {
-	
+
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
@@ -59,19 +61,25 @@ public class OrderService {
 					+ " strategy's common properties are empty!"));
 		}
 
-		IOrderAssembler<T> oa = getAssembler(strat);
-		wrapper.getClientSocket().placeOrder(wrapper.nextOrderId(),
-				oa.buildContract(so, ocp), oa.buildOrder(so, ocp));
+		IOrderAssembler<T> orderAssembler = getAssembler(strat);
+
+		Contract contract = orderAssembler.buildContract(so, ocp);
+		for (Order order : orderAssembler.buildOrders(so, ocp, wrapper.nextOrderId())) {
+			wrapper.getClientSocket().placeOrder(order.orderId(), contract,
+					order);
+		}
 	}
-	
-	public <T extends AbstractStrategyOrder> void placeOrders(List<T> convertedItems) {
-		for(T order : convertedItems) {
+
+	public <T extends AbstractStrategyOrder> void placeOrders(
+			List<T> convertedItems) {
+		for (T order : convertedItems) {
 			placeOrder(order);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends AbstractStrategyOrder> IOrderAssembler<T> getAssembler(Strategy strat) {
+	private <T extends AbstractStrategyOrder> IOrderAssembler<T> getAssembler(
+			Strategy strat) {
 		switch (strat) {
 		case CVTS:
 			return (IOrderAssembler<T>) cvtsAssembler;

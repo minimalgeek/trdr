@@ -3,7 +3,7 @@ package hu.farago.web;
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.IBOrder;
 import hu.farago.web.component.order.CVTSPasteGrid;
-import hu.farago.web.component.order.OpenedOrders;
+import hu.farago.web.component.order.OrderStatusPanel;
 import hu.farago.web.response.Response;
 import hu.farago.web.response.ResponseType;
 
@@ -41,7 +41,7 @@ public class VaadinUI extends UI {
 
 	// Tab content
 	@Autowired
-	private OpenedOrders openedOrders;
+	private OrderStatusPanel openedOrders;
 	
 	@Autowired
 	private CVTSPasteGrid orderPasteGrid;
@@ -71,16 +71,20 @@ public class VaadinUI extends UI {
 		responseGrid.setSizeFull();
 		responseGrid.setContainerDataSource(responses);
 		responseGrid.setColumnReorderingAllowed(true);
-		responseGrid.setImmediate(true);
 		responseGrid.setDescription("Responses sent by the IB client");
 		Grid.Column htmlColumn = responseGrid.getColumn("htmlResponse");
 		htmlColumn.setRenderer(new HtmlRenderer(""));
 		htmlColumn.setEditable(true);
 		htmlColumn.setWidthUndefined();
+		// expand ratios
+		htmlColumn.setExpandRatio(6);
+		responseGrid.getColumn("clientDateTime").setExpandRatio(1);
+		// show content on hover
+		responseGrid.setCellDescriptionGenerator((cell) -> cell.getValue().toString());
 	}
 
 	private void buildTabs() {
-		tabSheet.addTab(openedOrders, "Opened Orders", new ThemeResource(
+		tabSheet.addTab(openedOrders, "Orders current status", new ThemeResource(
 				"img/planets/01.png"));
 		tabSheet.addTab(orderPasteGrid, "CVTS strategy", new ThemeResource(
 				"img/planets/02.png"));

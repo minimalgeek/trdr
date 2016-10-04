@@ -4,8 +4,8 @@ import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.ib.service.order.OrderService;
 import hu.farago.web.component.OrderCommonPropertiesEditor;
-import hu.farago.web.component.PasteConverterTextBox;
 import hu.farago.web.component.OrderPasteGrid;
+import hu.farago.web.component.PasteConverterTextBox;
 import hu.farago.web.component.order.dto.CVTSOrder;
 import hu.farago.web.utils.Formatters;
 
@@ -56,7 +56,7 @@ public class CVTSPasteGrid extends OrderPasteGrid<CVTSOrder> {
 
 			@Override
 			public void populate(List<CVTSOrder> items) {
-				grid.setContainerDataSource(new BeanItemContainer<CVTSOrder>(
+				grid.getGrid().setContainerDataSource(new BeanItemContainer<CVTSOrder>(
 						CVTSOrder.class, items));
 			}
 			

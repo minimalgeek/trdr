@@ -7,24 +7,19 @@ import hu.farago.web.component.order.dto.AbstractStrategyOrder;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 
 public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends VerticalLayout {
 
 	private static final long serialVersionUID = 534910030402563189L;
 
-	protected Grid grid;
+	protected GridWithActionList grid;
 	protected Button save;
 	protected Button clear;
-	private CssLayout actions;
 	protected PasteConverterTextBox<T> converter;
 	
 	private Button ocpeWindowOpener;
@@ -39,24 +34,16 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 	public OrderPasteGrid(OrderCommonPropertiesEditor ocpe, OrderService os) {
 		this.ocpe = ocpe;
 		this.ocpe.setChangeHandler(() -> ocpeWindow.close());
-		this.grid = new Grid();
 		this.save = new Button("Save", FontAwesome.SAVE);
 		this.clear = new Button("Clear", FontAwesome.TRASH_O);
 		this.ocpeWindowOpener = new Button("Common Properties", FontAwesome.ANGELLIST);
+		this.grid = new GridWithActionList(save, clear, ocpeWindowOpener);
 		
-		this.actions = new CssLayout(save, clear, ocpeWindowOpener);
-		this.actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-		this.save.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		this.save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 		this.save.addClickListener((e) -> os.placeOrders(this.converter.getConvertedItems()));
 		this.clear.addClickListener((e) -> {
 			converter.setValue("");
 			converter.populate(Lists.newArrayList());	
 		});
-
-		setMargin(true);
-		setSpacing(true);
-		this.grid.setSizeFull();
 		
 		this.converter = createConverter();
 		this.strategy = createStrategy();
@@ -72,7 +59,7 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 			}
 		});
 
-		addComponents(converter, grid, actions);
+		addComponents(converter, grid);
 		setupOrderCommonPropertiesEditor();
 	}
 

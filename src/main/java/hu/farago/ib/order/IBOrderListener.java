@@ -1,6 +1,6 @@
 package hu.farago.ib.order;
 
-import hu.farago.ib.model.dao.OpenOrderDAO;
+import hu.farago.ib.model.dao.IBOrderDAO;
 import hu.farago.ib.model.dto.IBOrder;
 
 import javax.annotation.PostConstruct;
@@ -12,13 +12,13 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @Component
-public class OpenOrderHandler {
+public class IBOrderListener {
 
 	@Autowired
 	private EventBus eventBus;
 	
 	@Autowired
-	private OpenOrderDAO ooDAO;
+	private IBOrderDAO ooDAO;
 	
 	@PostConstruct
     public void init() {
@@ -26,8 +26,8 @@ public class OpenOrderHandler {
 	}
 	
 	@Subscribe
-	public void openOrder(IBOrder oo){
-		ooDAO.save(oo);
+	public void orderChanged(IBOrder ibOrder){
+		ooDAO.save(ibOrder);
 	}
 	
 }
