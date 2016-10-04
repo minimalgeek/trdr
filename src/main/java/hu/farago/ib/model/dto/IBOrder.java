@@ -8,8 +8,8 @@ import com.ib.client.Contract;
 import com.ib.client.Order;
 import com.ib.client.OrderState;
 
-@Document(collection = "ib_opened_order")
-public class OpenOrder {
+@Document(collection = "ib_order")
+public class IBOrder {
 	
 	@Id
 	private int orderId;
@@ -17,7 +17,7 @@ public class OpenOrder {
 	private Order order;
 	private OrderState orderState;
 
-	public OpenOrder(int orderId, Contract contract, Order order,
+	public IBOrder(int orderId, Contract contract, Order order,
 			OrderState orderState) {
 		super();
 		this.orderId = orderId;

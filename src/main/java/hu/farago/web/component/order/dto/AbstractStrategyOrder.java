@@ -2,7 +2,7 @@ package hu.farago.web.component.order.dto;
 
 import hu.farago.ib.order.strategy.enums.Strategy;
 
-public abstract class StrategyOrder {
+public abstract class AbstractStrategyOrder {
 
 	protected String ticker;
 	

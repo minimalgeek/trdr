@@ -1,7 +1,7 @@
 package hu.farago.ib.order;
 
 import hu.farago.ib.model.dao.OpenOrderDAO;
-import hu.farago.ib.model.dto.OpenOrder;
+import hu.farago.ib.model.dto.IBOrder;
 
 import javax.annotation.PostConstruct;
 
@@ -26,7 +26,7 @@ public class OpenOrderHandler {
 	}
 	
 	@Subscribe
-	public void openOrder(OpenOrder oo){
+	public void openOrder(IBOrder oo){
 		ooDAO.save(oo);
 	}
 	

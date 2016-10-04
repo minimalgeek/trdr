@@ -1,7 +1,7 @@
 package hu.farago.ib;
 
 import hu.farago.ib.model.dto.IBError;
-import hu.farago.ib.model.dto.OpenOrder;
+import hu.farago.ib.model.dto.IBOrder;
 
 import java.util.Set;
 
@@ -233,23 +233,30 @@ public class EWrapperImpl implements EWrapper {
 		currentOrderId = orderId;		
 	}
 
+	// ******************************************************
+	// *********************** ORDERS ***********************
+	// ******************************************************
+	
 	@Override
 	public void openOrder(int arg0, Contract arg1, Order arg2, OrderState arg3) {
-		eventBus.post(new OpenOrder(arg0, arg1, arg2, arg3));
-	}
-
-	@Override
-	public void openOrderEnd() {
-		LOGGER.debug("openOrderEnd");
-		
+		LOGGER.info("================= openOrder");
+		eventBus.post(new IBOrder(arg0, arg1, arg2, arg3));
 	}
 
 	@Override
 	public void orderStatus(int arg0, String arg1, double arg2, double arg3,
 			double arg4, int arg5, int arg6, double arg7, int arg8, String arg9) {
-		LOGGER.debug("orderStatus");
+		LOGGER.info("================= orderStatus");
+	}
+	
+	@Override
+	public void openOrderEnd() {
+		LOGGER.info("================= openOrderEnd");
+		
 	}
 
+	// ******************************************************
+	
 	@Override
 	public void position(String arg0, Contract arg1, double arg2, double arg3) {
 		LOGGER.debug("position");

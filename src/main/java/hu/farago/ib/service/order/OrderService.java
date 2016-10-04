@@ -7,10 +7,12 @@ import hu.farago.ib.model.dto.OrderCommonProperties;
 import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.ib.order.strategy.CVTSAssembler;
 import hu.farago.ib.order.strategy.enums.Strategy;
-import hu.farago.web.component.order.dto.StrategyOrder;
+import hu.farago.web.component.order.dto.AbstractStrategyOrder;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +22,8 @@ import com.vaadin.spring.annotation.UIScope;
 @Component
 @UIScope
 public class OrderService {
+	
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private EventBus eventBus;
@@ -46,7 +50,7 @@ public class OrderService {
 		return ocpDAO.findOne(strategy);
 	}
 
-	public <T extends StrategyOrder> void placeOrder(T so) {
+	public <T extends AbstractStrategyOrder> void placeOrder(T so) {
 		Strategy strat = so.strategy();
 
 		OrderCommonProperties ocp = ocpDAO.findOne(strat);
@@ -60,19 +64,24 @@ public class OrderService {
 				oa.buildContract(so, ocp), oa.buildOrder(so, ocp));
 	}
 	
-	public <T extends StrategyOrder> void placeOrders(List<T> convertedItems) {
+	public <T extends AbstractStrategyOrder> void placeOrders(List<T> convertedItems) {
 		for(T order : convertedItems) {
 			placeOrder(order);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends StrategyOrder> IOrderAssembler<T> getAssembler(Strategy strat) {
+	private <T extends AbstractStrategyOrder> IOrderAssembler<T> getAssembler(Strategy strat) {
 		switch (strat) {
 		case CVTS:
 			return (IOrderAssembler<T>) cvtsAssembler;
 		default:
 			return null;
 		}
+	}
+
+	public void reqAllOpenOrders() {
+		LOGGER.info("reqAllOpenOrders");
+		wrapper.getClientSocket().reqAllOpenOrders();
 	}
 }

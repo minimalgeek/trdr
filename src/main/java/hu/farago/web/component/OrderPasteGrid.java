@@ -2,7 +2,7 @@ package hu.farago.web.component;
 
 import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.ib.service.order.OrderService;
-import hu.farago.web.component.order.dto.StrategyOrder;
+import hu.farago.web.component.order.dto.AbstractStrategyOrder;
 
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -17,7 +17,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-public abstract class OrderPasteGrid<T extends StrategyOrder> extends VerticalLayout {
+public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends VerticalLayout {
 
 	private static final long serialVersionUID = 534910030402563189L;
 
@@ -56,7 +56,7 @@ public abstract class OrderPasteGrid<T extends StrategyOrder> extends VerticalLa
 
 		setMargin(true);
 		setSpacing(true);
-		grid.setSizeFull();
+		this.grid.setSizeFull();
 		
 		this.converter = createConverter();
 		this.strategy = createStrategy();

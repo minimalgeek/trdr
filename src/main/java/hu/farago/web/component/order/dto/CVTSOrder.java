@@ -11,7 +11,7 @@ import org.joda.time.DateTime;
  * @author Balázs
  *
  */
-public class CVTSOrder extends StrategyOrder {
+public class CVTSOrder extends AbstractStrategyOrder {
 
 	private DateTime startDateTime;
 	private ActionType action;

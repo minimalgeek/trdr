@@ -1,9 +1,9 @@
 package hu.farago.web;
 
 import hu.farago.ib.model.dto.IBError;
-import hu.farago.ib.model.dto.OpenOrder;
-import hu.farago.web.component.OrderCommonPropertiesEditor;
+import hu.farago.ib.model.dto.IBOrder;
 import hu.farago.web.component.order.CVTSPasteGrid;
+import hu.farago.web.component.order.OpenedOrders;
 import hu.farago.web.response.Response;
 import hu.farago.web.response.ResponseType;
 
@@ -18,13 +18,11 @@ import com.vaadin.annotations.Title;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.shared.Position;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalSplitPanel;
@@ -43,8 +41,8 @@ public class VaadinUI extends UI {
 
 	// Tab content
 	@Autowired
-	private OrderCommonPropertiesEditor ocpe;
-
+	private OpenedOrders openedOrders;
+	
 	@Autowired
 	private CVTSPasteGrid orderPasteGrid;
 	// End
@@ -82,7 +80,7 @@ public class VaadinUI extends UI {
 	}
 
 	private void buildTabs() {
-		tabSheet.addTab(ocpe, "Order Editor Sample", new ThemeResource(
+		tabSheet.addTab(openedOrders, "Opened Orders", new ThemeResource(
 				"img/planets/01.png"));
 		tabSheet.addTab(orderPasteGrid, "CVTS strategy", new ThemeResource(
 				"img/planets/02.png"));
@@ -108,7 +106,7 @@ public class VaadinUI extends UI {
 	}
 
 	@Subscribe
-	public void openOrder(OpenOrder oo) {
+	public void openOrder(IBOrder oo) {
 		addResponseToGrid(oo.toString());
 	}
 
