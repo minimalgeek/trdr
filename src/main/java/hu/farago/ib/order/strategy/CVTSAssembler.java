@@ -73,6 +73,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		parent.totalQuantity(quantity.intValue());
 		parent.lmtPrice(limitPrice);
 		parent.faProfile(ocp.getFaProfile());
+		parent.tif(TimeInForce.GTC);
 		// The parent and children orders will need this attribute set to false
 		// to prevent accidental executions.
 		// The LAST CHILD will have it set to true.
@@ -162,6 +163,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		// to activate all its predecessors
 		stopLoss.transmit(true);
 		stopLoss.faProfile(ocp.getFaProfile());
+		stopLoss.tif(TimeInForce.GTC);
 		retList.add(stopLoss);
 
 		return retList;
