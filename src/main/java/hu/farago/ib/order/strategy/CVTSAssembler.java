@@ -1,19 +1,24 @@
 package hu.farago.ib.order.strategy;
 
 import hu.farago.ib.model.dto.OrderCommonProperties;
-import hu.farago.ib.order.OrderUtils;
 import hu.farago.ib.order.IOrderAssembler;
+import hu.farago.ib.order.OrderUtils;
 import hu.farago.ib.order.strategy.enums.ActionType;
+import hu.farago.ib.utils.Formatters;
 import hu.farago.web.component.order.dto.CVTSOrder;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.ib.client.Contract;
 import com.ib.client.Order;
+import com.ib.client.OrderCondition;
+import com.ib.client.OrderConditionType;
+import com.ib.client.TimeCondition;
 
 @Component
 public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
@@ -43,12 +48,15 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 	public List<Order> buildOrders(CVTSOrder so, OrderCommonProperties ocp,
 			int parentOrderId) {
 
+		List<Order> retList = Lists.newArrayList();
+		
 		Double position = ocp.getPositionSize() * ocp.getTargetVolatility()
 				/ so.getHistoricalVolatility();
 		Double quantity = position / so.getPreviousDayClosePrice();
 		
-		ActionType action = so.getAction();
-		double limitPrice = so.getLimitPrice();
+		final ActionType action = so.getAction();
+		final double limitPrice = so.getLimitPrice();
+		final String switchActionStr = OrderUtils.switchActionStr(action);
 
 		// This will be our main or "parent" order
 		Order parent = new Order();
@@ -62,31 +70,68 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		// to prevent accidental executions.
 		// The LAST CHILD will have it set to true.
 		parent.transmit(false);
+		retList.add(parent);
 
-		double takeProfitLimitPrice = 0, stopLossPrice = 0;
+		double takeProfitLimitPrice = 0, remainingTakeProfitLimitPrice = 0, stopLossPrice = 0;
 		if (action == ActionType.BUY) {
 			takeProfitLimitPrice = limitPrice
 					* (1.0 + profitTargetFirstDay / 100.0);
+			remainingTakeProfitLimitPrice = limitPrice
+					* (1.0 + profitTargetRemainingDay / 100.0);
 			stopLossPrice = limitPrice * (1.0 - stopLossTarget / 100.0);
 		} else {
 			takeProfitLimitPrice = limitPrice
 					* (1.0 - profitTargetFirstDay / 100);
+			remainingTakeProfitLimitPrice = limitPrice
+					* (1.0 - profitTargetRemainingDay / 100.0);
 			stopLossPrice = limitPrice * (1.0 + stopLossTarget / 100.0);
 		}
 
 		Order takeProfit = new Order();
 		takeProfit.orderId(parent.orderId() + 1);
-		takeProfit.action(OrderUtils.switchActionStr(action));
+		takeProfit.action(switchActionStr);
 		takeProfit.orderType(ocp.getOrderType());
 		takeProfit.totalQuantity(quantity.intValue());
 		takeProfit.lmtPrice(takeProfitLimitPrice);
 		takeProfit.parentId(parentOrderId);
 		takeProfit.transmit(false);
 		takeProfit.faProfile(ocp.getFaProfile());
+		retList.add(takeProfit);
+		
+		DateTime startDT = DateTime.now().withTimeAtStartOfDay();
+		
+        for (int i = 1; i < ocp.barStop; i++) {
+        	TimeCondition timeConditionStart = (TimeCondition)OrderCondition.create(OrderConditionType.Time);
+            timeConditionStart.isMore(true);
+            timeConditionStart.time(Formatters.formatToTimeCondition(startDT.plusDays(i)));
+            timeConditionStart.conjunctionConnection(true);
+            
+            TimeCondition timeConditionEnd = (TimeCondition)OrderCondition.create(OrderConditionType.Time);
+            timeConditionEnd.isMore(false);
+            timeConditionEnd.time(Formatters.formatToTimeCondition(startDT.plusDays(i + 1)));
+            timeConditionEnd.conjunctionConnection(true);
+            
+            Order timedTakeProfit = new Order();
+            timedTakeProfit.orderId(parent.orderId() + 1 + i);
+            timedTakeProfit.action(switchActionStr);
+            timedTakeProfit.orderType(ocp.getOrderType());
+            timedTakeProfit.totalQuantity(quantity.intValue());
+            timedTakeProfit.lmtPrice(remainingTakeProfitLimitPrice);
+            timedTakeProfit.parentId(parentOrderId);
+            timedTakeProfit.transmit(false);
+            timedTakeProfit.faProfile(ocp.getFaProfile());
+    		
+            timedTakeProfit.conditionsCancelOrder(true);
+            timedTakeProfit.conditions().add(timeConditionStart);
+            timedTakeProfit.conditions().add(timeConditionEnd);
+    		
+    		retList.add(timedTakeProfit);
+        }
 
+		
 		Order stopLoss = new Order();
-		stopLoss.orderId(parent.orderId() + 2);
-		stopLoss.action(OrderUtils.switchActionStr(action));
+		stopLoss.orderId(parent.orderId() + 1 + ocp.barStop);
+		stopLoss.action(switchActionStr);
 		stopLoss.orderType("STP");
 		// Stop trigger price
 		stopLoss.auxPrice(stopLossPrice);
@@ -97,21 +142,8 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		// to activate all its predecessors
 		stopLoss.transmit(true);
 		stopLoss.faProfile(ocp.getFaProfile());
+		retList.add(stopLoss);
 
-		return Lists.newArrayList(parent, takeProfit, stopLoss);
-
-		// Order order = new Order();
-		//
-		// order.action(so.getAction().name());
-		// order.orderType(ocp.getOrderType());
-		//
-		// Double position =
-		// ocp.getPositionSize()*ocp.getTargetVolatility()/so.getHistoricalVolatility();
-		// Double quantity = position/so.getPreviousDayClosePrice();
-		//
-		// order.totalQuantity(quantity.intValue());
-		// order.lmtPrice(so.getLimitPrice());
-		// order.faProfile(ocp.getFaProfile());
-		// return Lists.newArrayList(order);
+		return retList;
 	}
 }

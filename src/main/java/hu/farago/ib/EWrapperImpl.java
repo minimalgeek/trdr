@@ -26,10 +26,8 @@ import com.ib.client.EWrapper;
 import com.ib.client.Execution;
 import com.ib.client.Order;
 import com.ib.client.OrderState;
-import com.vaadin.spring.annotation.UIScope;
 
 @Component
-@UIScope
 public class EWrapperImpl implements EWrapper {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
@@ -42,8 +40,6 @@ public class EWrapperImpl implements EWrapper {
 	private String host;
 	@Value("${trdr.tws.port}")
 	private int port;
-	@Value("${trdr.tws.account}")
-	private String account;
 	
 	@Autowired
 	private EventBus eventBus;

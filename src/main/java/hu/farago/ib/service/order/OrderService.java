@@ -19,10 +19,8 @@ import org.springframework.stereotype.Component;
 import com.google.common.eventbus.EventBus;
 import com.ib.client.Contract;
 import com.ib.client.Order;
-import com.vaadin.spring.annotation.UIScope;
 
 @Component
-@UIScope
 public class OrderService {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
