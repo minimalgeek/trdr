@@ -8,6 +8,7 @@ import hu.farago.ib.utils.Formatters;
 import hu.farago.web.component.order.dto.CVTSOrder;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,10 @@ import com.ib.client.Order;
 import com.ib.client.OrderCondition;
 import com.ib.client.OrderConditionType;
 import com.ib.client.TimeCondition;
+import com.ib.client.Types.TimeInForce;
+
+import de.jollyday.HolidayCalendar;
+import de.jollyday.HolidayManager;
 
 @Component
 public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
@@ -31,6 +36,8 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 
 	@Value("${trdr.strategy.cvts.profitTarget.remainingDay}")
 	private double profitTargetRemainingDay;
+	
+	private HolidayManager holidayManager = HolidayManager.getInstance(HolidayCalendar.NYSE);
 
 	@Override
 	public Contract buildContract(CVTSOrder so, OrderCommonProperties ocp) {
@@ -99,20 +106,27 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		retList.add(takeProfit);
 		
 		DateTime startDT = DateTime.now().withTimeAtStartOfDay();
-		
-        for (int i = 1; i < ocp.barStop; i++) {
+		boolean allTakeProfitSet = false;
+		int nrOfTakeProfitOrders = 0;
+        
+		while (!allTakeProfitSet) {
+        	startDT = startDT.plusDays(1);
+        	if (holidayManager.isHoliday(startDT.toCalendar(Locale.US))) {
+        		continue;
+        	}
+        	
         	TimeCondition timeConditionStart = (TimeCondition)OrderCondition.create(OrderConditionType.Time);
             timeConditionStart.isMore(true);
-            timeConditionStart.time(Formatters.formatToTimeCondition(startDT.plusDays(i)));
+            timeConditionStart.time(Formatters.formatToTimeCondition(startDT));
             timeConditionStart.conjunctionConnection(true);
             
             TimeCondition timeConditionEnd = (TimeCondition)OrderCondition.create(OrderConditionType.Time);
             timeConditionEnd.isMore(false);
-            timeConditionEnd.time(Formatters.formatToTimeCondition(startDT.plusDays(i + 1)));
+            timeConditionEnd.time(Formatters.formatToTimeCondition(startDT.plusDays(1)));
             timeConditionEnd.conjunctionConnection(true);
             
             Order timedTakeProfit = new Order();
-            timedTakeProfit.orderId(parent.orderId() + 1 + i);
+            timedTakeProfit.orderId(parent.orderId() + 2 + nrOfTakeProfitOrders);
             timedTakeProfit.action(switchActionStr);
             timedTakeProfit.orderType(ocp.getOrderType());
             timedTakeProfit.totalQuantity(quantity.intValue());
@@ -120,12 +134,18 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
             timedTakeProfit.parentId(parentOrderId);
             timedTakeProfit.transmit(false);
             timedTakeProfit.faProfile(ocp.getFaProfile());
+            timedTakeProfit.tif(TimeInForce.GTC);
     		
             timedTakeProfit.conditionsCancelOrder(true);
             timedTakeProfit.conditions().add(timeConditionStart);
             timedTakeProfit.conditions().add(timeConditionEnd);
     		
     		retList.add(timedTakeProfit);
+    		
+    		nrOfTakeProfitOrders++;
+    		if (nrOfTakeProfitOrders == ocp.barStop - 1) {
+    			allTakeProfitSet = true;
+    		}
         }
 
 		
