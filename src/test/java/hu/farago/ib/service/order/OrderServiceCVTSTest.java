@@ -27,7 +27,7 @@ public class OrderServiceCVTSTest extends AbstractOrderServiceTest<CVTSOrder> {
 		
 		Thread.sleep(3000);
 		
-		assertEquals(7, openedOrders.size());
+		assertEquals(5, openedOrders.size());
 	}
 	
 	@Subscribe

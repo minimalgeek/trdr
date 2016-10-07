@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile="TwsApi.jar" -DgroupId=tws -DartifactId=tws -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true

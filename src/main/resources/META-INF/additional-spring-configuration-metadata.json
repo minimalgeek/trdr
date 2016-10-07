@@ -13,5 +13,20 @@
     "name": "trdr.tws.account",
     "type": "java.lang.String",
     "description": "Account name to connect"
+  },
+  {
+    "name": "trdr.strategy.cvts.profitTarget.firstDay",
+    "type": "java.lang.String",
+    "description": "First day's profit target in percentage"
+  },
+  {
+    "name": "trdr.strategy.cvts.profitTarget.remainingDay",
+    "type": "java.lang.String",
+    "description": "Remaining day's profit target in percentage"
+  },
+  {
+    "name": "trdr.strategy.cvts.stopLossTarget",
+    "type": "java.lang.String",
+    "description": "Stop loss in percentage"
   }
 ]}
