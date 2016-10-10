@@ -11,8 +11,8 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
 public class OrderServiceCVTSTest extends AbstractOrderServiceTest<CVTSOrder> {
 

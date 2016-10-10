@@ -39,8 +39,10 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 	@Value("${trdr.strategy.cvts.profitTarget.remainingDay}")
 	private double profitTargetRemainingDay;
 
+	@SuppressWarnings("deprecation")
 	private HolidayManager holidayManagerNYSE = HolidayManager
 			.getInstance(HolidayCalendar.NYSE);
+	@SuppressWarnings("deprecation")
 	private HolidayManager holidayManagerUS = HolidayManager
 			.getInstance(HolidayCalendar.UNITED_STATES);
 

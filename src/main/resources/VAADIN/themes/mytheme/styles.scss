@@ -1,2 +1,5 @@
 @import "mytheme.scss";
-@include mytheme;
+
+.mytheme {
+  @include mytheme;
+}

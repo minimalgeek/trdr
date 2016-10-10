@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.util.StringUtils;
 
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.google.common.collect.Lists;
 import com.vaadin.ui.TextArea;
 
 public abstract class PasteConverterTextBox<T> extends TextArea {

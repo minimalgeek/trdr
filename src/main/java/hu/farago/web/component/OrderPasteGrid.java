@@ -4,7 +4,7 @@ import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.ib.service.order.OrderService;
 import hu.farago.web.component.order.dto.AbstractStrategyOrder;
 
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.google.common.collect.Lists;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.server.FontAwesome;
