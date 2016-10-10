@@ -1,7 +1,7 @@
 package hu.farago.ib.order;
 
 import hu.farago.ib.model.dao.IBOrderDAO;
-import hu.farago.ib.model.dto.IBOrder;
+import hu.farago.ib.model.dto.order.IBOrder;
 
 import javax.annotation.PostConstruct;
 

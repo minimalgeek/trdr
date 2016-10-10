@@ -1,9 +1,9 @@
-package hu.farago.ib.service.order;
+package hu.farago.ib.service;
 
 import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
 import hu.farago.ib.model.dto.IBError;
-import hu.farago.ib.model.dto.OrderCommonProperties;
+import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.ib.order.strategy.CVTSAssembler;
 import hu.farago.ib.order.strategy.enums.Strategy;

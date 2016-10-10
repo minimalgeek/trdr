@@ -1,4 +1,4 @@
-package hu.farago.ib.model.dto;
+package hu.farago.ib.model.dto.order;
 
 public class IBOrderStatus {
 

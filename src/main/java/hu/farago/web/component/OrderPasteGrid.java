@@ -1,7 +1,7 @@
 package hu.farago.web.component;
 
 import hu.farago.ib.order.strategy.enums.Strategy;
-import hu.farago.ib.service.order.OrderService;
+import hu.farago.ib.service.OrderService;
 import hu.farago.web.component.order.dto.AbstractStrategyOrder;
 
 import com.google.common.collect.Lists;

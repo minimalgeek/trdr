@@ -1,6 +1,6 @@
 package hu.farago.ib.model.dao;
 
-import hu.farago.ib.model.dto.IBOrder;
+import hu.farago.ib.model.dto.order.IBOrder;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

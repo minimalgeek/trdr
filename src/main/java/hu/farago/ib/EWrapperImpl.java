@@ -1,19 +1,23 @@
 package hu.farago.ib;
 
 import hu.farago.ib.model.dto.IBError;
-import hu.farago.ib.model.dto.IBOrder;
-import hu.farago.ib.model.dto.IBOrderStatus;
+import hu.farago.ib.model.dto.market.StockPrices;
+import hu.farago.ib.model.dto.order.IBOrder;
+import hu.farago.ib.model.dto.order.IBOrderStatus;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.ib.client.CommissionReport;
 import com.ib.client.Contract;
@@ -35,6 +39,8 @@ public class EWrapperImpl implements EWrapper {
 	private EReaderSignal readerSignal;
 	private EClientSocket clientSocket;
 	protected int currentOrderId = -1;
+	protected int currentTickerId = -1;
+	private List<StockPrices.OhlcData> ohlcList;
 	
 	@Value("${trdr.tws.host}")
 	private String host;
@@ -69,6 +75,15 @@ public class EWrapperImpl implements EWrapper {
 	public int nextOrderId() {
 		currentOrderId++;
 		return currentOrderId;
+	}
+	
+	public int nextTickerId() {
+		currentTickerId++;
+		return currentTickerId;
+	}
+	
+	public void resetOhlcList() {
+		ohlcList = Lists.newArrayList();
 	}
 	
 	public EventBus getEventBus() {
@@ -209,8 +224,11 @@ public class EWrapperImpl implements EWrapper {
 	public void historicalData(int arg0, String arg1, double arg2, double arg3,
 			double arg4, double arg5, int arg6, int arg7, double arg8,
 			boolean arg9) {
-		// TODO Auto-generated method stub
+		LOGGER.debug("historicalData response");
+		StockPrices.OhlcData data = new StockPrices.OhlcData(NumberUtils.toLong(arg1), arg2, arg3, arg4, arg5);
+		ohlcList.add(data);
 		
+		eventBus.post(ohlcList);
 	}
 
 	@Override

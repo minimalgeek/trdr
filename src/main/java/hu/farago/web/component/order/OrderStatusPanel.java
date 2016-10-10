@@ -1,7 +1,7 @@
 package hu.farago.web.component.order;
 
-import hu.farago.ib.model.dto.IBOrderStatus;
-import hu.farago.ib.service.order.OrderService;
+import hu.farago.ib.model.dto.order.IBOrderStatus;
+import hu.farago.ib.service.OrderService;
 import hu.farago.web.component.GridWithActionList;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package hu.farago.ib.model.dto;
+package hu.farago.ib.model.dto.order;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;

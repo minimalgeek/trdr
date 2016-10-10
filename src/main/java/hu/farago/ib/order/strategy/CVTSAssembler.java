@@ -1,6 +1,6 @@
 package hu.farago.ib.order.strategy;
 
-import hu.farago.ib.model.dto.OrderCommonProperties;
+import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.ib.order.OrderUtils;
 import hu.farago.ib.order.strategy.enums.ActionType;

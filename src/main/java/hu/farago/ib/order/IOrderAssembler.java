@@ -1,6 +1,6 @@
 package hu.farago.ib.order;
 
-import hu.farago.ib.model.dto.OrderCommonProperties;
+import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.web.component.order.dto.AbstractStrategyOrder;
 
 import java.util.List;

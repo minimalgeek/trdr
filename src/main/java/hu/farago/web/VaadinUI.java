@@ -1,7 +1,7 @@
 package hu.farago.web;
 
 import hu.farago.ib.model.dto.IBError;
-import hu.farago.ib.model.dto.IBOrder;
+import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.web.component.chart.CandleStick;
 import hu.farago.web.component.order.CVTSPasteGrid;
 import hu.farago.web.component.order.OrderStatusPanel;
@@ -55,6 +55,9 @@ public class VaadinUI extends UI {
 
 	@Autowired
 	private CVTSPasteGrid orderPasteGrid;
+	
+	@Autowired
+	private CandleStick candleStick;
 	// End
 
 	private TabSheet tabSheet;
@@ -114,7 +117,7 @@ public class VaadinUI extends UI {
 				new ThemeResource("img/planets/01.png"));
 		tabSheet.addTab(orderPasteGrid, "CVTS strategy", new ThemeResource(
 				"img/planets/02.png"));
-		tabSheet.addTab(new CandleStick(), "Stock prices", new ThemeResource(
+		tabSheet.addTab(candleStick, "Stock prices", new ThemeResource(
 				"img/planets/03.png"));
 	}
 

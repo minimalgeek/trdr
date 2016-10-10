@@ -1,8 +1,8 @@
 package hu.farago.web.component;
 
-import hu.farago.ib.model.dto.OrderCommonProperties;
+import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.order.strategy.enums.Strategy;
-import hu.farago.ib.service.order.OrderService;
+import hu.farago.ib.service.OrderService;
 import hu.farago.web.utils.Converters;
 
 import java.util.Arrays;

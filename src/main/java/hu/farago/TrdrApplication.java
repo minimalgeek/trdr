@@ -17,9 +17,4 @@ public class TrdrApplication {
 	public EventBus eventBus() {
 		return new EventBus();
 	}
-	
-	@Bean
-    public in.virit.WidgetSet viritinCdnInitializer() {
-        return new in.virit.WidgetSet();
-    }
 }
