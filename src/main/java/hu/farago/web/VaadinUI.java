@@ -3,16 +3,12 @@ package hu.farago.web;
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.web.component.chart.CandleStick;
+import hu.farago.web.component.equity.EquityCurve;
 import hu.farago.web.component.order.CVTSPasteGrid;
 import hu.farago.web.component.order.OrderStatusPanel;
 import hu.farago.web.response.Response;
 import hu.farago.web.response.ResponseType;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +54,9 @@ public class VaadinUI extends UI {
 	
 	@Autowired
 	private CandleStick candleStick;
+	
+	@Autowired
+	private EquityCurve equityCurve;
 	// End
 
 	private TabSheet tabSheet;
@@ -68,17 +67,17 @@ public class VaadinUI extends UI {
 	@Autowired
     private ServletContext servletContext;
     
-    @PostConstruct
-    public void init() throws IOException {
-        Theme annotation = getUI().getClass().getAnnotation(Theme.class);
-        if (annotation != null) {
-            String root = servletContext.getRealPath("/");
-            if (root != null && Files.isDirectory(Paths.get(root))) {
-                Files.createDirectories(Paths.get(servletContext.getRealPath("/VAADIN/themes/" + annotation.value())));
-            }
-        }
-    }
-	
+//    @PostConstruct
+//    public void init() throws IOException {
+//        Theme annotation = getUI().getClass().getAnnotation(Theme.class);
+//        if (annotation != null) {
+//            String root = servletContext.getRealPath("/");
+//            if (root != null && Files.isDirectory(Paths.get(root))) {
+//                Files.createDirectories(Paths.get(servletContext.getRealPath("/VAADIN/themes/" + annotation.value())));
+//            }
+//        }
+//    }
+
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
 		eventBus.register(this);
@@ -117,26 +116,14 @@ public class VaadinUI extends UI {
 				new ThemeResource("img/planets/01.png"));
 		tabSheet.addTab(orderPasteGrid, "CVTS strategy", new ThemeResource(
 				"img/planets/02.png"));
-		tabSheet.addTab(candleStick, "Stock prices", new ThemeResource(
+		tabSheet.addTab(equityCurve, "Equity curve", new ThemeResource(
 				"img/planets/03.png"));
+		tabSheet.addTab(candleStick, "Stock prices", new ThemeResource(
+				"img/planets/04.png"));
 	}
 
 	@Subscribe
 	public void ibError(IBError ibError) {
-		// access(new Runnable() {
-		// @Override
-		// public void run() {
-		// Notification notif = new Notification("Error",
-		// ibError.toString(), Notification.Type.ERROR_MESSAGE);
-		//
-		// // Customize it
-		// notif.setDelayMsec(5000);
-		// notif.setPosition(Position.BOTTOM_CENTER);
-		//
-		// // Show it in the page
-		// notif.show(VaadinUI.this.getPage());
-		// }
-		// });
 		addResponseToGrid(ibError.toString(), ResponseType.ERROR);
 	}
 

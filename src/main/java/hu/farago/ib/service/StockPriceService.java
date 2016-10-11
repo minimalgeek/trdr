@@ -37,7 +37,7 @@ public class StockPriceService {
 		contract.exchange("SMART");
 		contract.primaryExch("NASDAQ");
 		
-		wrapper.getClientSocket().reqHistoricalData(wrapper.nextTickerId(), contract, queryTime, days + " D", "1 day", "MIDPOINT", 1, 1, null);
+		wrapper.getClientSocket().reqHistoricalData(wrapper.nextTickerId(), contract, queryTime, days + " D", "1 day", "MIDPOINT", 1, 2, null);
 	}
 	
 }
