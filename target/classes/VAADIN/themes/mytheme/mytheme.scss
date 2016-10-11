@@ -3,7 +3,7 @@
 @mixin mytheme {
 	@include valo;
 	
-	.hiddenStuff {
+	.v-slot-hiddenStuff {
     	position: fixed;
     	left: -500px;
   	}
@@ -19,4 +19,12 @@
   	.v-slider {
   		width: 100%;
   	}
+  	
+  	.v-caption-inline-label{
+		display: inline-block;
+		margin-right: 10px;
+    	text-align: center;
+    	vertical-align: top;
+    	line-height: 36px;
+	}
 }

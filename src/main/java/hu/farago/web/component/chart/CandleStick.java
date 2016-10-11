@@ -51,6 +51,8 @@ public class CandleStick extends VerticalLayout {
 		content = this;
 		content.setSizeFull();
 		content.setMargin(true);
+		content.setSpacing(true);
+		
 		content.addComponent(this.ticker);
 		content.addComponent(this.chart);
 		content.setExpandRatio(this.chart, 1);
@@ -59,8 +61,9 @@ public class CandleStick extends VerticalLayout {
 
 	private void buildTickerInput() {
 		this.ticker = new TextField("Ticker");
+		this.ticker.addStyleName("inline-label");
 		this.ticker.addTextChangeListener((e) -> this.service
-				.getStockPrices(new StockQueryDTO(this.ticker.getValue(),
+				.getStockPrices(new StockQueryDTO(e.getText(),
 						DateTime.now().minusMonths(6), DateTime.now())));
 	}
 

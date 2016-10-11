@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ib.client.Contract;
+import com.ib.client.Types.SecType;
 
 @Component
 public class StockPriceService {
@@ -30,9 +31,11 @@ public class StockPriceService {
 		Contract contract = new Contract();
 		contract.conid(0);
 		contract.symbol(query.ticker);
-		contract.secType("STK");
+		// TODO extract it!
+		contract.secType(SecType.STK);
 		contract.currency("USD");
 		contract.exchange("SMART");
+		contract.primaryExch("NASDAQ");
 		
 		wrapper.getClientSocket().reqHistoricalData(wrapper.nextTickerId(), contract, queryTime, days + " D", "1 day", "MIDPOINT", 1, 1, null);
 	}

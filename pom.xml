@@ -155,6 +155,32 @@
 						</systemPropertyVariables>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>com.vaadin</groupId>
+					<artifactId>vaadin-maven-plugin</artifactId>
+					<version>${vaadin.plugin.version}</version>
+					<configuration>
+						<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+						<generatedWidgetsetDirectory>${basedir}/src/main/resources</generatedWidgetsetDirectory>
+						<webappDirectory>${basedir}/src/main/resources/VAADIN/widgetsets</webappDirectory>
+						<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+					</configuration>
+					<executions>
+						<execution>
+							<configuration>
+								<!-- if you don't specify any modules, the plugin will find them -->
+								<style>OBF</style>
+								<strict>true</strict>
+							</configuration>
+							<goals>
+								<goal>update-theme</goal>
+								<goal>update-widgetset</goal>
+								<goal>compile</goal>
+								<goal>compile-theme</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

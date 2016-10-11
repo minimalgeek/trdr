@@ -41,7 +41,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 @SpringUI
 @Theme("mytheme")
 @Title("IB Trader")
-@Widgetset("com.vaadin.addon.charts.Widgetset")
+@Widgetset("AppWidgetset")
 public class VaadinUI extends UI {
 
 	private static final long serialVersionUID = 673516373579025498L;

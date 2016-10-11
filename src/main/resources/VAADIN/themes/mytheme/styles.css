@@ -12968,7 +12968,7 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: hidden;
 }
 
-.mytheme .hiddenStuff {
+.mytheme .v-slot-hiddenStuff {
 	position: fixed;
 	left: -500px;
 }
@@ -12983,4 +12983,12 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .v-slider {
 	width: 100%;
+}
+
+.mytheme .v-caption-inline-label {
+	display: inline-block;
+	margin-right: 10px;
+	text-align: center;
+	vertical-align: top;
+	line-height: 36px;
 }
