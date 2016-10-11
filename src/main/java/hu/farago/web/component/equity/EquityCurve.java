@@ -30,7 +30,7 @@ public class EquityCurve extends HorizontalLayout {
 		setSizeFull();
 		
 		addComponents(eqe, equityGrid);
-		setExpandRatio(equityGrid, 4.0f);
+		setExpandRatio(equityGrid, 6.0f);
 		setExpandRatio(eqe, 1.0f);
 	}
 	
