@@ -1,7 +1,7 @@
 package hu.farago.web.component.chart;
 
 import hu.farago.ib.model.dto.market.StockPrices;
-import hu.farago.ib.model.dto.market.StockQueryDTO;
+import hu.farago.ib.model.dto.market.StockQuery;
 import hu.farago.ib.service.StockPriceService;
 
 import java.util.Date;
@@ -63,7 +63,7 @@ public class CandleStick extends VerticalLayout {
 		this.ticker = new TextField("Ticker");
 		this.ticker.addStyleName("inline-label");
 		this.ticker.addTextChangeListener((e) -> this.service
-				.getStockPrices(new StockQueryDTO(e.getText(), DateTime.now()
+				.getStockPrices(new StockQuery(e.getText(), DateTime.now()
 						.minusMonths(6), DateTime.now())));
 	}
 

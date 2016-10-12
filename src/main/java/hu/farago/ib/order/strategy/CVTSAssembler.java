@@ -1,11 +1,11 @@
 package hu.farago.ib.order.strategy;
 
+import hu.farago.ib.model.dto.order.CVTSOrder;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.ib.order.OrderUtils;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.utils.Formatters;
-import hu.farago.web.component.order.dto.CVTSOrder;
 
 import java.time.DayOfWeek;
 import java.util.ArrayList;

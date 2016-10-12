@@ -27,4 +27,9 @@
     	vertical-align: top;
     	line-height: 36px;
 	}
+	
+	.v-horizontallayout-initial-width .v-slot {
+		width: initial;
+	}
+	
 }

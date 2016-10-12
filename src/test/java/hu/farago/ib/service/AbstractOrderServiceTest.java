@@ -2,9 +2,9 @@ package hu.farago.ib.service;
 
 import hu.farago.AbstractRootTest;
 import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
+import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.service.OrderService;
-import hu.farago.web.component.order.dto.AbstractStrategyOrder;
 
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;

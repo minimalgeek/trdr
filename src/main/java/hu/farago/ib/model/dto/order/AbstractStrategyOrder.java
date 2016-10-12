@@ -1,4 +1,4 @@
-package hu.farago.web.component.order.dto;
+package hu.farago.ib.model.dto.order;
 
 import hu.farago.ib.order.strategy.enums.Strategy;
 

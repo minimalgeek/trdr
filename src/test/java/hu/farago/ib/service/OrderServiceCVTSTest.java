@@ -1,11 +1,11 @@
 package hu.farago.ib.service;
 
 import static org.junit.Assert.assertEquals;
+import hu.farago.ib.model.dto.order.CVTSOrder;
 import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.ib.model.dto.order.IBOrderStatus;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.service.OrderService;
-import hu.farago.web.component.order.dto.CVTSOrder;
 
 import java.util.List;
 

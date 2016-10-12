@@ -12992,3 +12992,7 @@ div.v-layout.v-horizontal.v-widget {
 	vertical-align: top;
 	line-height: 36px;
 }
+
+.mytheme .v-horizontallayout-initial-width .v-slot {
+	width: initial;
+}

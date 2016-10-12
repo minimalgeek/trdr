@@ -3,11 +3,12 @@ package hu.farago.ib.service;
 import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
 import hu.farago.ib.model.dto.IBError;
+import hu.farago.ib.model.dto.equity.EquityQuery;
+import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.ib.order.strategy.CVTSAssembler;
 import hu.farago.ib.order.strategy.enums.Strategy;
-import hu.farago.web.component.order.dto.AbstractStrategyOrder;
 
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class OrderService {
 	public <T extends AbstractStrategyOrder> void placeOrder(T so) {
 		Strategy strat = so.strategy();
 
-		OrderCommonProperties ocp = ocpDAO.findOne(strat);
+		OrderCommonProperties ocp = loadOcp(strat);
 		if (ocp == null) {
 			eventBus.post(new IBError(strat.name()
 					+ " strategy's common properties are empty!"));
@@ -74,7 +75,7 @@ public class OrderService {
 			placeOrder(order);
 		}
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private <T extends AbstractStrategyOrder> IOrderAssembler<T> getAssembler(
 			Strategy strat) {

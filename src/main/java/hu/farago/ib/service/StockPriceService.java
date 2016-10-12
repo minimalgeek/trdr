@@ -1,7 +1,7 @@
 package hu.farago.ib.service;
 
 import hu.farago.ib.EWrapperImpl;
-import hu.farago.ib.model.dto.market.StockQueryDTO;
+import hu.farago.ib.model.dto.market.StockQuery;
 import hu.farago.ib.utils.Formatters;
 
 import org.joda.time.Days;
@@ -21,7 +21,7 @@ public class StockPriceService {
 	@Autowired
 	private EWrapperImpl wrapper;
 	
-	public void getStockPrices(StockQueryDTO query) {
+	public void getStockPrices(StockQuery query) {
 		LOGGER.info("getStockPrices");
 		wrapper.resetOhlcList();
 		

@@ -1,12 +1,12 @@
 package hu.farago.web.component.order;
 
+import hu.farago.ib.model.dto.order.CVTSOrder;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.ib.service.OrderService;
 import hu.farago.web.component.OrderCommonPropertiesEditor;
 import hu.farago.web.component.OrderPasteGrid;
 import hu.farago.web.component.PasteConverterTextBox;
-import hu.farago.web.component.order.dto.CVTSOrder;
 import hu.farago.web.utils.Formatters;
 
 import java.util.List;
