@@ -3,7 +3,6 @@ package hu.farago.ib.service;
 import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
 import hu.farago.ib.model.dto.IBError;
-import hu.farago.ib.model.dto.equity.EquityQuery;
 import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.order.IOrderAssembler;
@@ -64,6 +63,7 @@ public class OrderService {
 
 		Contract contract = orderAssembler.buildContract(so, ocp);
 		for (Order order : orderAssembler.buildOrders(so, ocp, wrapper.nextOrderId())) {
+			order.algoId(strat.name());
 			wrapper.getClientSocket().placeOrder(order.orderId(), contract,
 					order);
 		}

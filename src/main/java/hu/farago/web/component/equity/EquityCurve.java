@@ -2,11 +2,8 @@ package hu.farago.web.component.equity;
 
 import hu.farago.ib.model.dto.equity.EquityOfOrder;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.eventbus.Subscribe;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
@@ -28,6 +25,8 @@ public class EquityCurve extends HorizontalLayout {
 		equityQE = eqe;
 		equityGrid.setContainerDataSource(new BeanItemContainer<EquityOfOrder>(
 				EquityOfOrder.class));
+		equityQE.setCallback((e) -> equityGrid.setContainerDataSource(new BeanItemContainer<EquityOfOrder>(
+				EquityOfOrder.class, e)));
 		addComponents(equityQE, equityGrid);
 		formatting();
 	}
@@ -39,17 +38,6 @@ public class EquityCurve extends HorizontalLayout {
 		setResponsive(true);
 		equityGrid.setSizeFull();
 		setExpandRatio(equityGrid, 1);
-	}
-	
-	@Subscribe
-	public void equityOfOrder(List<EquityOfOrder> dataList) {
-		this.getUI().access(new Runnable() {
-			@Override
-			public void run() {
-				equityGrid.setContainerDataSource(new BeanItemContainer<EquityOfOrder>(
-						EquityOfOrder.class, dataList));
-			}
-		});
 	}
 	
 }

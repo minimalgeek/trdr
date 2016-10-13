@@ -1,5 +1,7 @@
 package hu.farago.ib.model.dto.equity;
 
+import hu.farago.ib.order.strategy.enums.Strategy;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
@@ -10,13 +12,22 @@ import org.joda.time.DateTime;
 public class EquityQuery {
 
 	@Past
+	@NotNull
 	public DateTime from;
 	@Past
+	@NotNull
 	public DateTime to;
 
-	@Size(min = 1, max = 4)
 	@NotNull
-	public String strategy;
+	public Strategy strategy;
+
+//	@AssertTrue(message = "'From' must be before 'To'")
+//	public boolean isValidRange() {
+//		if (from == null || to == null) {
+//			return true;
+//		}
+//		return from.compareTo(to) <= 0;
+//	}
 
 	public DateTime getFrom() {
 		return from;
@@ -33,12 +44,12 @@ public class EquityQuery {
 	public void setTo(DateTime to) {
 		this.to = to;
 	}
-
-	public String getStrategy() {
+	
+	public Strategy getStrategy() {
 		return strategy;
 	}
-
-	public void setStrategy(String strategy) {
+	
+	public void setStrategy(Strategy strategy) {
 		this.strategy = strategy;
 	}
 

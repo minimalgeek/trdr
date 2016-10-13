@@ -131,8 +131,8 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void commissionReport(CommissionReport arg0) {
-		// TODO Auto-generated method stub
-
+		LOGGER.debug("commissionReport");
+		eventBus.post(arg0);
 	}
 
 	@Override
@@ -205,8 +205,8 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void execDetails(int arg0, Contract arg1, Execution arg2) {
-		// TODO Auto-generated method stub
-
+		LOGGER.debug("execDetails");
+		eventBus.post(arg2);
 	}
 
 	@Override
