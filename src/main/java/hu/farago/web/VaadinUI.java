@@ -100,13 +100,15 @@ public class VaadinUI extends UI {
 		responseGrid.setColumnReorderingAllowed(true);
 		responseGrid.setDescription("Responses sent by the IB client");
 		Grid.Column htmlColumn = responseGrid.getColumn("htmlResponse");
+		Grid.Column cdtColumn = responseGrid.getColumn("clientDateTime");
 		htmlColumn.setRenderer(new HtmlRenderer(""));
 		htmlColumn.setEditable(true);
 		htmlColumn.setWidthUndefined();
 		// expand ratios
 		htmlColumn.setExpandRatio(6);
-		responseGrid.getColumn("clientDateTime").setExpandRatio(1);
+		cdtColumn.setExpandRatio(1);
 		// show content on hover
+		responseGrid.setColumns(cdtColumn.getPropertyId(), htmlColumn.getPropertyId());
 		responseGrid.setCellDescriptionGenerator((cell) -> cell.getValue()
 				.toString());
 	}

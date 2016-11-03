@@ -12996,3 +12996,7 @@ div.v-layout.v-horizontal.v-widget {
 .mytheme .v-horizontallayout-initial-width .v-slot {
 	width: initial;
 }
+
+.mytheme .v-tooltip {
+	background-color: white;
+}

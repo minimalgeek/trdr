@@ -41,7 +41,9 @@ public class Converters {
 	
 	public static final Converter<Date, DateTime> DATE_TO_DATETIME = new Converter<Date, DateTime>() {
 
-        @Override
+		private static final long serialVersionUID = -4635841005077419814L;
+
+		@Override
         public DateTime convertToModel(Date value, Class<? extends DateTime> targetType, Locale locale)
                 throws com.vaadin.data.util.converter.Converter.ConversionException {
             return value == null ? null : new DateTime(value.getTime());
