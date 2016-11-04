@@ -4,8 +4,10 @@ import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.market.StockPrices;
 import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.ib.model.dto.order.IBOrderStatus;
+import hu.farago.ib.order.strategy.enums.Strategy;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.ib.client.CommissionReport;
 import com.ib.client.Contract;
@@ -41,7 +44,8 @@ public class EWrapperImpl implements EWrapper {
 	protected int currentOrderId = -1;
 	protected int currentTickerId = -1;
 	private List<StockPrices.OhlcData> ohlcList;
-
+	private Map<Integer, Strategy> orderIdToStrategyMap = Maps.newConcurrentMap();
+	
 	@Value("${trdr.tws.host}")
 	private String host;
 	@Value("${trdr.tws.port}")
@@ -87,8 +91,10 @@ public class EWrapperImpl implements EWrapper {
 		ohlcList = Lists.newArrayList();
 	}
 
-	public EventBus getEventBus() {
-		return eventBus;
+	public void placeOrder(Order order, Contract contract, Strategy strat) {
+		getClientSocket().placeOrder(order.orderId(), contract,
+				order);
+		orderIdToStrategyMap.put(order.orderId(), strat);
 	}
 
 	@Override
@@ -259,7 +265,7 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void openOrder(int arg0, Contract arg1, Order arg2, OrderState arg3) {
-		eventBus.post(new IBOrder(arg0, arg1, arg2, arg3));
+		eventBus.post(new IBOrder(arg0, arg1, arg2, arg3, orderIdToStrategyMap.get(arg0)));
 	}
 
 	@Override

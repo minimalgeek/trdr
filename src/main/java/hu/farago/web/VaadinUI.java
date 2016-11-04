@@ -9,8 +9,6 @@ import hu.farago.web.component.order.OrderStatusPanel;
 import hu.farago.web.response.Response;
 import hu.farago.web.response.ResponseType;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
@@ -63,20 +61,6 @@ public class VaadinUI extends UI {
 	private VerticalSplitPanel vsp;
 	private Grid responseGrid;
 	private BeanItemContainer<Response> responses;
-
-	@Autowired
-    private ServletContext servletContext;
-    
-//    @PostConstruct
-//    public void init() throws IOException {
-//        Theme annotation = getUI().getClass().getAnnotation(Theme.class);
-//        if (annotation != null) {
-//            String root = servletContext.getRealPath("/");
-//            if (root != null && Files.isDirectory(Paths.get(root))) {
-//                Files.createDirectories(Paths.get(servletContext.getRealPath("/VAADIN/themes/" + annotation.value())));
-//            }
-//        }
-//    }
 
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {

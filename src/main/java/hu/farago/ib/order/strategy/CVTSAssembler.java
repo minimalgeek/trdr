@@ -94,7 +94,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		parent.totalQuantity(quantity.intValue());
 		parent.lmtPrice(limitPrice);
 		parent.faProfile(ocp.getFaProfile());
-		parent.tif(TimeInForce.GTC);
+		parent.tif(TimeInForce.DAY);
 		// The parent and children orders will need this attribute set to false
 		// to prevent accidental executions.
 		// The LAST CHILD will have it set to true.
@@ -149,7 +149,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		retList.add(timedTakeProfit);
 
 		Order vwapClose = new Order();
-		fillVwapParams(vwapClose, 0.2, "09:00:00 CET", "16:00:00 CET", true,
+		fillVwapParams(vwapClose, 0.2, "09:30:00 ET", "16:00:00 ET", false,
 				true);
 		vwapClose.orderId(parent.orderId() + 3);
 		vwapClose.action(switchActionStr);
@@ -159,7 +159,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		vwapClose.transmit(false);
 		vwapClose.faProfile(ocp.getFaProfile());
 		vwapClose.tif(TimeInForce.GTC);
-		vwapClose.conditionsCancelOrder(true);
+		//vwapClose.conditionsCancelOrder(true);
 		vwapClose.conditions().add(buildTimeCondition(endDT, true));
 		retList.add(vwapClose);
 
@@ -183,12 +183,12 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 	}
 
 	private TimeCondition buildTimeCondition(DateTime startDT, boolean isMore) {
-		TimeCondition timeConditionStart = (TimeCondition) OrderCondition
+		TimeCondition timeCondition = (TimeCondition) OrderCondition
 				.create(OrderConditionType.Time);
-		timeConditionStart.isMore(isMore);
-		timeConditionStart.time(Formatters.formatToTimeCondition(startDT));
-		timeConditionStart.conjunctionConnection(true);
-		return timeConditionStart;
+		timeCondition.isMore(isMore);
+		timeCondition.time(Formatters.formatToTimeCondition(startDT));
+		timeCondition.conjunctionConnection(true);
+		return timeCondition;
 	}
 
 	private boolean isHolidayOrWeekend(DateTime dateTime) {

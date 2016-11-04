@@ -4,13 +4,15 @@ import hu.farago.ib.model.dao.IBOrderDAO;
 import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.ib.order.strategy.enums.Strategy;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.ib.client.CommissionReport;
@@ -29,19 +31,14 @@ public class IBOrderSaver {
 	public void init() {
 		eventBus.register(this);
 	}
-
+	
 	@Subscribe
 	public void orderChanged(IBOrder ibOrder) {
 		IBOrder older = ooDAO.findOne(ibOrder.getOrderId());
-		String algoId = ibOrder.getOrder().algoId();
-		if (older != null) {
-			ibOrder.setStrategy(older.getStrategy());
-			ibOrder.setOpenDate(older.getOpenDate());
-		} else {
-			if (StringUtils.isNotEmpty(algoId)) {
-				ibOrder.setStrategy(Strategy.valueOf(algoId));
-			}
+		if (older == null) {
 			ibOrder.setOpenDate(DateTime.now());
+		} else {
+			ibOrder.setOpenDate(older.getOpenDate());
 		}
 
 		ooDAO.save(ibOrder);

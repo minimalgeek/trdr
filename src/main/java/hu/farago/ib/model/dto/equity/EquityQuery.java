@@ -4,7 +4,6 @@ import hu.farago.ib.order.strategy.enums.Strategy;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.DateTime;
@@ -14,10 +13,8 @@ public class EquityQuery {
 	@Past
 	@NotNull
 	public DateTime from;
-	@Past
 	@NotNull
 	public DateTime to;
-
 	@NotNull
 	public Strategy strategy;
 

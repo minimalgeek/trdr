@@ -31,7 +31,7 @@ public class EquityQueryEditor extends FormLayout {
 
 	private EquityService equityService;
 
-	private EquityQuery eq = new EquityQuery();;
+	private EquityQuery eq = new EquityQuery();
 
 	DateField from = new DateField("From");
 	DateField to = new DateField("To");
@@ -52,7 +52,6 @@ public class EquityQueryEditor extends FormLayout {
 	public EquityQueryEditor(EquityService equityService) {
 		this.equityService = equityService;
 
-		this.strategy.setIcon(FontAwesome.ANDROID);
 		this.from.setConverter(Converters.DATE_TO_DATETIME);
 		this.to.setConverter(Converters.DATE_TO_DATETIME);
 

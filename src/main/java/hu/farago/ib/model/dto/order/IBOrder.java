@@ -29,13 +29,18 @@ public class IBOrder {
 	private Order order;
 	private OrderState orderState;
 
+	public IBOrder() {
+		
+	}
+	
 	public IBOrder(int orderId, Contract contract, Order order,
-			OrderState orderState) {
+			OrderState orderState, Strategy strategy) {
 		super();
 		this.orderId = orderId;
 		this.contract = contract;
 		this.order = order;
 		this.orderState = orderState;
+		this.strategy = strategy;
 	}
 
 	public int getOrderId() {

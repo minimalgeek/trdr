@@ -63,9 +63,7 @@ public class OrderService {
 
 		Contract contract = orderAssembler.buildContract(so, ocp);
 		for (Order order : orderAssembler.buildOrders(so, ocp, wrapper.nextOrderId())) {
-			order.algoId(strat.name());
-			wrapper.getClientSocket().placeOrder(order.orderId(), contract,
-					order);
+			wrapper.placeOrder(order, contract, strat);
 		}
 	}
 

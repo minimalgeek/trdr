@@ -4,24 +4,24 @@ import org.joda.time.DateTime;
 
 public class EquityOfOrder {
 
-	public int orderId;
+	public Integer orderId;
 	public DateTime openDate;
 	public DateTime closeDate;
-	public double profitAndLoss;
+	public Double profitAndLoss;
 
-	public EquityOfOrder(int orderId, DateTime openDate, DateTime closeDate,
-			double profitAndLoss) {
+	public EquityOfOrder(Integer orderId, DateTime openDate,
+			DateTime closeDate, Double profitAndLoss) {
 		this.orderId = orderId;
 		this.openDate = openDate;
 		this.closeDate = closeDate;
 		this.profitAndLoss = profitAndLoss;
 	}
 
-	public int getOrderId() {
+	public Integer getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(int orderId) {
+	public void setOrderId(Integer orderId) {
 		this.orderId = orderId;
 	}
 
@@ -41,11 +41,11 @@ public class EquityOfOrder {
 		this.closeDate = closeDate;
 	}
 
-	public double getProfitAndLoss() {
+	public Double getProfitAndLoss() {
 		return profitAndLoss;
 	}
 
-	public void setProfitAndLoss(double profitAndLoss) {
+	public void setProfitAndLoss(Double profitAndLoss) {
 		this.profitAndLoss = profitAndLoss;
 	}
 
