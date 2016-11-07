@@ -21,6 +21,7 @@ public class IBOrder {
 	private Strategy strategy;
 	private DateTime openDate;
 	private DateTime closeDate;
+	private int parentOrderId;
 	private Double pnl;
 	private String lastExecId;
 	private Execution lastExecution;
@@ -28,6 +29,8 @@ public class IBOrder {
 	private Contract contract;
 	private Order order;
 	private OrderState orderState;
+	
+	private IBOrderStatus lastOrderStatus;
 
 	public IBOrder() {
 		
@@ -121,6 +124,22 @@ public class IBOrder {
 	
 	public void setLastExecId(String lastExecId) {
 		this.lastExecId = lastExecId;
+	}
+	
+	public IBOrderStatus getLastOrderStatus() {
+		return lastOrderStatus;
+	}
+	
+	public void setLastOrderStatus(IBOrderStatus lastOrderStatus) {
+		this.lastOrderStatus = lastOrderStatus;
+	}
+	
+	public int getParentOrderId() {
+		return parentOrderId;
+	}
+
+	public void setParentOrderId(int parentOrderId) {
+		this.parentOrderId = parentOrderId;
 	}
 
 	@Override

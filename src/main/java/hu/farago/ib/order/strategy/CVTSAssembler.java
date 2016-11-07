@@ -1,21 +1,33 @@
 package hu.farago.ib.order.strategy;
 
+import hu.farago.ib.EWrapperImpl;
+import hu.farago.ib.model.dao.IBOrderDAO;
 import hu.farago.ib.model.dto.order.CVTSOrder;
+import hu.farago.ib.model.dto.order.IBOrder;
+import hu.farago.ib.model.dto.order.IBOrderStatus;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.ib.order.OrderUtils;
 import hu.farago.ib.order.strategy.enums.ActionType;
+import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.ib.utils.Formatters;
 
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.ib.client.Contract;
 import com.ib.client.Order;
 import com.ib.client.OrderCondition;
@@ -30,6 +42,8 @@ import de.jollyday.HolidayManager;
 @Component
 public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 
+	private final Logger LOGGER  = LoggerFactory.getLogger(getClass());
+	
 	@Value("${trdr.strategy.cvts.stopLossTarget}")
 	private double stopLossTarget;
 
@@ -38,6 +52,49 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 
 	@Value("${trdr.strategy.cvts.profitTarget.remainingDay}")
 	private double profitTargetRemainingDay;
+	
+	@Autowired
+	private EventBus eventBus;
+	
+	@Autowired
+	private IBOrderDAO ooDAO;
+	
+	@Autowired
+	private EWrapperImpl eWrapper;
+	
+	@PostConstruct
+	public void init() {
+		eventBus.register(this);
+	}
+	
+	@Subscribe
+	public void orderStatusUpdated(IBOrderStatus ibOrderStatus) {
+		
+		// TODO investigate this. Maybe this should be extracted to an other handler, 
+		// especially if it will belong to all kind of orders
+		
+		IBOrder older = ooDAO.findOne(ibOrderStatus.getOrderId());
+		if (older.getParentOrderId() != 0 && older.getStrategy() == Strategy.CVTS) {
+			List<IBOrder> ordersInOCAGroup = ooDAO.findByParentOrderId(older.getParentOrderId());
+			IBOrder parentOrder = ordersInOCAGroup.stream().filter((o) -> o.getParentOrderId() == 0).findAny().get();
+			boolean allIsClosed = ordersInOCAGroup.stream().allMatch((o) -> o.getCloseDate() != null && 
+																			o.getLastOrderStatus().getStatus() != "Filled");
+			
+			if (allIsClosed && parentOrder != null) {
+				LOGGER.info("All orders are closed in OCA group, we should fire the VWAP order");
+				Order vwapClose = new Order();
+				fillVwapParams(vwapClose, 0.2, "09:30:00 ET", "16:00:00 ET", false,
+						true);
+				vwapClose.orderId(eWrapper.nextOrderId());
+				vwapClose.action(OrderUtils.switchActionStr(parentOrder.getOrder().action().name()));
+				vwapClose.orderType("MKT");
+				vwapClose.totalQuantity(parentOrder.getOrder().totalQuantity());
+				vwapClose.faProfile(parentOrder.getOrder().faProfile());
+				
+				eWrapper.placeOrder(vwapClose, parentOrder.getContract(), parentOrder.getStrategy());
+			}
+		}
+	}
 
 	@SuppressWarnings("deprecation")
 	private HolidayManager holidayManagerNYSE = HolidayManager
@@ -148,20 +205,18 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		timedTakeProfit.conditions().add(timeConditionEnd);
 		retList.add(timedTakeProfit);
 
-		Order vwapClose = new Order();
-		fillVwapParams(vwapClose, 0.2, "09:30:00 ET", "16:00:00 ET", false,
-				true);
-		vwapClose.orderId(parent.orderId() + 3);
-		vwapClose.action(switchActionStr);
-		vwapClose.orderType("MKT");
-		vwapClose.totalQuantity(quantity.intValue());
-		vwapClose.parentId(parentOrderId);
-		vwapClose.transmit(false);
-		vwapClose.faProfile(ocp.getFaProfile());
-		vwapClose.tif(TimeInForce.GTC);
-		//vwapClose.conditionsCancelOrder(true);
-		vwapClose.conditions().add(buildTimeCondition(endDT, true));
-		retList.add(vwapClose);
+//		Order vwapClose = new Order();
+//		fillVwapParams(vwapClose, 0.2, "09:30:00 ET", "16:00:00 ET", false,
+//				true);
+//		vwapClose.orderId(parent.orderId() + 3);
+//		vwapClose.action(switchActionStr);
+//		vwapClose.orderType("MKT");
+//		vwapClose.totalQuantity(quantity.intValue());
+//		//vwapClose.parentId(parentOrderId);
+//		vwapClose.transmit(false);
+//		vwapClose.faProfile(ocp.getFaProfile());
+//		vwapClose.conditions().add(buildTimeCondition(endDT, true));
+//		retList.add(vwapClose);
 
 		Order stopLoss = new Order();
 		stopLoss.orderId(parent.orderId() + 4);

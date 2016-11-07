@@ -269,10 +269,11 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void orderStatus(int arg0, String arg1, double arg2, double arg3,
-			double arg4, int arg5, int arg6, double arg7, int arg8, String arg9) {
-		eventBus.post(new IBOrderStatus(arg0, arg1, arg2, arg3, arg4, arg5,
-				arg6, arg7, arg8, arg9));
+	public void orderStatus(int orderId, String status, double filled,
+            double remaining, double avgFillPrice, int permId, int parentId,
+            double lastFillPrice, int clientId, String whyHeld) {
+		eventBus.post(new IBOrderStatus(orderId, status, filled, remaining, avgFillPrice, permId,
+				parentId, lastFillPrice, clientId, whyHeld));
 	}
 
 	@Override

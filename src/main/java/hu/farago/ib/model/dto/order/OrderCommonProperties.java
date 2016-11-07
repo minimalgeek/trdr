@@ -23,6 +23,7 @@ public class OrderCommonProperties {
 	public Double targetVolatility;
 	public String faProfile;
 	public Integer barStop;
+	public Integer maxOrders;
 
 	public Strategy getId() {
 		return id;
@@ -102,6 +103,14 @@ public class OrderCommonProperties {
 	
 	public void setBarStop(Integer barStop) {
 		this.barStop = barStop;
+	}
+
+	public Integer getMaxOrders() {
+		return maxOrders;
+	}
+
+	public void setMaxOrders(Integer maxOrders) {
+		this.maxOrders = maxOrders;
 	}
 	
 }

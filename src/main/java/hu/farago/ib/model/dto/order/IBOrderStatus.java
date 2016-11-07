@@ -1,5 +1,7 @@
 package hu.farago.ib.model.dto.order;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class IBOrderStatus {
 
 	private int orderId;
@@ -108,4 +110,9 @@ public class IBOrderStatus {
 		this.whyHeld = whyHeld;
 	}
 
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+	
 }

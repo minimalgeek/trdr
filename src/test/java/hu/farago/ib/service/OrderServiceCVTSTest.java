@@ -3,16 +3,14 @@ package hu.farago.ib.service;
 import static org.junit.Assert.assertEquals;
 import hu.farago.ib.model.dto.order.CVTSOrder;
 import hu.farago.ib.model.dto.order.IBOrder;
-import hu.farago.ib.model.dto.order.IBOrderStatus;
 import hu.farago.ib.order.strategy.enums.ActionType;
-import hu.farago.ib.service.OrderService;
 
-import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
 public class OrderServiceCVTSTest extends AbstractOrderServiceTest<CVTSOrder> {
@@ -20,7 +18,7 @@ public class OrderServiceCVTSTest extends AbstractOrderServiceTest<CVTSOrder> {
 	@Autowired
 	private OrderService orderService;
 	
-	private List<IBOrder> openedOrders = Lists.newArrayList();
+	private Set<Integer> openedOrderIds = Sets.newHashSet();
 	
 	@Test
 	public void placeOrderCVTSTest() throws InterruptedException {
@@ -28,18 +26,18 @@ public class OrderServiceCVTSTest extends AbstractOrderServiceTest<CVTSOrder> {
 		
 		Thread.sleep(3000);
 		
-		assertEquals(5, openedOrders.size());
+		assertEquals(5, openedOrderIds.size());
 	}
 	
 	@Subscribe
 	private void openOrder(IBOrder order) {
-		openedOrders.add(order);
+		openedOrderIds.add(order.getOrderId());
 	}
 	
-	@Subscribe
-	private void openOrder(IBOrderStatus status) {
-		status.getAvgFillPrice();
-	}
+//	@Subscribe
+//	private void openOrder(IBOrderStatus status) {
+//		//status.getAvgFillPrice();
+//	}
 	
 	@Override
 	protected CVTSOrder buildOrder() {

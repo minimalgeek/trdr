@@ -12,5 +12,8 @@ public interface IBOrderDAO  extends MongoRepository<IBOrder, Integer> {
 
 	List<IBOrder> findByStrategyAndOpenDateBetween(Strategy strategy, DateTime begin, DateTime end);
 	IBOrder findByLastExecId(String execId);
+	List<IBOrder> findByStrategyAndCloseDateIsNull(Strategy strategy);
+	List<IBOrder> findByStrategyAndParentOrderIdAndCloseDateIsNull(Strategy strategy, int parentOrderId);
+	List<IBOrder> findByParentOrderId(int parentOrderId);
 	
 }

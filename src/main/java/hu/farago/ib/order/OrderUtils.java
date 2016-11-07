@@ -12,4 +12,8 @@ public class OrderUtils {
 		return action == ActionType.BUY ? ActionType.SELL : ActionType.BUY;
 	}
 	
+	public static String switchActionStr(String action) {
+		return switchActionStr(ActionType.valueOf(action));
+	}
+	
 }

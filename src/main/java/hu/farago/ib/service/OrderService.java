@@ -1,9 +1,11 @@
 package hu.farago.ib.service;
 
 import hu.farago.ib.EWrapperImpl;
+import hu.farago.ib.model.dao.IBOrderDAO;
 import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
+import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.ib.order.strategy.CVTSAssembler;
@@ -33,6 +35,9 @@ public class OrderService {
 
 	@Autowired
 	private OrderCommonPropertiesDAO ocpDAO;
+	
+	@Autowired
+	private IBOrderDAO ibOrderDAO;
 
 	// Strategy assemblers
 	@Autowired
@@ -56,7 +61,17 @@ public class OrderService {
 		OrderCommonProperties ocp = loadOcp(strat);
 		if (ocp == null) {
 			eventBus.post(new IBError(strat.name()
-					+ " strategy's common properties are empty!"));
+					+ " strategy's common properties are empty"));
+			return;
+		}
+
+		// 0 means root order
+		List<IBOrder> openedOrders = ibOrderDAO.findByStrategyAndParentOrderIdAndCloseDateIsNull(strat, 0);
+		
+		if (openedOrders.size() >= ocp.maxOrders) {
+			eventBus.post(new IBError(strat.name()
+					+ " strategy's max opened position limit exceeded: " + ocp.maxOrders));
+			return;
 		}
 
 		IOrderAssembler<T> orderAssembler = getAssembler(strat);
@@ -65,6 +80,9 @@ public class OrderService {
 		for (Order order : orderAssembler.buildOrders(so, ocp, wrapper.nextOrderId())) {
 			wrapper.placeOrder(order, contract, strat);
 		}
+		
+		// the parameter has no effects
+		wrapper.getClientSocket().reqIds(0);
 	}
 
 	public <T extends AbstractStrategyOrder> void placeOrders(
