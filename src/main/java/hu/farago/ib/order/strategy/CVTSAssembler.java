@@ -42,8 +42,8 @@ import de.jollyday.HolidayManager;
 @Component
 public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 
-	private final Logger LOGGER  = LoggerFactory.getLogger(getClass());
-	
+	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
 	@Value("${trdr.strategy.cvts.stopLossTarget}")
 	private double stopLossTarget;
 
@@ -52,46 +52,58 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 
 	@Value("${trdr.strategy.cvts.profitTarget.remainingDay}")
 	private double profitTargetRemainingDay;
-	
+
 	@Autowired
 	private EventBus eventBus;
-	
+
 	@Autowired
 	private IBOrderDAO ooDAO;
-	
+
 	@Autowired
 	private EWrapperImpl eWrapper;
-	
+
 	@PostConstruct
 	public void init() {
 		eventBus.register(this);
 	}
-	
+
 	@Subscribe
 	public void orderStatusUpdated(IBOrderStatus ibOrderStatus) {
-		
-		// TODO investigate this. Maybe this should be extracted to an other handler, 
+
+		// TODO investigate this. Maybe this should be extracted to an other
+		// handler,
 		// especially if it will belong to all kind of orders
-		
+
 		IBOrder older = ooDAO.findOne(ibOrderStatus.getOrderId());
-		if (older.getParentOrderId() != 0 && older.getStrategy() == Strategy.CVTS) {
-			List<IBOrder> ordersInOCAGroup = ooDAO.findByParentOrderId(older.getParentOrderId());
-			IBOrder parentOrder = ordersInOCAGroup.stream().filter((o) -> o.getParentOrderId() == 0).findAny().get();
-			boolean allIsClosed = ordersInOCAGroup.stream().allMatch((o) -> o.getCloseDate() != null && 
-																			o.getLastOrderStatus().getStatus() != "Filled");
-			
-			if (allIsClosed && parentOrder != null) {
-				LOGGER.info("All orders are closed in OCA group, we should fire the VWAP order");
-				Order vwapClose = new Order();
-				fillVwapParams(vwapClose, 0.2, "09:30:00 ET", "16:00:00 ET", false,
-						true);
-				vwapClose.orderId(eWrapper.nextOrderId());
-				vwapClose.action(OrderUtils.switchActionStr(parentOrder.getOrder().action().name()));
-				vwapClose.orderType("MKT");
-				vwapClose.totalQuantity(parentOrder.getOrder().totalQuantity());
-				vwapClose.faProfile(parentOrder.getOrder().faProfile());
-				
-				eWrapper.placeOrder(vwapClose, parentOrder.getContract(), parentOrder.getStrategy());
+		if (older.getParentOrderId() != 0
+				&& older.getStrategy() == Strategy.CVTS) {
+			List<IBOrder> ordersInOCAGroup = ooDAO.findByParentOrderId(older
+					.getParentOrderId());
+			IBOrder parentOrder = ooDAO.findOne(older.getParentOrderId());
+
+			if (parentOrder != null) {
+				boolean parentIsFilled = parentOrder.getLastOrderStatus()
+						.getStatus().equals("Filled");
+				boolean allIsClosed = ordersInOCAGroup.stream().allMatch(
+						(o) -> o.getCloseDate() != null
+								&& !o.getLastOrderStatus().getStatus()
+										.equals("Filled"));
+				if (allIsClosed && parentIsFilled) {
+					LOGGER.info("All orders are closed in OCA group, we should fire the VWAP order");
+					Order vwapClose = new Order();
+					fillVwapParams(vwapClose, 0.2, "09:30:00 ET",
+							"16:00:00 ET", false, true);
+					vwapClose.orderId(eWrapper.nextOrderId());
+					vwapClose.action(OrderUtils.switchActionStr(parentOrder
+							.getOrder().action().name()));
+					vwapClose.orderType("MKT");
+					vwapClose.totalQuantity(parentOrder.getOrder()
+							.totalQuantity());
+					vwapClose.faProfile(parentOrder.getOrder().faProfile());
+
+					eWrapper.placeOrder(vwapClose, parentOrder.getContract(),
+							parentOrder.getStrategy());
+				}
 			}
 		}
 	}
@@ -205,18 +217,18 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		timedTakeProfit.conditions().add(timeConditionEnd);
 		retList.add(timedTakeProfit);
 
-//		Order vwapClose = new Order();
-//		fillVwapParams(vwapClose, 0.2, "09:30:00 ET", "16:00:00 ET", false,
-//				true);
-//		vwapClose.orderId(parent.orderId() + 3);
-//		vwapClose.action(switchActionStr);
-//		vwapClose.orderType("MKT");
-//		vwapClose.totalQuantity(quantity.intValue());
-//		//vwapClose.parentId(parentOrderId);
-//		vwapClose.transmit(false);
-//		vwapClose.faProfile(ocp.getFaProfile());
-//		vwapClose.conditions().add(buildTimeCondition(endDT, true));
-//		retList.add(vwapClose);
+		// Order vwapClose = new Order();
+		// fillVwapParams(vwapClose, 0.2, "09:30:00 ET", "16:00:00 ET", false,
+		// true);
+		// vwapClose.orderId(parent.orderId() + 3);
+		// vwapClose.action(switchActionStr);
+		// vwapClose.orderType("MKT");
+		// vwapClose.totalQuantity(quantity.intValue());
+		// //vwapClose.parentId(parentOrderId);
+		// vwapClose.transmit(false);
+		// vwapClose.faProfile(ocp.getFaProfile());
+		// vwapClose.conditions().add(buildTimeCondition(endDT, true));
+		// retList.add(vwapClose);
 
 		Order stopLoss = new Order();
 		stopLoss.orderId(parent.orderId() + 4);
