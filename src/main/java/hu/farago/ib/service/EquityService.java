@@ -5,6 +5,7 @@ import hu.farago.ib.model.dto.equity.EquityOfOrder;
 import hu.farago.ib.model.dto.equity.EquityQuery;
 import hu.farago.ib.model.dto.order.IBOrder;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -27,9 +28,20 @@ public class EquityService {
 		List<EquityOfOrder> ret = Lists.newArrayList();
 		
 		List<IBOrder> orders = orderDAO.findByStrategyAndOpenDateBetween(query.strategy, query.from, query.to);
+		orders.sort(new Comparator<IBOrder>() {
+			@Override
+			public int compare(IBOrder o1, IBOrder o2) {
+				return o1.getOrderId()-o2.getOrderId();
+			}
+		});
 		
 		for (IBOrder ibOrder : orders) {
-			EquityOfOrder e = new EquityOfOrder(ibOrder.getOrderId(), ibOrder.getOpenDate(), ibOrder.getCloseDate(), ibOrder.getPnl());
+			EquityOfOrder e = new EquityOfOrder(
+					ibOrder.getOrderId(), 
+					ibOrder.getOpenDate(), 
+					ibOrder.getCloseDate(), 
+					ibOrder.getPnl(),
+					ibOrder.getParentOrderId());
 			ret.add(e);
 		}
 		

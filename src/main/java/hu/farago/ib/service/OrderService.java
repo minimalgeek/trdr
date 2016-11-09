@@ -13,6 +13,8 @@ import hu.farago.ib.order.strategy.enums.Strategy;
 
 import java.util.List;
 
+import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,7 @@ public class OrderService {
 
 	@Autowired
 	private OrderCommonPropertiesDAO ocpDAO;
-	
+
 	@Autowired
 	private IBOrderDAO ibOrderDAO;
 
@@ -66,21 +68,24 @@ public class OrderService {
 		}
 
 		// 0 means root order
-		List<IBOrder> openedOrders = ibOrderDAO.findByStrategyAndParentOrderIdAndCloseDateIsNull(strat, 0);
-		
+		List<IBOrder> openedOrders = ibOrderDAO
+				.findByStrategyAndParentOrderIdAndCloseDateIsNull(strat, 0);
+
 		if (openedOrders.size() >= ocp.maxOrders) {
 			eventBus.post(new IBError(strat.name()
-					+ " strategy's max opened position limit exceeded: " + ocp.maxOrders));
+					+ " strategy's max opened position limit exceeded: "
+					+ ocp.maxOrders));
 			return;
 		}
 
 		IOrderAssembler<T> orderAssembler = getAssembler(strat);
 
 		Contract contract = orderAssembler.buildContract(so, ocp);
-		for (Order order : orderAssembler.buildOrders(so, ocp, wrapper.nextOrderId())) {
+		for (Order order : orderAssembler.buildOrders(so, ocp,
+				wrapper.nextOrderId())) {
 			wrapper.placeOrder(order, contract, strat);
 		}
-		
+
 		// the parameter has no effects
 		wrapper.getClientSocket().reqIds(0);
 	}
@@ -88,10 +93,14 @@ public class OrderService {
 	public <T extends AbstractStrategyOrder> void placeOrders(
 			List<T> convertedItems) {
 		for (T order : convertedItems) {
-			placeOrder(order);
+			if (DateUtils.isSameDay(order.getStartDateTime().toDate(), DateTime.now().toDate())) {
+				placeOrder(order);
+			} else {
+				eventBus.post(new IBError("Start date is not today for the '" + order.getTicker() + "' order"));
+			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private <T extends AbstractStrategyOrder> IOrderAssembler<T> getAssembler(
 			Strategy strat) {

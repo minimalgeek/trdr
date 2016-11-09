@@ -43,7 +43,9 @@ public class IBOrderSaver {
 		IBOrder older = ooDAO.findOne(ibOrder.getOrderId());
 		if (older == null) {
 			ibOrder.setOpenDate(DateTime.now());
-			ibOrder.setParentOrderId(ibOrder.getOrder().parentId());
+			if (ibOrder.getParentOrderId() == null) {
+				ibOrder.setParentOrderId(ibOrder.getOrder().parentId());
+			}
 			ooDAO.save(ibOrder);
 		} else {
 			older.setOrder(ibOrder.getOrder());

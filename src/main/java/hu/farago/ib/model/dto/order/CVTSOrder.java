@@ -3,8 +3,6 @@ package hu.farago.ib.model.dto.order;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.order.strategy.enums.Strategy;
 
-import org.joda.time.DateTime;
-
 /**
  * This class holds the data pasted from an Excel sheet
  * 
@@ -13,19 +11,10 @@ import org.joda.time.DateTime;
  */
 public class CVTSOrder extends AbstractStrategyOrder {
 
-	private DateTime startDateTime;
 	private ActionType action;
 	private double previousDayClosePrice;
 	private double limitPrice;
 	private double historicalVolatility;
-
-	public DateTime getStartDateTime() {
-		return startDateTime;
-	}
-
-	public void setStartDateTime(DateTime startDateTime) {
-		this.startDateTime = startDateTime;
-	}
 
 	public ActionType getAction() {
 		return action;

@@ -75,7 +75,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		// especially if it will belong to all kind of orders
 
 		IBOrder older = ooDAO.findOne(ibOrderStatus.getOrderId());
-		if (older.getParentOrderId() != 0
+		if (older != null && older.getParentOrderId() != 0
 				&& older.getStrategy() == Strategy.CVTS) {
 			List<IBOrder> ordersInOCAGroup = ooDAO.findByParentOrderId(older
 					.getParentOrderId());
@@ -101,8 +101,8 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 							.totalQuantity());
 					vwapClose.faProfile(parentOrder.getOrder().faProfile());
 
-					eWrapper.placeOrder(vwapClose, parentOrder.getContract(),
-							parentOrder.getStrategy());
+					eWrapper.placeOrderWithParentId(vwapClose, parentOrder.getContract(),
+							parentOrder.getStrategy(), parentOrder.getOrderId());
 				}
 			}
 		}
@@ -231,7 +231,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		// retList.add(vwapClose);
 
 		Order stopLoss = new Order();
-		stopLoss.orderId(parent.orderId() + 4);
+		stopLoss.orderId(parent.orderId() + 3);
 		stopLoss.action(switchActionStr);
 		stopLoss.orderType("STP");
 		// Stop trigger price

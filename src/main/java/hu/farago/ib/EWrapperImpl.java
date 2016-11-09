@@ -45,6 +45,7 @@ public class EWrapperImpl implements EWrapper {
 	protected int currentTickerId = -1;
 	private List<StockPrices.OhlcData> ohlcList;
 	private Map<Integer, Strategy> orderIdToStrategyMap = Maps.newConcurrentMap();
+	private Map<Integer, Integer> shouldBindParentId = Maps.newConcurrentMap();
 	
 	@Value("${trdr.tws.host}")
 	private String host;
@@ -95,6 +96,13 @@ public class EWrapperImpl implements EWrapper {
 		getClientSocket().placeOrder(order.orderId(), contract,
 				order);
 		orderIdToStrategyMap.put(order.orderId(), strat);
+	}
+	
+	public void placeOrderWithParentId(Order order, Contract contract, Strategy strat, int parentId) {
+		getClientSocket().placeOrder(order.orderId(), contract,
+				order);
+		orderIdToStrategyMap.put(order.orderId(), strat);
+		shouldBindParentId.put(order.orderId(), parentId);
 	}
 
 	@Override
@@ -265,7 +273,7 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void openOrder(int arg0, Contract arg1, Order arg2, OrderState arg3) {
-		eventBus.post(new IBOrder(arg0, arg1, arg2, arg3, orderIdToStrategyMap.get(arg0)));
+		eventBus.post(new IBOrder(arg0, arg1, arg2, arg3, orderIdToStrategyMap.get(arg0), shouldBindParentId.get(arg0)));
 	}
 
 	@Override

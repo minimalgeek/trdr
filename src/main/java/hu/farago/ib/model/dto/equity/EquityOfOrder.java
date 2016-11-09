@@ -8,13 +8,15 @@ public class EquityOfOrder {
 	public DateTime openDate;
 	public DateTime closeDate;
 	public Double profitAndLoss;
+	public Integer parentOrderId;
 
 	public EquityOfOrder(Integer orderId, DateTime openDate,
-			DateTime closeDate, Double profitAndLoss) {
+			DateTime closeDate, Double profitAndLoss, Integer parentOrderId) {
 		this.orderId = orderId;
 		this.openDate = openDate;
 		this.closeDate = closeDate;
 		this.profitAndLoss = profitAndLoss;
+		this.parentOrderId = parentOrderId;
 	}
 
 	public Integer getOrderId() {
@@ -49,4 +51,12 @@ public class EquityOfOrder {
 		this.profitAndLoss = profitAndLoss;
 	}
 
+	public Integer getParentOrderId() {
+		return parentOrderId;
+	}
+
+	public void setParentOrderId(Integer parentOrderId) {
+		this.parentOrderId = parentOrderId;
+	}
+	
 }

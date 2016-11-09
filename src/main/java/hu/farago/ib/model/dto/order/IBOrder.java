@@ -21,7 +21,7 @@ public class IBOrder {
 	private Strategy strategy;
 	private DateTime openDate;
 	private DateTime closeDate;
-	private int parentOrderId;
+	private Integer parentOrderId;
 	private Double pnl;
 	private String lastExecId;
 	private Execution lastExecution;
@@ -37,13 +37,14 @@ public class IBOrder {
 	}
 	
 	public IBOrder(int orderId, Contract contract, Order order,
-			OrderState orderState, Strategy strategy) {
+			OrderState orderState, Strategy strategy, int parentOrderId) {
 		super();
 		this.orderId = orderId;
 		this.contract = contract;
 		this.order = order;
 		this.orderState = orderState;
 		this.strategy = strategy;
+		this.parentOrderId = parentOrderId;
 	}
 
 	public int getOrderId() {
@@ -134,14 +135,14 @@ public class IBOrder {
 		this.lastOrderStatus = lastOrderStatus;
 	}
 	
-	public int getParentOrderId() {
+	public Integer getParentOrderId() {
 		return parentOrderId;
 	}
-
-	public void setParentOrderId(int parentOrderId) {
+	
+	public void setParentOrderId(Integer parentOrderId) {
 		this.parentOrderId = parentOrderId;
 	}
-
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
