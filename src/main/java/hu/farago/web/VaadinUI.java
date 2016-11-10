@@ -1,5 +1,6 @@
 package hu.farago.web;
 
+import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.web.component.chart.CandleStick;
@@ -21,10 +22,13 @@ import com.vaadin.annotations.Widgetset;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
@@ -42,6 +46,9 @@ public class VaadinUI extends UI {
 
 	@Autowired
 	private EventBus eventBus;
+	
+	@Autowired
+	private EWrapperImpl eWrapper;
 
 	// Tab content
 	@Autowired
@@ -65,14 +72,22 @@ public class VaadinUI extends UI {
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
 		eventBus.register(this);
+		VaadinSession.getCurrent().getSession().setMaxInactiveInterval(-1);
 		tabSheet = new TabSheet();
 
 		buildTabs();
 		setupResponseGrid();
-
+		
 		vsp = new VerticalSplitPanel(tabSheet, responseGrid);
 		vsp.setSplitPosition(70, Unit.PERCENTAGE);
-		setContent(vsp);
+		
+		Button reconnect = new Button("Reconnect", (e) -> eWrapper.reInitConnection());
+		AbsoluteLayout rootLayout = new AbsoluteLayout();
+		rootLayout.addComponent(vsp);
+		rootLayout.addComponent(reconnect, "right:0px;");
+		rootLayout.setSizeFull();
+		
+		setContent(rootLayout);
 	}
 
 	private void setupResponseGrid() {
@@ -123,7 +138,7 @@ public class VaadinUI extends UI {
 	}
 
 	private void addResponseToGrid(String responseText, ResponseType type) {
-		access(new Runnable() {
+		getUI().access(new Runnable() {
 			@Override
 			public void run() {
 				Response resp = new Response(type, responseText);

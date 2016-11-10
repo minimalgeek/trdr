@@ -38,6 +38,8 @@ public class EquityCurve extends HorizontalLayout {
 		setResponsive(true);
 		
 		equityTable.addContainerProperty("Order ID", Integer.class, null);
+		equityTable.addContainerProperty("Ticker", String.class, null);
+		equityTable.addContainerProperty("Action", String.class, null);
 		equityTable.addContainerProperty("Open Date", DateTime.class, null);
 		equityTable.addContainerProperty("Close Date", DateTime.class, null);
 		equityTable.addContainerProperty("Profit and Loss", Double.class, 0.0);
@@ -47,7 +49,8 @@ public class EquityCurve extends HorizontalLayout {
 	
 	private void buildTreeFromEquityOfOrderList(List<EquityOfOrder> list) {
 		for (EquityOfOrder eoo : list) {
-			equityTable.addItem(new Object[]{eoo.orderId, eoo.openDate, eoo.closeDate, eoo.profitAndLoss}, eoo.orderId);
+			equityTable.addItem(new Object[]{eoo.orderId, eoo.ticker, eoo.action, 
+					eoo.openDate, eoo.closeDate, eoo.profitAndLoss}, eoo.orderId);
 			if (eoo.parentOrderId != null && eoo.parentOrderId != 0) {
 				equityTable.setParent(eoo.orderId, eoo.parentOrderId);
 			}

@@ -101,7 +101,8 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 							.totalQuantity());
 					vwapClose.faProfile(parentOrder.getOrder().faProfile());
 
-					eWrapper.placeOrderWithParentId(vwapClose, parentOrder.getContract(),
+					eWrapper.placeOrderWithParentId(vwapClose,
+							parentOrder.getContract(),
 							parentOrder.getStrategy(), parentOrder.getOrderId());
 				}
 			}
@@ -128,14 +129,14 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 	}
 
 	@Override
-	public List<Order> buildOrders(CVTSOrder so, OrderCommonProperties ocp,
-			int parentOrderId) {
+	public List<Order> buildOrders(CVTSOrder so, OrderCommonProperties ocp) {
 
 		List<Order> retList = Lists.newArrayList();
 
 		Double position = ocp.getPositionSize() * ocp.getTargetVolatility()
 				/ so.getHistoricalVolatility();
-		Double quantity = position / so.getPreviousDayClosePrice();
+		Double quantity = Formatters.formatToTwoDecimalPlaces(position
+				/ so.getPreviousDayClosePrice());
 
 		final ActionType action = so.getAction();
 		final double limitPrice = so.getLimitPrice();
@@ -154,8 +155,12 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 					* (1.0 - profitTargetRemainingDay / 100.0);
 			stopLossPrice = limitPrice * (1.0 + stopLossTarget / 100.0);
 		}
+		takeProfitLimitPrice = Formatters.formatToTwoDecimalPlaces(takeProfitLimitPrice);
+		remainingTakeProfitLimitPrice = Formatters.formatToTwoDecimalPlaces(remainingTakeProfitLimitPrice);
+		stopLossPrice = Formatters.formatToTwoDecimalPlaces(stopLossPrice);
 
 		// This will be our main or "parent" order
+		int parentOrderId = eWrapper.nextOrderId();
 		Order parent = new Order();
 		parent.orderId(parentOrderId);
 		parent.action(action.name());
@@ -164,14 +169,11 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		parent.lmtPrice(limitPrice);
 		parent.faProfile(ocp.getFaProfile());
 		parent.tif(TimeInForce.DAY);
-		// The parent and children orders will need this attribute set to false
-		// to prevent accidental executions.
-		// The LAST CHILD will have it set to true.
 		parent.transmit(false);
 		retList.add(parent);
 
 		Order takeProfit = new Order();
-		takeProfit.orderId(parent.orderId() + 1);
+		takeProfit.orderId(eWrapper.nextOrderId());
 		takeProfit.action(switchActionStr);
 		takeProfit.orderType(ocp.getOrderType());
 		takeProfit.totalQuantity(quantity.intValue());
@@ -203,7 +205,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		TimeCondition timeConditionEnd = buildTimeCondition(endDT, false);
 
 		Order timedTakeProfit = new Order();
-		timedTakeProfit.orderId(parent.orderId() + 2);
+		timedTakeProfit.orderId(eWrapper.nextOrderId());
 		timedTakeProfit.action(switchActionStr);
 		timedTakeProfit.orderType(ocp.getOrderType());
 		timedTakeProfit.totalQuantity(quantity.intValue());
@@ -231,16 +233,13 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		// retList.add(vwapClose);
 
 		Order stopLoss = new Order();
-		stopLoss.orderId(parent.orderId() + 3);
+		stopLoss.orderId(eWrapper.nextOrderId());
 		stopLoss.action(switchActionStr);
 		stopLoss.orderType("STP");
 		// Stop trigger price
 		stopLoss.auxPrice(stopLossPrice);
 		stopLoss.totalQuantity(quantity.intValue());
 		stopLoss.parentId(parentOrderId);
-		// In this case, the low side order will be the last child being sent.
-		// Therefore, it needs to set this attribute to true
-		// to activate all its predecessors
 		stopLoss.transmit(true);
 		stopLoss.faProfile(ocp.getFaProfile());
 		stopLoss.tif(TimeInForce.GTC);

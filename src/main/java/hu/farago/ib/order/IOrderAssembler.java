@@ -10,5 +10,5 @@ import com.ib.client.Order;
 
 public interface IOrderAssembler<T extends AbstractStrategyOrder> {
 	public Contract buildContract(T so, OrderCommonProperties ocp);
-	public List<Order> buildOrders(T so, OrderCommonProperties ocp, int parentOrderId);
+	public List<Order> buildOrders(T so, OrderCommonProperties ocp);
 }

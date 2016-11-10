@@ -56,7 +56,7 @@ public class EWrapperImpl implements EWrapper {
 	private EventBus eventBus;
 
 	@PostConstruct
-	public void init() {
+	public void initConnection() {
 		readerSignal = new EJavaSignal();
 		clientSocket = new EClientSocket(this, readerSignal);
 		clientSocket.eConnect(host, port, 1);
@@ -64,6 +64,11 @@ public class EWrapperImpl implements EWrapper {
 		Thread thread = new Thread(new MessageReceiver(clientSocket,
 				readerSignal, eventBus));
 		thread.start();
+	}
+	
+	public void reInitConnection() {
+		LOGGER.info("reInitConnection");
+		clientSocket.eConnect(host, port, 1);
 	}
 
 	public EReaderSignal getReaderSignal() {

@@ -68,9 +68,8 @@ public class IBOrderSaver {
 			older.setLastOrderStatus(ibOrderStatus);
 			
 			updateCloseIfNecessary(ibOrderStatus.getStatus(), older);
+			ooDAO.save(older);
 		}
-
-		ooDAO.save(older);
 	}
 
 	private void updateCloseIfNecessary(String status,

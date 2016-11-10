@@ -38,6 +38,8 @@ public class EquityService {
 		for (IBOrder ibOrder : orders) {
 			EquityOfOrder e = new EquityOfOrder(
 					ibOrder.getOrderId(), 
+					ibOrder.getContract().symbol(),
+					ibOrder.getOrder().action().name(),
 					ibOrder.getOpenDate(), 
 					ibOrder.getCloseDate(), 
 					ibOrder.getPnl(),

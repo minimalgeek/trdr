@@ -5,57 +5,21 @@ import org.joda.time.DateTime;
 public class EquityOfOrder {
 
 	public Integer orderId;
+	public String ticker;
+	public String action;
 	public DateTime openDate;
 	public DateTime closeDate;
 	public Double profitAndLoss;
 	public Integer parentOrderId;
 
-	public EquityOfOrder(Integer orderId, DateTime openDate,
+	public EquityOfOrder(Integer orderId, String ticker, String action, DateTime openDate,
 			DateTime closeDate, Double profitAndLoss, Integer parentOrderId) {
 		this.orderId = orderId;
+		this.ticker = ticker;
+		this.action = action;
 		this.openDate = openDate;
 		this.closeDate = closeDate;
-		this.profitAndLoss = profitAndLoss;
-		this.parentOrderId = parentOrderId;
-	}
-
-	public Integer getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(Integer orderId) {
-		this.orderId = orderId;
-	}
-
-	public DateTime getOpenDate() {
-		return openDate;
-	}
-
-	public void setOpenDate(DateTime openDate) {
-		this.openDate = openDate;
-	}
-
-	public DateTime getCloseDate() {
-		return closeDate;
-	}
-
-	public void setCloseDate(DateTime closeDate) {
-		this.closeDate = closeDate;
-	}
-
-	public Double getProfitAndLoss() {
-		return profitAndLoss;
-	}
-
-	public void setProfitAndLoss(Double profitAndLoss) {
-		this.profitAndLoss = profitAndLoss;
-	}
-
-	public Integer getParentOrderId() {
-		return parentOrderId;
-	}
-
-	public void setParentOrderId(Integer parentOrderId) {
+		this.profitAndLoss = profitAndLoss != null && profitAndLoss != Double.MAX_VALUE ? profitAndLoss : 0.0;
 		this.parentOrderId = parentOrderId;
 	}
 	

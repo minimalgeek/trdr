@@ -81,8 +81,7 @@ public class OrderService {
 		IOrderAssembler<T> orderAssembler = getAssembler(strat);
 
 		Contract contract = orderAssembler.buildContract(so, ocp);
-		for (Order order : orderAssembler.buildOrders(so, ocp,
-				wrapper.nextOrderId())) {
+		for (Order order : orderAssembler.buildOrders(so, ocp)) {
 			wrapper.placeOrder(order, contract, strat);
 		}
 
@@ -93,12 +92,17 @@ public class OrderService {
 	public <T extends AbstractStrategyOrder> void placeOrders(
 			List<T> convertedItems) {
 		for (T order : convertedItems) {
-			if (DateUtils.isSameDay(order.getStartDateTime().toDate(), DateTime.now().toDate())) {
+			if (candidateStartDateIsYesterday(order)) {
 				placeOrder(order);
 			} else {
-				eventBus.post(new IBError("Start date is not today for the '" + order.getTicker() + "' order"));
+				eventBus.post(new IBError("Start date is not yesterday for the '" + order.getTicker() + "' order"));
 			}
 		}
+	}
+
+	private <T extends AbstractStrategyOrder> boolean candidateStartDateIsYesterday(
+			T order) {
+		return DateUtils.isSameDay(order.getStartDateTime().toDate(), DateTime.now().minusDays(1).toDate());
 	}
 
 	@SuppressWarnings("unchecked")

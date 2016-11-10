@@ -37,7 +37,7 @@ public class IBOrder {
 	}
 	
 	public IBOrder(int orderId, Contract contract, Order order,
-			OrderState orderState, Strategy strategy, int parentOrderId) {
+			OrderState orderState, Strategy strategy, Integer parentOrderId) {
 		super();
 		this.orderId = orderId;
 		this.contract = contract;
