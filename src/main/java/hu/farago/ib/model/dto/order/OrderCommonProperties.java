@@ -24,6 +24,10 @@ public class OrderCommonProperties {
 	public String faProfile;
 	public Integer barStop;
 	public Integer maxOrders;
+	
+	public Double firstDayTarget;
+	public Double remainingDaysTarget;
+	public Double stopLossTarget;
 
 	public Strategy getId() {
 		return id;
@@ -111,6 +115,30 @@ public class OrderCommonProperties {
 
 	public void setMaxOrders(Integer maxOrders) {
 		this.maxOrders = maxOrders;
+	}
+
+	public Double getFirstDayTarget() {
+		return firstDayTarget;
+	}
+
+	public void setFirstDayTarget(Double firstDayTarget) {
+		this.firstDayTarget = firstDayTarget;
+	}
+
+	public Double getRemainingDaysTarget() {
+		return remainingDaysTarget;
+	}
+
+	public void setRemainingDaysTarget(Double remainingDaysTarget) {
+		this.remainingDaysTarget = remainingDaysTarget;
+	}
+
+	public Double getStopLossTarget() {
+		return stopLossTarget;
+	}
+
+	public void setStopLossTarget(Double stopLossTarget) {
+		this.stopLossTarget = stopLossTarget;
 	}
 	
 }

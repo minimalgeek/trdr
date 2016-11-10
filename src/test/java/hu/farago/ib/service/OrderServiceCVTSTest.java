@@ -1,8 +1,8 @@
 package hu.farago.ib.service;
 
 import static org.junit.Assert.assertEquals;
-import hu.farago.ib.model.dto.order.CVTSOrder;
 import hu.farago.ib.model.dto.order.IBOrder;
+import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
 import hu.farago.ib.order.strategy.enums.ActionType;
 
 import java.util.Set;

@@ -2,10 +2,10 @@ package hu.farago.ib.order.strategy;
 
 import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dao.IBOrderDAO;
-import hu.farago.ib.model.dto.order.CVTSOrder;
 import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.ib.model.dto.order.IBOrderStatus;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
+import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
 import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.ib.order.OrderUtils;
 import hu.farago.ib.order.strategy.enums.ActionType;
@@ -44,14 +44,14 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-	@Value("${trdr.strategy.cvts.stopLossTarget}")
-	private double stopLossTarget;
-
-	@Value("${trdr.strategy.cvts.profitTarget.firstDay}")
-	private double profitTargetFirstDay;
-
-	@Value("${trdr.strategy.cvts.profitTarget.remainingDay}")
-	private double profitTargetRemainingDay;
+//	@Value("${trdr.strategy.cvts.stopLossTarget}")
+//	private double stopLossTarget;
+//
+//	@Value("${trdr.strategy.cvts.profitTarget.firstDay}")
+//	private double profitTargetFirstDay;
+//
+//	@Value("${trdr.strategy.cvts.profitTarget.remainingDay}")
+//	private double profitTargetRemainingDay;
 
 	@Autowired
 	private EventBus eventBus;
@@ -144,16 +144,16 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		double takeProfitLimitPrice = 0, remainingTakeProfitLimitPrice = 0, stopLossPrice = 0;
 		if (action == ActionType.BUY) {
 			takeProfitLimitPrice = limitPrice
-					* (1.0 + profitTargetFirstDay / 100.0);
+					* (1.0 + ocp.firstDayTarget / 100.0);
 			remainingTakeProfitLimitPrice = limitPrice
-					* (1.0 + profitTargetRemainingDay / 100.0);
-			stopLossPrice = limitPrice * (1.0 - stopLossTarget / 100.0);
+					* (1.0 + ocp.remainingDaysTarget / 100.0);
+			stopLossPrice = limitPrice * (1.0 - ocp.stopLossTarget / 100.0);
 		} else {
 			takeProfitLimitPrice = limitPrice
-					* (1.0 - profitTargetFirstDay / 100);
+					* (1.0 - ocp.firstDayTarget / 100);
 			remainingTakeProfitLimitPrice = limitPrice
-					* (1.0 - profitTargetRemainingDay / 100.0);
-			stopLossPrice = limitPrice * (1.0 + stopLossTarget / 100.0);
+					* (1.0 - ocp.remainingDaysTarget / 100.0);
+			stopLossPrice = limitPrice * (1.0 + ocp.stopLossTarget / 100.0);
 		}
 		takeProfitLimitPrice = Formatters.formatToTwoDecimalPlaces(takeProfitLimitPrice);
 		remainingTakeProfitLimitPrice = Formatters.formatToTwoDecimalPlaces(remainingTakeProfitLimitPrice);
@@ -222,7 +222,7 @@ public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 		// Order vwapClose = new Order();
 		// fillVwapParams(vwapClose, 0.2, "09:30:00 ET", "16:00:00 ET", false,
 		// true);
-		// vwapClose.orderId(parent.orderId() + 3);
+		// vwapClose.orderId(eWrapper.nextOrderId());
 		// vwapClose.action(switchActionStr);
 		// vwapClose.orderType("MKT");
 		// vwapClose.totalQuantity(quantity.intValue());

@@ -29,6 +29,18 @@ import com.vaadin.ui.themes.ValoTheme;
 public class OrderCommonPropertiesEditor extends FormLayout {
 
 	private static final long serialVersionUID = -4085171580771112473L;
+	
+	private class DoubleTextField extends TextField {
+		
+		private static final long serialVersionUID = -2807982926425707376L;
+
+		public DoubleTextField(String caption) {
+			super(caption);
+			this.setConverter(Double.class);
+			this.setNullRepresentation("0.0");
+		}
+		
+	}
 
 	private OrderService orderService;
 
@@ -41,11 +53,16 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 	TextField primaryExchange = new TextField("Primary Exchange");
 	ComboBox orderType = new ComboBox("Order Type", Arrays.asList(OrderType
 			.values()));
-	TextField positionSize = new TextField("Position size");
+	DoubleTextField positionSize = new DoubleTextField("Position size");
 	Slider targetVolatility = new Slider("Target Volatility", 0, 100);
 	TextField faProfile = new TextField("FA Profile");
 	Slider barStop = new Slider("N-Bar Stop", 0, 20);
 	Slider maxOrders = new Slider("Maximum orders", 0, 100);
+	
+	DoubleTextField firstDayTarget = new DoubleTextField("First day target");
+	DoubleTextField remainingDaysTarget = new DoubleTextField("Remaining days target");
+	DoubleTextField stopLossTarget = new DoubleTextField("Stop-loss target");
+	
 	// fields end
 
 	// action buttons
@@ -56,16 +73,14 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 	public OrderCommonPropertiesEditor(OrderService orderService) {
 		this.orderService = orderService;
 		addComponents(secType, currency, exchange, primaryExchange, orderType,
-				positionSize, targetVolatility, faProfile, barStop, maxOrders, actions);
+				positionSize, targetVolatility, faProfile, barStop, maxOrders, 
+				firstDayTarget, remainingDaysTarget, stopLossTarget, actions);
 
 		// Configure and style components
 		setSpacing(true);
 		setStyleName("common-properties-editor");
 		setWidthUndefined();
 
-		positionSize.setConverter(Double.class);
-		positionSize.setNullRepresentation("0.0");
-		
 		targetVolatility.setConverter(Double.class);
 		targetVolatility.setImmediate(true);
 		barStop.setConverter(Converters.DOUBLE_TO_INT);

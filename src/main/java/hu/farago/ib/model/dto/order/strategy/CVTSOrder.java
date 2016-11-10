@@ -1,5 +1,6 @@
-package hu.farago.ib.model.dto.order;
+package hu.farago.ib.model.dto.order.strategy;
 
+import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.order.strategy.enums.Strategy;
 
