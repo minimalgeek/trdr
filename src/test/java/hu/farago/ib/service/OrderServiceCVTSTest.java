@@ -1,22 +1,19 @@
 package hu.farago.ib.service;
 
 import static org.junit.Assert.assertEquals;
-import hu.farago.ib.model.dto.order.IBOrder;
-import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
-import hu.farago.ib.order.strategy.enums.ActionType;
 
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
-public class OrderServiceCVTSTest extends AbstractOrderServiceTest<CVTSOrder> {
+import hu.farago.ib.model.dto.order.IBOrder;
+import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
+import hu.farago.ib.order.strategy.enums.ActionType;
 
-	@Autowired
-	private OrderService orderService;
+public class OrderServiceCVTSTest extends AbstractOrderServiceTest<CVTSOrder> {
 	
 	private Set<Integer> openedOrderIds = Sets.newHashSet();
 	

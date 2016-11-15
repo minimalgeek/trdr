@@ -1,6 +1,7 @@
 hu\farago\ib\model\dto\market\StockPrices.class
 hu\farago\ib\EWrapperImpl.class
 hu\farago\ib\model\dto\market\StockPrices$JsonData.class
+hu\farago\ib\order\strategy\CVTSAssemblerSimple.class
 hu\farago\ib\order\strategy\enums\ActionType.class
 hu\farago\ib\model\dto\market\StockPrices$PriceData.class
 hu\farago\web\response\ResponseType.class
@@ -9,6 +10,7 @@ hu\farago\web\component\order\OrderStatusPanel.class
 hu\farago\web\component\PasteConverterTextBox.class
 hu\farago\ib\model\dto\market\StockQuery.class
 hu\farago\web\component\chart\CandleStick.class
+hu\farago\web\component\OrderCommonPropertiesEditor$DoubleTextField.class
 hu\farago\ib\utils\Formatters.class
 hu\farago\ib\model\dto\order\IBOrder.class
 hu\farago\web\component\equity\EquityQueryEditor.class
@@ -53,5 +55,5 @@ hu\farago\ib\service\OrderService.class
 hu\farago\web\utils\Formatters.class
 hu\farago\web\utils\Validators.class
 hu\farago\web\component\equity\EquityCurve.class
-hu\farago\ib\model\dto\order\CVTSOrder.class
 hu\farago\web\utils\Validators$1.class
+hu\farago\ib\model\dto\order\strategy\CVTSOrder.class

@@ -1,16 +1,5 @@
 package hu.farago.ib.service;
 
-import hu.farago.ib.EWrapperImpl;
-import hu.farago.ib.model.dao.IBOrderDAO;
-import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
-import hu.farago.ib.model.dto.IBError;
-import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
-import hu.farago.ib.model.dto.order.IBOrder;
-import hu.farago.ib.model.dto.order.OrderCommonProperties;
-import hu.farago.ib.order.IOrderAssembler;
-import hu.farago.ib.order.strategy.CVTSAssembler;
-import hu.farago.ib.order.strategy.enums.Strategy;
-
 import java.util.List;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -23,6 +12,17 @@ import org.springframework.stereotype.Component;
 import com.google.common.eventbus.EventBus;
 import com.ib.client.Contract;
 import com.ib.client.Order;
+
+import hu.farago.ib.EWrapperImpl;
+import hu.farago.ib.model.dao.IBOrderDAO;
+import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
+import hu.farago.ib.model.dto.IBError;
+import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
+import hu.farago.ib.model.dto.order.IBOrder;
+import hu.farago.ib.model.dto.order.OrderCommonProperties;
+import hu.farago.ib.order.IOrderAssembler;
+import hu.farago.ib.order.strategy.CVTSAssemblerSimple;
+import hu.farago.ib.order.strategy.enums.Strategy;
 
 @Component
 public class OrderService {
@@ -43,7 +43,7 @@ public class OrderService {
 
 	// Strategy assemblers
 	@Autowired
-	private CVTSAssembler cvtsAssembler;
+	private CVTSAssemblerSimple cvtsAssembler;
 
 	public void saveOrModifyOcp(OrderCommonProperties ocp) {
 		OrderCommonProperties oldOcp = ocpDAO.findOne(ocp.id);
