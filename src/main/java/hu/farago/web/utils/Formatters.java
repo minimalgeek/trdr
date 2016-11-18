@@ -12,7 +12,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class Formatters {
 
-	private static NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
+	private static NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
 	private static DecimalFormat formatter = (DecimalFormat)nf;
 	private static final DateTimeFormatter simpleYMD = DateTimeFormat
 			.forPattern("yyyy.MM.dd").withZone(DateTimeZone.UTC);

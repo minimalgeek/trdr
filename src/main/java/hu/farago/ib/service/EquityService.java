@@ -43,7 +43,8 @@ public class EquityService {
 					ibOrder.getOpenDate(), 
 					ibOrder.getCloseDate(), 
 					ibOrder.getPnl(),
-					ibOrder.getParentOrderId());
+					ibOrder.getParentOrderId(),
+					ibOrder.getLastOrderStatus() != null ? ibOrder.getLastOrderStatus().getStatus() : "Unknown");
 			ret.add(e);
 		}
 		

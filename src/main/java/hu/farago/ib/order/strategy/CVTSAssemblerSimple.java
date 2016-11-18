@@ -14,6 +14,7 @@ import com.ib.client.Contract;
 import com.ib.client.Order;
 import com.ib.client.OrderCondition;
 import com.ib.client.OrderConditionType;
+import com.ib.client.OrderType;
 import com.ib.client.TimeCondition;
 import com.ib.client.Types.TimeInForce;
 
@@ -110,12 +111,13 @@ public class CVTSAssemblerSimple implements IOrderAssembler<CVTSOrder> {
 		Order takeProfit = new Order();
 		takeProfit.orderId(eWrapper.nextOrderId());
 		takeProfit.action(switchActionStr);
-		takeProfit.orderType(ocp.getOrderType());
+		takeProfit.orderType(ocp.getOrderType()); // LMT?
 		takeProfit.totalQuantity(quantity.intValue());
 		takeProfit.lmtPrice(takeProfitLimitPrice);
 		takeProfit.parentId(parentOrderId);
 		takeProfit.transmit(false);
 		takeProfit.faProfile(ocp.getFaProfile());
+		takeProfit.tif(TimeInForce.GTC);
 		retList.add(takeProfit);
 
 		DateTime startDT = DateTime.now().withTimeAtStartOfDay().plusDays(1);
@@ -139,7 +141,7 @@ public class CVTSAssemblerSimple implements IOrderAssembler<CVTSOrder> {
 		Order timedTakeProfit = new Order();
 		timedTakeProfit.orderId(eWrapper.nextOrderId());
 		timedTakeProfit.action(switchActionStr);
-		timedTakeProfit.orderType(ocp.getOrderType());
+		timedTakeProfit.orderType(ocp.getOrderType()); // LMT?
 		timedTakeProfit.totalQuantity(quantity.intValue());
 		timedTakeProfit.lmtPrice(remainingTakeProfitLimitPrice);
 		timedTakeProfit.parentId(parentOrderId);
@@ -147,27 +149,28 @@ public class CVTSAssemblerSimple implements IOrderAssembler<CVTSOrder> {
 		timedTakeProfit.faProfile(ocp.getFaProfile());
 		timedTakeProfit.tif(TimeInForce.GTC);
 		timedTakeProfit.conditionsCancelOrder(false);
+		timedTakeProfit.conditionsIgnoreRth(true);
 		timedTakeProfit.conditions().add(buildTimeCondition(startDT, true));
-		timedTakeProfit.conditions().add(buildTimeCondition(endDT, false));
 		retList.add(timedTakeProfit);
 
 		Order nBarStop = new Order();
 		nBarStop.orderId(eWrapper.nextOrderId());
 		nBarStop.action(switchActionStr);
-		nBarStop.orderType("MKT");
+		nBarStop.orderType(OrderType.MKT);
 		nBarStop.totalQuantity(quantity.intValue());
 		nBarStop.parentId(parentOrderId);
 		nBarStop.transmit(false);
 		nBarStop.faProfile(ocp.getFaProfile());
 		nBarStop.tif(TimeInForce.GTC);
 		nBarStop.conditionsCancelOrder(false);
+		nBarStop.conditionsIgnoreRth(true);
 		nBarStop.conditions().add(buildTimeCondition(endDT, true));
 		retList.add(nBarStop);
 
 		Order stopLoss = new Order();
 		stopLoss.orderId(eWrapper.nextOrderId());
 		stopLoss.action(switchActionStr);
-		stopLoss.orderType("STP");
+		stopLoss.orderType(OrderType.STP);
 		// Stop trigger price
 		stopLoss.auxPrice(stopLossPrice);
 		stopLoss.totalQuantity(quantity.intValue());

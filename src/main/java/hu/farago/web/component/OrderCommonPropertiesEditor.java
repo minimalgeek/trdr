@@ -6,6 +6,7 @@ import hu.farago.ib.service.OrderService;
 import hu.farago.web.utils.Converters;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,6 +38,7 @@ public class OrderCommonPropertiesEditor extends FormLayout {
 		public DoubleTextField(String caption) {
 			super(caption);
 			this.setConverter(Double.class);
+			this.setLocale(Locale.US);
 			this.setNullRepresentation("0.0");
 		}
 		

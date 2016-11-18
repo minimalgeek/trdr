@@ -55,5 +55,4 @@ hu\farago\ib\service\OrderService.class
 hu\farago\web\utils\Formatters.class
 hu\farago\web\utils\Validators.class
 hu\farago\web\component\equity\EquityCurve.class
-hu\farago\web\utils\Validators$1.class
 hu\farago\ib\model\dto\order\strategy\CVTSOrder.class
