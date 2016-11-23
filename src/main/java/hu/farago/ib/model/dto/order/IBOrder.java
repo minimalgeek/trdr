@@ -1,7 +1,5 @@
 package hu.farago.ib.model.dto.order;
 
-import hu.farago.ib.order.strategy.enums.Strategy;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
@@ -11,6 +9,8 @@ import com.ib.client.Contract;
 import com.ib.client.Execution;
 import com.ib.client.Order;
 import com.ib.client.OrderState;
+
+import hu.farago.ib.order.strategy.enums.Strategy;
 
 @Document(collection = "ib_order")
 public class IBOrder {

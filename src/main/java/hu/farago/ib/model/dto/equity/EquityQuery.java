@@ -1,19 +1,15 @@
 package hu.farago.ib.model.dto.equity;
 
-import hu.farago.ib.order.strategy.enums.Strategy;
-
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 
+import hu.farago.ib.order.strategy.enums.Strategy;
+
 public class EquityQuery {
 
-	@Past
-	@NotNull
 	public DateTime from;
-	@NotNull
 	public DateTime to;
 	@NotNull
 	public Strategy strategy;

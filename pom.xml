@@ -28,21 +28,15 @@
 		<guava.version>19.0</guava.version>
 		<vaadin-charts.version>3.2.0</vaadin-charts.version>
 		<vaadin-spring-boot-starter.version>1.0.0</vaadin-spring-boot-starter.version>
+		<querydsl.version>4.1.4</querydsl.version>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.springframework.boot</groupId> -->
-		<!-- <artifactId>spring-boot-starter-hateoas</artifactId> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -109,25 +103,26 @@
 			<!-- <systemPath>${project.basedir}/lib/TwsApi.jar</systemPath> -->
 		</dependency>
 
-<!-- 		Dafuq is this?! -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.hadoop</groupId> -->
-<!-- 			<artifactId>hadoop-core</artifactId> -->
-<!-- 			<version>1.0.0</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.scala-lang</groupId> -->
-<!-- 			<artifactId>scala-library</artifactId> -->
-<!-- 			<version>2.11.0</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.boot</groupId> -->
-<!-- 			<artifactId>spring-boot-starter-jta-narayana</artifactId> -->
-<!-- 		</dependency> -->
+		<!-- MongoDB -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jta-narayana</artifactId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-mongodb</artifactId>
+			<version>${querydsl.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>${querydsl.version}</version>
+		</dependency>
+
+		<!-- Dafuq is this?! -->
+
 	</dependencies>
 
 	<repositories>
@@ -137,9 +132,6 @@
 		</repository>
 	</repositories>
 
-	<!-- The project uses a newer version of Vaadin, than the default one brought 
-		in by the starter module. To use a newer version, define the Vaadin Bill 
-		of Materials (BOM) -->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -153,59 +145,69 @@
 	</dependencyManagement>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<mainClass>hu.farago.TrdrApplication</mainClass>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>repackage</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-<!-- 				<plugin> -->
-<!-- 					<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 					<artifactId>maven-surefire-plugin</artifactId> -->
-<!-- 					<configuration> -->
-<!-- 						<systemPropertyVariables> -->
-<!-- 							<vaadin.charts.developer.license>${vaadin.charts.developer.license}</vaadin.charts.developer.license> -->
-<!-- 						</systemPropertyVariables> -->
-<!-- 					</configuration> -->
-<!-- 				</plugin> -->
-				<plugin>
-					<groupId>com.vaadin</groupId>
-					<artifactId>vaadin-maven-plugin</artifactId>
-					<version>${vaadin.plugin.version}</version>
-					<configuration>
-						<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-						<generatedWidgetsetDirectory>${basedir}/src/main/resources</generatedWidgetsetDirectory>
-						<webappDirectory>${basedir}/src/main/resources/VAADIN/widgetsets</webappDirectory>
-						<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
-					</configuration>
-					<executions>
-						<execution>
-							<configuration>
-								<!-- if you don't specify any modules, the plugin will find them -->
-								<style>OBF</style>
-								<strict>true</strict>
-							</configuration>
-							<goals>
-								<goal>update-theme</goal>
-								<goal>update-widgetset</goal>
-								<goal>compile</goal>
-								<goal>compile-theme</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>hu.farago.TrdrApplication</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<vaadin.charts.developer.license>${vaadin.charts.developer.license}</vaadin.charts.developer.license>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin.plugin.version}</version>
+				<configuration>
+					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+					<generatedWidgetsetDirectory>${basedir}/src/main/resources</generatedWidgetsetDirectory>
+					<webappDirectory>${basedir}/src/main/resources/VAADIN/widgetsets</webappDirectory>
+					<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+				</configuration>
+				<executions>
+					<execution>
+						<configuration>
+							<style>OBF</style>
+							<strict>true</strict>
+						</configuration>
+						<goals>
+							<goal>update-theme</goal>
+							<goal>update-widgetset</goal>
+							<goal>compile</goal>
+							<goal>compile-theme</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+				<version>1.1.3</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/generated-sources/java</outputDirectory>
+							<processor>
+								org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor
+							</processor>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 
 </project>
