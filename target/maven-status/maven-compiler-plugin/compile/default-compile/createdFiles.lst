@@ -23,7 +23,6 @@ hu\farago\ib\order\strategy\enums\Strategy.class
 hu\farago\web\response\Response.class
 hu\farago\ib\model\dto\market\StockPrices$OhlcData.class
 hu\farago\ib\model\dao\OrderCommonPropertiesDAO.class
-hu\farago\ib\service\EquityService$1.class
 hu\farago\web\component\equity\EquityChart.class
 hu\farago\ib\model\dto\equity\EquityOfOrder.class
 hu\farago\web\VaadinUI.class

@@ -33,11 +33,11 @@ public class EquityService {
 		if (query.from == null && query.to == null) {
 			predicate = qIBOrder.strategy.eq(query.strategy);
 		} else if (query.from == null && query.to != null) {
-			predicate = qIBOrder.openDate.lt(query.to).and(qIBOrder.strategy.eq(query.strategy));
+			predicate = qIBOrder.openDate.loe(query.to).and(qIBOrder.strategy.eq(query.strategy));
 		} else if (query.from != null && query.to == null) {
-			predicate = qIBOrder.openDate.gt(query.from).and(qIBOrder.strategy.eq(query.strategy));
+			predicate = qIBOrder.openDate.goe(query.from).and(qIBOrder.strategy.eq(query.strategy));
 		} else {
-			predicate = qIBOrder.openDate.between(query.from, query.to).and(qIBOrder.strategy.eq(query.strategy));
+			predicate = qIBOrder.openDate.loe(query.to).and(qIBOrder.openDate.goe(query.from)).and(qIBOrder.strategy.eq(query.strategy));
 		}
 		Iterable<IBOrder> orders = orderDAO.findAll(predicate, qIBOrder.orderId.asc());
 

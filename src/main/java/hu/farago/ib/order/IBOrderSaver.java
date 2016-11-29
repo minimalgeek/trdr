@@ -93,9 +93,12 @@ public class IBOrderSaver {
 	public void commission(CommissionReport commission) {
 		IBOrder older = ooDAO.findByLastExecId(commission.m_execId);
 		if (older != null) {
-			older.setPnl(commission.m_realizedPNL);
+			if (older.getPnl() != null && older.getPnl() != 0) {
+				older.setPnl(older.getPnl() + commission.m_realizedPNL);
+			} else {
+				older.setPnl(commission.m_realizedPNL);
+			}
 			ooDAO.save(older);
 		}
 	}
-
 }

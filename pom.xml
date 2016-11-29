@@ -121,7 +121,7 @@
 			<version>${querydsl.version}</version>
 		</dependency>
 
-		<!-- Dafuq is this?! -->
+		<!-- End -->
 
 	</dependencies>
 
@@ -153,20 +153,35 @@
 					<mainClass>hu.farago.TrdrApplication</mainClass>
 				</configuration>
 			</plugin>
+			
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<systemPropertyVariables>
-						<vaadin.charts.developer.license>${vaadin.charts.developer.license}</vaadin.charts.developer.license>
-					</systemPropertyVariables>
-				</configuration>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>set-system-properties</goal>
+						</goals>
+						<configuration>
+							<properties>
+								<property>
+									<name>vaadin.charts.developer.license</name>
+									<value>${vaadin.charts.developer.license}</value>
+								</property>
+							</properties>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
+			
 			<plugin>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
 				<version>${vaadin.plugin.version}</version>
 				<configuration>
+					<style>OBF</style>
+					<strict>true</strict>
 					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
 					<generatedWidgetsetDirectory>${basedir}/src/main/resources</generatedWidgetsetDirectory>
 					<webappDirectory>${basedir}/src/main/resources/VAADIN/widgetsets</webappDirectory>
@@ -174,10 +189,6 @@
 				</configuration>
 				<executions>
 					<execution>
-						<configuration>
-							<style>OBF</style>
-							<strict>true</strict>
-						</configuration>
 						<goals>
 							<goal>update-theme</goal>
 							<goal>update-widgetset</goal>

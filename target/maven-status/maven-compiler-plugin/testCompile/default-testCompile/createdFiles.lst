@@ -1,5 +1,6 @@
 hu\farago\ib\service\AbstractOrderServiceTest.class
 hu\farago\ib\service\OrderServiceCVTSTest.class
-hu\farago\AbstractRootTest.class
 hu\farago\ib\EWrapperImplTest.class
 hu\farago\TrdrApplicationTests.class
+hu\farago\AbstractRootTest.class
+hu\farago\ib\service\EquityServiceTest.class

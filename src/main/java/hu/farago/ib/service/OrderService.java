@@ -2,6 +2,7 @@ package hu.farago.ib.service;
 
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -71,7 +72,7 @@ public class OrderService {
 		List<IBOrder> openedOrders = ibOrderDAO
 				.findByStrategyAndParentOrderIdAndCloseDateIsNull(strat, 0);
 
-		if (openedOrders.size() >= ocp.maxOrders) {
+		if (openedOrders.size() >= (int)ObjectUtils.defaultIfNull(ocp.maxOrders, 0)) {
 			eventBus.post(new IBError(strat.name()
 					+ " strategy's max opened position limit exceeded: "
 					+ ocp.maxOrders));
@@ -119,5 +120,6 @@ public class OrderService {
 	public void reqAllOpenOrders() {
 		LOGGER.info("reqAllOpenOrders");
 		wrapper.getClientSocket().reqAllOpenOrders();
+		//wrapper.getClientSocket().reqPositions();
 	}
 }
