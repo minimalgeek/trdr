@@ -46,7 +46,7 @@ public class VaadinUI extends UI {
 
 	@Autowired
 	private EventBus eventBus;
-	
+
 	@Autowired
 	private EWrapperImpl eWrapper;
 
@@ -56,10 +56,10 @@ public class VaadinUI extends UI {
 
 	@Autowired
 	private CVTSPasteGrid orderPasteGrid;
-	
+
 	@Autowired
 	private CandleStick candleStick;
-	
+
 	@Autowired
 	private EquityTab equityCurve;
 	// End
@@ -77,22 +77,21 @@ public class VaadinUI extends UI {
 
 		buildTabs();
 		setupResponseGrid();
-		
+
 		vsp = new VerticalSplitPanel(tabSheet, responseGrid);
 		vsp.setSplitPosition(70, Unit.PERCENTAGE);
-		
+
 		Button reconnect = new Button("Reconnect", (e) -> eWrapper.reInitConnection());
 		AbsoluteLayout rootLayout = new AbsoluteLayout();
 		rootLayout.addComponent(vsp);
 		rootLayout.addComponent(reconnect, "right:0px;");
 		rootLayout.setSizeFull();
-		
+
 		setContent(rootLayout);
 	}
 
 	private void setupResponseGrid() {
-		responses = new BeanItemContainer<Response>(Response.class,
-				Lists.newArrayList());
+		responses = new BeanItemContainer<Response>(Response.class, Lists.newArrayList());
 		responseGrid = new Grid();
 		responseGrid.setSizeFull();
 		responseGrid.setContainerDataSource(responses);
@@ -108,19 +107,14 @@ public class VaadinUI extends UI {
 		cdtColumn.setExpandRatio(1);
 		// show content on hover
 		responseGrid.setColumns(cdtColumn.getPropertyId(), htmlColumn.getPropertyId());
-		responseGrid.setCellDescriptionGenerator((cell) -> cell.getValue()
-				.toString());
+		responseGrid.setCellDescriptionGenerator((cell) -> cell.getValue().toString());
 	}
 
 	private void buildTabs() {
-		tabSheet.addTab(openedOrders, "Orders current status",
-				new ThemeResource("img/planets/01.png"));
-		tabSheet.addTab(orderPasteGrid, "CVTS strategy", new ThemeResource(
-				"img/planets/02.png"));
-		tabSheet.addTab(equityCurve, "Equity curve", new ThemeResource(
-				"img/planets/03.png"));
-		tabSheet.addTab(candleStick, "Stock prices", new ThemeResource(
-				"img/planets/04.png"));
+		tabSheet.addTab(openedOrders, "Services", new ThemeResource("img/planets/01.png"));
+		tabSheet.addTab(orderPasteGrid, "CVTS strategy", new ThemeResource("img/planets/02.png"));
+		tabSheet.addTab(equityCurve, "Equity curve", new ThemeResource("img/planets/03.png"));
+		tabSheet.addTab(candleStick, "Stock prices", new ThemeResource("img/planets/04.png"));
 	}
 
 	@Subscribe
@@ -143,8 +137,7 @@ public class VaadinUI extends UI {
 			public void run() {
 				Response resp = new Response(type, responseText);
 				responses.addBean(resp);
-				responseGrid.sort(responseGrid.getColumn("clientDateTime")
-						.getPropertyId(), SortDirection.DESCENDING);
+				responseGrid.sort(responseGrid.getColumn("clientDateTime").getPropertyId(), SortDirection.DESCENDING);
 			}
 		});
 	}

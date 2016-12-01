@@ -23,6 +23,8 @@ import com.ib.client.Execution;
 @Component
 public class IBOrderSaver {
 
+	private static final String FILLED = "Filled";
+
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
@@ -31,7 +33,7 @@ public class IBOrderSaver {
 	@Autowired
 	private IBOrderDAO ooDAO;
 
-	private static final List<String> CLOSE_ORDER_STATUS = Lists.newArrayList("ApiCanceled", "Cancelled", "Filled");
+	private static final List<String> CLOSE_ORDER_STATUS = Lists.newArrayList("ApiCanceled", "Cancelled", FILLED);
 	
 	@PostConstruct
 	public void init() {
@@ -75,6 +77,7 @@ public class IBOrderSaver {
 	private void updateCloseIfNecessary(String status,
 			IBOrder older) {
 		if (CLOSE_ORDER_STATUS.contains(status)) {
+			LOGGER.info("Closing IBOrder: " + older.getOrderId());
 			older.setCloseDate(DateTime.now());
 		}
 	}
@@ -85,6 +88,9 @@ public class IBOrderSaver {
 		if (older != null) {
 			older.setLastExecution(exec);
 			older.setLastExecId(exec.execId());
+			if (exec.cumQty() >= older.getOrder().totalQuantity()) {
+				updateCloseIfNecessary(FILLED, older);
+			}
 			ooDAO.save(older);
 		}
 	}

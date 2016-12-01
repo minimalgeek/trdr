@@ -86,8 +86,7 @@ public class OrderService {
 			wrapper.placeOrder(order, contract, strat);
 		}
 
-		// the parameter has no effects
-		wrapper.getClientSocket().reqIds(0);
+		wrapper.reqIds();
 	}
 
 	public <T extends AbstractStrategyOrder> void placeOrders(
@@ -118,8 +117,10 @@ public class OrderService {
 	}
 
 	public void reqAllOpenOrders() {
-		LOGGER.info("reqAllOpenOrders");
-		wrapper.getClientSocket().reqAllOpenOrders();
-		//wrapper.getClientSocket().reqPositions();
+		wrapper.reqAllOpenOrders();
+	}
+	
+	public void reqExecutions() {
+		wrapper.reqExecutions();
 	}
 }

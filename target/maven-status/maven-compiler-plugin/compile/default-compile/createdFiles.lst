@@ -4,6 +4,7 @@ hu\farago\ib\model\dto\market\StockPrices$JsonData.class
 hu\farago\ib\model\dto\order\QIBOrder.class
 hu\farago\ib\order\strategy\CVTSAssemblerSimple.class
 hu\farago\ib\order\strategy\enums\ActionType.class
+hu\farago\web\component\order\OrderStatusPanel$GridWithBackendService.class
 hu\farago\ib\model\dto\market\StockPrices$PriceData.class
 hu\farago\web\response\ResponseType.class
 hu\farago\ib\MessageReceiver.class

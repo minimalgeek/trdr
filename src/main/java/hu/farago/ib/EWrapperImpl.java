@@ -31,6 +31,7 @@ import com.ib.client.EJavaSignal;
 import com.ib.client.EReaderSignal;
 import com.ib.client.EWrapper;
 import com.ib.client.Execution;
+import com.ib.client.ExecutionFilter;
 import com.ib.client.Order;
 import com.ib.client.OrderState;
 
@@ -83,6 +84,8 @@ public class EWrapperImpl implements EWrapper {
 		return currentOrderId;
 	}
 
+	// functions to call from services
+	
 	public int nextOrderId() {
 		currentOrderId++;
 		return currentOrderId;
@@ -109,6 +112,23 @@ public class EWrapperImpl implements EWrapper {
 		orderIdToStrategyMap.put(order.orderId(), strat);
 		shouldBindParentId.put(order.orderId(), parentId);
 	}
+	
+	public void reqExecutions() {
+		LOGGER.info("reqExecutions");
+		clientSocket.reqExecutions(0, new ExecutionFilter());
+	}
+	
+	public void reqIds() {
+		LOGGER.info("reqIds");
+		clientSocket.reqIds(0);
+	}
+	
+	public void reqAllOpenOrders() {
+		LOGGER.info("reqAllOpenOrders");
+		clientSocket.reqAllOpenOrders();
+	}
+	
+	// end of functions to call from services
 
 	@Override
 	public void accountDownloadEnd(String arg0) {
