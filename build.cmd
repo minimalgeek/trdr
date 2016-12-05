@@ -1,1 +1,1 @@
-mvn clean package install -DskipTests spring-boot:repackage
+mvn clean generate-sources install -DskipTests spring-boot:repackage

@@ -42,6 +42,8 @@ public class EWrapperImpl implements EWrapper {
 
 	private EReaderSignal readerSignal;
 	private EClientSocket clientSocket;
+	private Thread thread;
+	
 	protected int currentOrderId = -1;
 	protected int currentTickerId = -1;
 	private List<StockPrices.OhlcData> ohlcList;
@@ -62,14 +64,20 @@ public class EWrapperImpl implements EWrapper {
 		clientSocket = new EClientSocket(this, readerSignal);
 		clientSocket.eConnect(host, port, 1);
 
-		Thread thread = new Thread(new MessageReceiver(clientSocket,
+		thread = new Thread(new MessageReceiver(clientSocket,
 				readerSignal, eventBus));
 		thread.start();
 	}
 	
 	public void reInitConnection() {
 		LOGGER.info("reInitConnection");
-		clientSocket.eConnect(host, port, 1);
+		
+		clientSocket.eDisconnect();
+		Thread moribund = thread;
+        thread = null;
+        moribund.interrupt();
+		
+		initConnection();
 	}
 
 	public EReaderSignal getReaderSignal() {
