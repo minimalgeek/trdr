@@ -1,9 +1,5 @@
 package hu.farago.ib.order;
 
-import hu.farago.ib.model.dao.IBOrderDAO;
-import hu.farago.ib.model.dto.order.IBOrder;
-import hu.farago.ib.model.dto.order.IBOrderStatus;
-
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -19,6 +15,16 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.ib.client.CommissionReport;
 import com.ib.client.Execution;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.NumberExpression;
+
+import hu.farago.ib.model.dao.IBOrderDAO;
+import hu.farago.ib.model.dto.order.IBOrder;
+import hu.farago.ib.model.dto.order.IBOrder.ExecutionAndCommission;
+import hu.farago.ib.model.dto.order.IBOrderStatus;
+import hu.farago.ib.model.dto.order.QIBOrder;
+import hu.farago.ib.model.dto.order.QIBOrder_ExecutionAndCommission;
 
 @Component
 public class IBOrderSaver {
@@ -84,27 +90,40 @@ public class IBOrderSaver {
 	
 	@Subscribe
 	public void execution(Execution exec) {
-		IBOrder older = ooDAO.findOne(exec.orderId());
-		if (older != null) {
-			older.setLastExecution(exec);
-			older.setLastExecId(exec.execId());
-			if (exec.cumQty() >= older.getOrder().totalQuantity()) {
-				updateCloseIfNecessary(FILLED, older);
+		QIBOrder qIBOrder = QIBOrder.iBOrder;
+		Predicate ibPredicate = qIBOrder.orderId.eq(exec.orderId()).and(qIBOrder.executions.any().execId.eq(exec.execId()));
+		
+		if (ooDAO.count(ibPredicate) == 0) {
+			IBOrder order = ooDAO.findOne(qIBOrder.orderId.eq(exec.orderId()));
+			if (order != null) {
+				ExecutionAndCommission ec = order.new ExecutionAndCommission();
+				ec.avgPrice = exec.avgPrice();
+				ec.cumQty = exec.cumQty();
+				ec.execId = exec.execId();
+				ec.orderId = exec.orderId();
+				ec.price = exec.price();
+				ec.shares = exec.shares();
+				ec.time = exec.time();
+				order.getExecutions().add(ec);
+				if (exec.cumQty() >= order.getOrder().totalQuantity()) {
+					updateCloseIfNecessary(FILLED, order);
+				}
+				ooDAO.save(order);
 			}
-			ooDAO.save(older);
 		}
 	}
 	
 	@Subscribe
 	public void commission(CommissionReport commission) {
-		IBOrder older = ooDAO.findByLastExecId(commission.m_execId);
-		if (older != null) {
-			if (older.getPnl() != null && older.getPnl() != 0) {
-				older.setPnl(older.getPnl() + commission.m_realizedPNL);
-			} else {
-				older.setPnl(commission.m_realizedPNL);
-			}
-			ooDAO.save(older);
+		QIBOrder qIBOrder = QIBOrder.iBOrder;
+		Predicate ibPredicate = qIBOrder.executions.any().execId.eq(commission.m_execId);
+		
+		IBOrder order = ooDAO.findOne(ibPredicate);
+		
+		if (order != null) {
+			ExecutionAndCommission eac = order.getExecutions().stream().filter((ex) -> ex.execId.equals(commission.m_execId)).findFirst().get();
+			eac.realizedPNL = commission.m_realizedPNL;
+			ooDAO.save(order);
 		}
 	}
 }

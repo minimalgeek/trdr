@@ -42,8 +42,9 @@ public class EquityService {
 		Iterable<IBOrder> orders = orderDAO.findAll(predicate, qIBOrder.orderId.asc());
 
 		for (IBOrder ibOrder : orders) {
+			double pnlSum = ibOrder.getExecutions().stream().mapToDouble(execution -> execution.realizedPNL).sum();
 			EquityOfOrder e = new EquityOfOrder(ibOrder.getOrderId(), ibOrder.getContract().symbol(),
-					ibOrder.getOrder().action().name(), ibOrder.getOpenDate(), ibOrder.getCloseDate(), ibOrder.getPnl(),
+					ibOrder.getOrder().action().name(), ibOrder.getOpenDate(), ibOrder.getCloseDate(), pnlSum,
 					ibOrder.getParentOrderId(),
 					ibOrder.getLastOrderStatus() != null ? ibOrder.getLastOrderStatus().getStatus() : "Unknown");
 			ret.add(e);

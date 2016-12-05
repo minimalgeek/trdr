@@ -1,10 +1,14 @@
 package hu.farago.ib.model.dto.order;
 
+import java.util.List;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.google.common.collect.Lists;
+import com.ib.client.CommissionReport;
 import com.ib.client.Contract;
 import com.ib.client.Execution;
 import com.ib.client.Order;
@@ -22,18 +26,30 @@ public class IBOrder {
 	private DateTime openDate;
 	private DateTime closeDate;
 	private Integer parentOrderId;
-	private Double pnl;
-	private String lastExecId;
-	private Execution lastExecution;
 
+	// sent by openOrder()
 	private Contract contract;
 	private Order order;
 	private OrderState orderState;
 	
+	// sent by orderStatus()	
 	private IBOrderStatus lastOrderStatus;
 
+	public class ExecutionAndCommission {
+		public int orderId;
+		public String execId;
+		public double avgPrice;
+		public double price;
+		public double shares;
+		public String time;
+		public int cumQty;
+		public double realizedPNL;
+	}
+	
+	// sent by execDetails() and commissionReport()
+	private List<ExecutionAndCommission> executions = Lists.newArrayList();
+	
 	public IBOrder() {
-		
 	}
 	
 	public IBOrder(int orderId, Contract contract, Order order,
@@ -103,30 +119,6 @@ public class IBOrder {
 		this.closeDate = closeDate;
 	}
 
-	public Double getPnl() {
-		return pnl;
-	}
-
-	public void setPnl(Double pnl) {
-		this.pnl = pnl;
-	}
-
-	public Execution getLastExecution() {
-		return lastExecution;
-	}
-
-	public void setLastExecution(Execution lastExecution) {
-		this.lastExecution = lastExecution;
-	}
-
-	public String getLastExecId() {
-		return lastExecId;
-	}
-	
-	public void setLastExecId(String lastExecId) {
-		this.lastExecId = lastExecId;
-	}
-	
 	public IBOrderStatus getLastOrderStatus() {
 		return lastOrderStatus;
 	}
@@ -135,6 +127,14 @@ public class IBOrder {
 		this.lastOrderStatus = lastOrderStatus;
 	}
 	
+	public List<ExecutionAndCommission> getExecutions() {
+		return executions;
+	}
+	
+	public void setExecutions(List<ExecutionAndCommission> executions) {
+		this.executions = executions;
+	}
+		
 	public Integer getParentOrderId() {
 		return parentOrderId;
 	}
