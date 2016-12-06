@@ -8,9 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.google.common.collect.Lists;
-import com.ib.client.CommissionReport;
 import com.ib.client.Contract;
-import com.ib.client.Execution;
 import com.ib.client.Order;
 import com.ib.client.OrderState;
 
@@ -35,19 +33,10 @@ public class IBOrder {
 	// sent by orderStatus()	
 	private IBOrderStatus lastOrderStatus;
 
-	public class ExecutionAndCommission {
-		public int orderId;
-		public String execId;
-		public double avgPrice;
-		public double price;
-		public double shares;
-		public String time;
-		public int cumQty;
-		public double realizedPNL;
-	}
-	
 	// sent by execDetails() and commissionReport()
 	private List<ExecutionAndCommission> executions = Lists.newArrayList();
+	// calculated by AccountingProfitCalculator
+	private Double calculatedAccountingProfit;
 	
 	public IBOrder() {
 	}
@@ -143,8 +132,29 @@ public class IBOrder {
 		this.parentOrderId = parentOrderId;
 	}
 	
+	public Double getCalculatedAccountingProfit() {
+		return calculatedAccountingProfit;
+	}
+	
+	public void setCalculatedAccountingProfit(Double calculatedAccountingProfit) {
+		this.calculatedAccountingProfit = calculatedAccountingProfit;
+	}
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+	
+	// inner classes
+	
+	public class ExecutionAndCommission {
+		public int orderId;
+		public String execId;
+		public double avgPrice;
+		public double price;
+		public double shares;
+		public String time;
+		public int cumQty;
+		public double realizedPNL;
 	}
 }

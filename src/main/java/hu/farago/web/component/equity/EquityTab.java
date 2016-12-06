@@ -48,6 +48,7 @@ public class EquityTab extends HorizontalLayout {
 		equityTable.addContainerProperty("Close Date", DateTime.class, null);
 		equityTable.addContainerProperty("Profit and Loss", Double.class, 0.0);
 		equityTable.addContainerProperty("Status", String.class, null);
+		equityTable.addContainerProperty("Accounting P&L", Double.class, null);
 		
 		equityTable.setSizeFull();
 		equityChart.setSizeFull();
@@ -59,7 +60,7 @@ public class EquityTab extends HorizontalLayout {
 	private void buildTreeFromEquityOfOrderList(List<EquityOfOrder> list) {
 		for (EquityOfOrder eoo : list) {
 			equityTable.addItem(new Object[]{eoo.orderId, eoo.ticker, eoo.action, 
-					eoo.openDate, eoo.closeDate, eoo.profitAndLoss, eoo.status}, eoo.orderId);
+					eoo.openDate, eoo.closeDate, eoo.profitAndLoss, eoo.status, eoo.accountingPNL}, eoo.orderId);
 			if (eoo.parentOrderId != null && eoo.parentOrderId != 0) {
 				equityTable.setParent(eoo.orderId, eoo.parentOrderId);
 			}

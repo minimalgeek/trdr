@@ -30,6 +30,8 @@ public class IBOrderStatus {
 		this.whyHeld = whyHeld;
 	}
 
+	public IBOrderStatus() {}
+
 	public int getOrderId() {
 		return orderId;
 	}

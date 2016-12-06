@@ -25,10 +25,13 @@ import hu.farago.ib.model.dto.order.IBOrder.ExecutionAndCommission;
 import hu.farago.ib.model.dto.order.IBOrderStatus;
 import hu.farago.ib.model.dto.order.QIBOrder;
 import hu.farago.ib.model.dto.order.QIBOrder_ExecutionAndCommission;
+import hu.farago.ib.order.calculator.AccountingProfitCalculator;
 
 @Component
 public class IBOrderSaver {
 
+	private static final String CANCELLED = "Cancelled";
+	private static final String API_CANCELED = "ApiCanceled";
 	private static final String FILLED = "Filled";
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -38,8 +41,11 @@ public class IBOrderSaver {
 
 	@Autowired
 	private IBOrderDAO ooDAO;
+	
+	@Autowired
+	private AccountingProfitCalculator profitCalculator;
 
-	private static final List<String> CLOSE_ORDER_STATUS = Lists.newArrayList("ApiCanceled", "Cancelled", FILLED);
+	private static final List<String> CLOSE_ORDER_STATUS = Lists.newArrayList(API_CANCELED, CANCELLED, FILLED);
 	
 	@PostConstruct
 	public void init() {
@@ -85,6 +91,7 @@ public class IBOrderSaver {
 		if (CLOSE_ORDER_STATUS.contains(status)) {
 			LOGGER.info("Closing IBOrder: " + older.getOrderId());
 			older.setCloseDate(DateTime.now());
+			profitCalculator.calculateProfit(older);
 		}
 	}
 	

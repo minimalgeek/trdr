@@ -46,7 +46,8 @@ public class EquityService {
 			EquityOfOrder e = new EquityOfOrder(ibOrder.getOrderId(), ibOrder.getContract().symbol(),
 					ibOrder.getOrder().action().name(), ibOrder.getOpenDate(), ibOrder.getCloseDate(), pnlSum,
 					ibOrder.getParentOrderId(),
-					ibOrder.getLastOrderStatus() != null ? ibOrder.getLastOrderStatus().getStatus() : "Unknown");
+					ibOrder.getLastOrderStatus() != null ? ibOrder.getLastOrderStatus().getStatus() : "Unknown", 
+					ibOrder.getCalculatedAccountingProfit());
 			ret.add(e);
 		}
 

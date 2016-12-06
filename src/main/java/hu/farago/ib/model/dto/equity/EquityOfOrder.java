@@ -12,9 +12,10 @@ public class EquityOfOrder {
 	public Double profitAndLoss;
 	public Integer parentOrderId;
 	public String status;
+	public Double accountingPNL;
 
 	public EquityOfOrder(Integer orderId, String ticker, String action, DateTime openDate,
-			DateTime closeDate, Double profitAndLoss, Integer parentOrderId, String status) {
+			DateTime closeDate, Double profitAndLoss, Integer parentOrderId, String status, Double accountingPNL) {
 		this.orderId = orderId;
 		this.ticker = ticker;
 		this.action = action;
@@ -23,6 +24,7 @@ public class EquityOfOrder {
 		this.profitAndLoss = profitAndLoss != null && profitAndLoss != Double.MAX_VALUE ? profitAndLoss : 0.0;
 		this.parentOrderId = parentOrderId;
 		this.status = status;
+		this.accountingPNL = accountingPNL;
 	}
 	
 }
