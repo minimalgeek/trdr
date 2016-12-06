@@ -1,11 +1,5 @@
 package hu.farago.ib;
 
-import hu.farago.ib.model.dto.IBError;
-import hu.farago.ib.model.dto.market.StockPrices;
-import hu.farago.ib.model.dto.order.IBOrder;
-import hu.farago.ib.model.dto.order.IBOrderStatus;
-import hu.farago.ib.order.strategy.enums.Strategy;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -34,6 +29,12 @@ import com.ib.client.Execution;
 import com.ib.client.ExecutionFilter;
 import com.ib.client.Order;
 import com.ib.client.OrderState;
+
+import hu.farago.ib.model.dto.IBError;
+import hu.farago.ib.model.dto.market.StockPrices;
+import hu.farago.ib.model.dto.order.IBOrder;
+import hu.farago.ib.model.dto.order.IBOrderStatus;
+import hu.farago.ib.order.strategy.enums.Strategy;
 
 @Component
 public class EWrapperImpl implements EWrapper {
@@ -60,6 +61,7 @@ public class EWrapperImpl implements EWrapper {
 
 	@PostConstruct
 	public void initConnection() {
+		LOGGER.info("initConnection");
 		readerSignal = new EJavaSignal();
 		clientSocket = new EClientSocket(this, readerSignal);
 		clientSocket.eConnect(host, port, 1);
@@ -72,12 +74,22 @@ public class EWrapperImpl implements EWrapper {
 	public void reInitConnection() {
 		LOGGER.info("reInitConnection");
 		
-		clientSocket.eDisconnect();
 		Thread moribund = thread;
         thread = null;
         moribund.interrupt();
 		
 		initConnection();
+	}
+	
+	@Scheduled(fixedRate = 60000, initialDelay = 60000)
+	private void scheduledReInit() {
+		if (clientSocket.isConnected()) {
+			LOGGER.info("Already connected, no need to reinitialize connection");
+			return;
+		}
+		LOGGER.info("Reinitialize connection!");
+		
+		reInitConnection();
 	}
 
 	public EReaderSignal getReaderSignal() {
