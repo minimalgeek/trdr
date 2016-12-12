@@ -1,4 +1,4 @@
-package hu.farago.ib.order;
+package hu.farago.ib.order.strategy;
 
 import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;

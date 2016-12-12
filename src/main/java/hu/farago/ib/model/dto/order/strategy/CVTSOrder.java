@@ -1,5 +1,7 @@
 package hu.farago.ib.model.dto.order.strategy;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.order.strategy.enums.Strategy;
@@ -47,6 +49,11 @@ public class CVTSOrder extends AbstractStrategyOrder {
 
 	public void setHistoricalVolatility(double historicalVolatility) {
 		this.historicalVolatility = historicalVolatility;
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 
 	@Override

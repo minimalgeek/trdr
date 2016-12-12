@@ -1,6 +1,7 @@
 package hu.farago.ib.service;
 
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -19,10 +20,12 @@ import hu.farago.ib.model.dao.IBOrderDAO;
 import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
+import hu.farago.ib.model.dto.order.AbstractStrategyOrderQueue;
 import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
-import hu.farago.ib.order.IOrderAssembler;
-import hu.farago.ib.order.strategy.CVTSAssemblerSimple;
+import hu.farago.ib.order.AbstractFactoryForOrder;
+import hu.farago.ib.order.strategy.IOrderAssembler;
+import hu.farago.ib.order.strategy.cvts.CVTSFactory;
 import hu.farago.ib.order.strategy.enums.Strategy;
 
 @Component
@@ -41,10 +44,10 @@ public class OrderService {
 
 	@Autowired
 	private IBOrderDAO ibOrderDAO;
-
-	// Strategy assemblers
+	
+	// strategy factories
 	@Autowired
-	private CVTSAssemblerSimple cvtsAssembler;
+	private CVTSFactory cvtsFactory;
 
 	public void saveOrModifyOcp(OrderCommonProperties ocp) {
 		OrderCommonProperties oldOcp = ocpDAO.findOne(ocp.id);
@@ -59,7 +62,14 @@ public class OrderService {
 	}
 
 	public <T extends AbstractStrategyOrder> void placeOrder(T so) {
+		
+		if (!candidateStartDateIsYesterday(so)) {
+			eventBus.post(new IBError("Start date is not yesterday for the '" + so.getTicker() + "' order"));
+			return;
+		}
+		
 		Strategy strat = so.strategy();
+		AbstractFactoryForOrder<T> factory = getFactory(strat);
 
 		OrderCommonProperties ocp = loadOcp(strat);
 		if (ocp == null) {
@@ -68,35 +78,35 @@ public class OrderService {
 			return;
 		}
 
-		// 0 means root order
-		List<IBOrder> openedOrders = ibOrderDAO
-				.findByStrategyAndParentOrderIdAndCloseDateIsNull(strat, 0);
-
-		if (openedOrders.size() >= (int)ObjectUtils.defaultIfNull(ocp.maxOrders, 0)) {
-			eventBus.post(new IBError(strat.name()
-					+ " strategy's max opened position limit exceeded: "
-					+ ocp.maxOrders));
-			return;
-		}
-
-		IOrderAssembler<T> orderAssembler = getAssembler(strat);
-
+		IOrderAssembler<T> orderAssembler = factory.getAssembler();
+		AbstractStrategyOrderQueue<T> queue = factory.getQueue();
 		Contract contract = orderAssembler.buildContract(so, ocp);
+
+		queue.addCallback(new Function<Order, Void>() {
+			@Override
+			public Void apply(Order order) {
+				// 0 means root order
+				List<IBOrder> openedOrders = 
+						ibOrderDAO.findByStrategyAndParentOrderIdAndCloseDateIsNull(strat, 0);
+				
+				if (openedOrders.size() < (int)ObjectUtils.defaultIfNull(ocp.maxOrders, 0)) {
+					wrapper.placeOrder(order, contract, strat);
+				}
+				
+				return null;
+			}
+		});
+		
 		for (Order order : orderAssembler.buildOrders(so, ocp)) {
-			wrapper.placeOrder(order, contract, strat);
+			queue.addOrder(order, contract);
 		}
 
 		wrapper.reqIds();
 	}
 
-	public <T extends AbstractStrategyOrder> void placeOrders(
-			List<T> convertedItems) {
+	public <T extends AbstractStrategyOrder> void placeOrders(List<T> convertedItems) {
 		for (T order : convertedItems) {
-			if (candidateStartDateIsYesterday(order)) {
-				placeOrder(order);
-			} else {
-				eventBus.post(new IBError("Start date is not yesterday for the '" + order.getTicker() + "' order"));
-			}
+			placeOrder(order);
 		}
 	}
 
@@ -106,11 +116,11 @@ public class OrderService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends AbstractStrategyOrder> IOrderAssembler<T> getAssembler(
+	private <T extends AbstractStrategyOrder> AbstractFactoryForOrder<T> getFactory(
 			Strategy strat) {
 		switch (strat) {
 		case CVTS:
-			return (IOrderAssembler<T>) cvtsAssembler;
+			return (AbstractFactoryForOrder<T>) cvtsFactory;
 		default:
 			return null;
 		}

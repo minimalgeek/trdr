@@ -1,4 +1,4 @@
-package hu.farago.ib.order.strategy;
+package hu.farago.ib.order.strategy.cvts;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -23,8 +23,8 @@ import de.jollyday.HolidayManager;
 import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
-import hu.farago.ib.order.IOrderAssembler;
 import hu.farago.ib.order.OrderUtils;
+import hu.farago.ib.order.strategy.IOrderAssembler;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.utils.Formatters;
 

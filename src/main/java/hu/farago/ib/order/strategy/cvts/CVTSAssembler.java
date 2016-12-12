@@ -1,16 +1,4 @@
-package hu.farago.ib.order.strategy;
-
-import hu.farago.ib.EWrapperImpl;
-import hu.farago.ib.model.dao.IBOrderDAO;
-import hu.farago.ib.model.dto.order.IBOrder;
-import hu.farago.ib.model.dto.order.IBOrderStatus;
-import hu.farago.ib.model.dto.order.OrderCommonProperties;
-import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
-import hu.farago.ib.order.IOrderAssembler;
-import hu.farago.ib.order.OrderUtils;
-import hu.farago.ib.order.strategy.enums.ActionType;
-import hu.farago.ib.order.strategy.enums.Strategy;
-import hu.farago.ib.utils.Formatters;
+package hu.farago.ib.order.strategy.cvts;
 
 import java.time.DayOfWeek;
 import java.util.ArrayList;
@@ -22,6 +10,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -37,8 +26,20 @@ import com.ib.client.Types.TimeInForce;
 
 import de.jollyday.HolidayCalendar;
 import de.jollyday.HolidayManager;
+import hu.farago.ib.EWrapperImpl;
+import hu.farago.ib.model.dao.IBOrderDAO;
+import hu.farago.ib.model.dto.order.IBOrder;
+import hu.farago.ib.model.dto.order.IBOrderStatus;
+import hu.farago.ib.model.dto.order.OrderCommonProperties;
+import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
+import hu.farago.ib.order.OrderUtils;
+import hu.farago.ib.order.strategy.IOrderAssembler;
+import hu.farago.ib.order.strategy.enums.ActionType;
+import hu.farago.ib.order.strategy.enums.Strategy;
+import hu.farago.ib.utils.Formatters;
 
 @Component
+@Qualifier("cvtsAssembler")
 public class CVTSAssembler implements IOrderAssembler<CVTSOrder> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());

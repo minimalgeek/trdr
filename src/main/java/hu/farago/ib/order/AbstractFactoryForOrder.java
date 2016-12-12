@@ -1,0 +1,12 @@
+package hu.farago.ib.order;
+
+import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
+import hu.farago.ib.model.dto.order.AbstractStrategyOrderQueue;
+import hu.farago.ib.order.strategy.IOrderAssembler;
+
+public abstract class AbstractFactoryForOrder<T extends AbstractStrategyOrder> {
+
+	public abstract IOrderAssembler<T> getAssembler();
+	public abstract AbstractStrategyOrderQueue<T> getQueue();
+	
+}

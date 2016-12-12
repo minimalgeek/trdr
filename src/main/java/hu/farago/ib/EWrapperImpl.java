@@ -1,5 +1,6 @@
 package hu.farago.ib;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ import com.ib.client.Execution;
 import com.ib.client.ExecutionFilter;
 import com.ib.client.Order;
 import com.ib.client.OrderState;
+import com.ib.client.TagValue;
 
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.market.StockPrices;
@@ -45,11 +47,11 @@ public class EWrapperImpl implements EWrapper {
 	private EClientSocket clientSocket;
 	private Thread thread;
 	
-	protected int currentOrderId = -1;
-	protected int currentTickerId = -1;
+	protected volatile int currentOrderId = -1;
+	protected volatile int currentTickerId = -1;
 	private List<StockPrices.OhlcData> ohlcList;
 	private Map<Integer, Strategy> orderIdToStrategyMap = Maps.newConcurrentMap();
-	private Map<Integer, Integer> shouldBindParentId = Maps.newConcurrentMap();
+	private Map<Integer, Integer> orderIdToParentIdMap = Maps.newConcurrentMap();
 	
 	@Value("${trdr.tws.host}")
 	private String host;
@@ -130,7 +132,7 @@ public class EWrapperImpl implements EWrapper {
 		getClientSocket().placeOrder(order.orderId(), contract,
 				order);
 		orderIdToStrategyMap.put(order.orderId(), strat);
-		shouldBindParentId.put(order.orderId(), parentId);
+		orderIdToParentIdMap.put(order.orderId(), parentId);
 	}
 	
 	public void reqExecutions() {
@@ -146,6 +148,18 @@ public class EWrapperImpl implements EWrapper {
 	public void reqAllOpenOrders() {
 		LOGGER.info("reqAllOpenOrders");
 		clientSocket.reqAllOpenOrders();
+	}
+	
+	public int reqMarketData(Contract contract) {
+		LOGGER.info("reqMarketData");
+		int tickerId = nextTickerId();
+		clientSocket.reqMktData(tickerId, contract, "233,236,258", false, Collections.<TagValue>emptyList());
+		return tickerId;
+	}
+	
+	public void cancelMktData(Integer tickerId) {
+		LOGGER.info("cancelMktData");
+		clientSocket.cancelMktData(tickerId);
 	}
 	
 	// end of functions to call from services
@@ -318,7 +332,7 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void openOrder(int arg0, Contract arg1, Order arg2, OrderState arg3) {
-		eventBus.post(new IBOrder(arg0, arg1, arg2, arg3, orderIdToStrategyMap.get(arg0), shouldBindParentId.get(arg0)));
+		eventBus.post(new IBOrder(arg0, arg1, arg2, arg3, orderIdToStrategyMap.get(arg0), orderIdToParentIdMap.get(arg0)));
 	}
 
 	@Override
