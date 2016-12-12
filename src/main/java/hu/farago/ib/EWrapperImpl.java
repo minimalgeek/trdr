@@ -33,7 +33,9 @@ import com.ib.client.OrderState;
 import com.ib.client.TagValue;
 
 import hu.farago.ib.model.dto.IBError;
+import hu.farago.ib.model.dto.market.RealTimeBar;
 import hu.farago.ib.model.dto.market.StockPrices;
+import hu.farago.ib.model.dto.market.TickPrice;
 import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.ib.model.dto.order.IBOrderStatus;
 import hu.farago.ib.order.strategy.enums.Strategy;
@@ -150,8 +152,8 @@ public class EWrapperImpl implements EWrapper {
 		clientSocket.reqAllOpenOrders();
 	}
 	
-	public int reqMarketData(Contract contract) {
-		LOGGER.info("reqMarketData");
+	public int reqMktData(Contract contract) {
+		LOGGER.info("reqMktData");
 		int tickerId = nextTickerId();
 		clientSocket.reqMktData(tickerId, contract, "233,236,258", false, Collections.<TagValue>emptyList());
 		return tickerId;
@@ -377,8 +379,7 @@ public class EWrapperImpl implements EWrapper {
 	@Override
 	public void realtimeBar(int arg0, long arg1, double arg2, double arg3,
 			double arg4, double arg5, long arg6, double arg7, int arg8) {
-		// TODO Auto-generated method stub
-
+		eventBus.post(new RealTimeBar(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
 	}
 
 	@Override
@@ -443,8 +444,7 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void tickPrice(int arg0, int arg1, double arg2, int arg3) {
-		// TODO Auto-generated method stub
-
+		eventBus.post(new TickPrice(arg0, arg1, arg2, arg3));
 	}
 
 	@Override

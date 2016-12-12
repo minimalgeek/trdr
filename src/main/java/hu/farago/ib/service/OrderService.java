@@ -44,7 +44,7 @@ public class OrderService {
 
 	@Autowired
 	private IBOrderDAO ibOrderDAO;
-	
+
 	// strategy factories
 	@Autowired
 	private CVTSFactory cvtsFactory;
@@ -62,19 +62,18 @@ public class OrderService {
 	}
 
 	public <T extends AbstractStrategyOrder> void placeOrder(T so) {
-		
+
 		if (!candidateStartDateIsYesterday(so)) {
 			eventBus.post(new IBError("Start date is not yesterday for the '" + so.getTicker() + "' order"));
 			return;
 		}
-		
+
 		Strategy strat = so.strategy();
 		AbstractFactoryForOrder<T> factory = getFactory(strat);
 
 		OrderCommonProperties ocp = loadOcp(strat);
 		if (ocp == null) {
-			eventBus.post(new IBError(strat.name()
-					+ " strategy's common properties are empty"));
+			eventBus.post(new IBError(strat.name() + " strategy's common properties are empty"));
 			return;
 		}
 
@@ -82,24 +81,23 @@ public class OrderService {
 		AbstractStrategyOrderQueue<T> queue = factory.getQueue();
 		Contract contract = orderAssembler.buildContract(so, ocp);
 
-		queue.addCallback(new Function<Order, Void>() {
+		queue.addCallback(new Function<List<Order>, Void>() {
 			@Override
-			public Void apply(Order order) {
+			public Void apply(List<Order> orders) {
 				// 0 means root order
-				List<IBOrder> openedOrders = 
-						ibOrderDAO.findByStrategyAndParentOrderIdAndCloseDateIsNull(strat, 0);
-				
-				if (openedOrders.size() < (int)ObjectUtils.defaultIfNull(ocp.maxOrders, 0)) {
-					wrapper.placeOrder(order, contract, strat);
+				List<IBOrder> openedOrders = ibOrderDAO.findByStrategyAndParentOrderIdAndCloseDateIsNull(strat, 0);
+
+				if (openedOrders.size() < (int) ObjectUtils.defaultIfNull(ocp.maxOrders, 0)) {
+					for (Order order : orders) {
+						wrapper.placeOrder(order, contract, strat);
+					}
 				}
-				
+
 				return null;
 			}
 		});
-		
-		for (Order order : orderAssembler.buildOrders(so, ocp)) {
-			queue.addOrder(order, contract);
-		}
+
+		queue.addOrder(orderAssembler.buildOrders(so, ocp), contract);
 
 		wrapper.reqIds();
 	}
@@ -110,14 +108,12 @@ public class OrderService {
 		}
 	}
 
-	private <T extends AbstractStrategyOrder> boolean candidateStartDateIsYesterday(
-			T order) {
+	private <T extends AbstractStrategyOrder> boolean candidateStartDateIsYesterday(T order) {
 		return DateUtils.isSameDay(order.getStartDateTime().toDate(), DateTime.now().minusDays(1).toDate());
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends AbstractStrategyOrder> AbstractFactoryForOrder<T> getFactory(
-			Strategy strat) {
+	private <T extends AbstractStrategyOrder> AbstractFactoryForOrder<T> getFactory(Strategy strat) {
 		switch (strat) {
 		case CVTS:
 			return (AbstractFactoryForOrder<T>) cvtsFactory;
@@ -129,7 +125,7 @@ public class OrderService {
 	public void reqAllOpenOrders() {
 		wrapper.reqAllOpenOrders();
 	}
-	
+
 	public void reqExecutions() {
 		wrapper.reqExecutions();
 	}

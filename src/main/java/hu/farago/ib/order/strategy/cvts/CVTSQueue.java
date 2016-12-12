@@ -1,8 +1,11 @@
 package hu.farago.ib.order.strategy.cvts;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
@@ -14,7 +17,6 @@ import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dto.market.TickPrice;
 import hu.farago.ib.model.dto.order.AbstractStrategyOrderQueue;
 import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
-import hu.farago.ib.order.strategy.enums.ActionType;
 
 /**
  * Listens to price changes. According to that, it triggers the limit orders.
@@ -34,21 +36,27 @@ public class CVTSQueue extends AbstractStrategyOrderQueue<CVTSOrder> {
 	@Subscribe
 	private void consumePrice(TickPrice price) {
 		LOGGER.info("Tick price arrived. ID: " + price.tickerId + "; price: " + price.price); 
-		Order order = findByTickerId(price.tickerId);
-		if (order != null && callback != null) {
-			if (order.action() == Action.BUY && price.price >= order.lmtPrice()) {
+		List<Order> orders = findByTickerId(price.tickerId);
+		if (orders != null && callback != null) {
+			Order parent = orders.stream().filter((e) -> e.parentId() == 0).findFirst().get();
+			if (parent.action() == Action.BUY && price.price >= parent.lmtPrice()) {
 				LOGGER.info("Buy triggered");
-				applyCallbackAndRemoveOrders(price, order);
-			} else if (order.action() == Action.SELL && price.price <= order.lmtPrice()) {
+				applyCallbackAndRemoveOrders(price, orders);
+			} else if (parent.action() == Action.SELL && price.price <= parent.lmtPrice()) {
 				LOGGER.info("Sell triggered");
-				applyCallbackAndRemoveOrders(price, order);
+				applyCallbackAndRemoveOrders(price, orders);
 			}
 		}
 	}
 
-	private void applyCallbackAndRemoveOrders(TickPrice price, Order order) {
+	private void applyCallbackAndRemoveOrders(TickPrice price, List<Order> order) {
 		callback.apply(order);
-		Order removedOrder = removeByTickerId(price.tickerId);
+		List<Order> removedOrder = removeByTickerId(price.tickerId);
 		LOGGER.info("Removed order: " + removedOrder.toString());
+	}
+	
+	@Scheduled(cron="0 0 0 * * ?")
+	private void clearAllAtMidnight() {
+		removeAll();
 	}
 }

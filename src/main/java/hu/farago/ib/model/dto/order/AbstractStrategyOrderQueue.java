@@ -1,5 +1,6 @@
 package hu.farago.ib.model.dto.order;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -12,10 +13,10 @@ import hu.farago.ib.EWrapperImpl;
 
 public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder> {
 	
-	private Map<Integer, Order> tickerIdToOrderMap;
+	private Map<Integer, List<Order>> tickerIdToOrderMap;
 	protected EWrapperImpl eWrapper;
 	protected EventBus eventBus;
-	protected Function<Order, Void> callback;
+	protected Function<List<Order>, Void> callback;
 	
 	public AbstractStrategyOrderQueue(EventBus eventBus, EWrapperImpl eWrapper) {
 		this.eWrapper = eWrapper;
@@ -25,25 +26,28 @@ public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder
 		this.tickerIdToOrderMap = Maps.newConcurrentMap();
 	}
 	
-	public void addCallback(Function<Order, Void> callback) {
+	public void addCallback(Function<List<Order>, Void> callback) {
 		this.callback = callback;
 	}
 	
-	public void addOrder(Order order, Contract contract) {
-		int id = eWrapper.reqMarketData(contract);
+	public void addOrder(List<Order> order, Contract contract) {
+		int id = eWrapper.reqMktData(contract);
 		tickerIdToOrderMap.put(id, order);
 	}
 	
-	public Order findByTickerId(Integer tickerId) {
+	public List<Order> findByTickerId(Integer tickerId) {
 		return tickerIdToOrderMap.get(tickerId);
 	}
 	
-	public Order removeByTickerId(Integer tickerId) {
+	public List<Order> removeByTickerId(Integer tickerId) {
 		eWrapper.cancelMktData(tickerId);
 		return tickerIdToOrderMap.remove(tickerId);
 	}
 	
 	public void removeAll() {
+		for (Integer key : tickerIdToOrderMap.keySet()) {
+			removeByTickerId(key);
+		}
 		tickerIdToOrderMap.clear();
 	}
 
