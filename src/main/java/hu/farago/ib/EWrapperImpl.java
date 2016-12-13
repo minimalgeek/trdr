@@ -119,6 +119,10 @@ public class EWrapperImpl implements EWrapper {
 		currentTickerId++;
 		return currentTickerId;
 	}
+	
+	public void resetTickerId() {
+		this.currentTickerId = -1;
+	}
 
 	public void resetOhlcList() {
 		ohlcList = Lists.newArrayList();

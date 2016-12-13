@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import hu.farago.ib.model.dto.order.AbstractStrategyOrderQueue;
+import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
 import hu.farago.ib.order.AbstractFactoryForOrder;
 import hu.farago.ib.order.strategy.IOrderAssembler;
@@ -23,7 +24,8 @@ public class CVTSFactory extends AbstractFactoryForOrder<CVTSOrder> {
 	}
 
 	@Override
-	public AbstractStrategyOrderQueue<CVTSOrder> getQueue() {
+	public AbstractStrategyOrderQueue<CVTSOrder> getQueue(OrderCommonProperties ocp) {
+		queue.setOcp(ocp);
 		return queue;
 	}
 

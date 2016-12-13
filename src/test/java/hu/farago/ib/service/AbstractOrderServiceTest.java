@@ -7,6 +7,7 @@ import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.service.OrderService;
 
 import org.junit.Before;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.EventBus;
@@ -14,8 +15,9 @@ import com.ib.client.OrderType;
 import com.ib.client.Types.SecType;
 
 public abstract class AbstractOrderServiceTest<T extends AbstractStrategyOrder> extends AbstractRootTest {
-
+	
 	@Autowired
+    @InjectMocks
 	protected OrderService orderService;
 	@Autowired
 	protected OrderCommonPropertiesDAO ocpDAO;
@@ -47,6 +49,11 @@ public abstract class AbstractOrderServiceTest<T extends AbstractStrategyOrder> 
 		ocp.targetVolatility = 10.0;
 		ocp.faProfile = "Proba01";
 		ocp.barStop = 5;
+		
+		ocp.firstDayTarget = 2.5;
+		ocp.remainingDaysTarget = 1.5;
+		ocp.stopLossTarget = 10.0;
+		ocp.maxOrders = 20;
 		
 		orderService.saveOrModifyOcp(ocp);
 	}

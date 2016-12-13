@@ -1,5 +1,6 @@
 package hu.farago;
 
+import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,5 +15,9 @@ public class AbstractRootTest {
 
 	@Autowired
 	protected MockMvc mockMvc;
+	
+	public void testTest() {
+		Assert.assertTrue(true);
+	}
 	
 }
