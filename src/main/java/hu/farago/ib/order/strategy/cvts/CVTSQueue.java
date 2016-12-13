@@ -39,20 +39,14 @@ public class CVTSQueue extends AbstractStrategyOrderQueue<CVTSOrder> {
 		List<Order> orders = findByTickerId(price.tickerId);
 		if (orders != null && callback != null) {
 			Order parent = orders.stream().filter((e) -> e.parentId() == 0).findFirst().get();
-			if (parent.action() == Action.BUY && price.price >= parent.lmtPrice()) {
+			if (parent.action() == Action.BUY && price.price <= parent.lmtPrice()) {
 				LOGGER.info("Buy triggered");
 				applyCallbackAndRemoveOrders(price, orders);
-			} else if (parent.action() == Action.SELL && price.price <= parent.lmtPrice()) {
+			} else if (parent.action() == Action.SELL && price.price >= parent.lmtPrice()) {
 				LOGGER.info("Sell triggered");
 				applyCallbackAndRemoveOrders(price, orders);
 			}
 		}
-	}
-
-	private void applyCallbackAndRemoveOrders(TickPrice price, List<Order> order) {
-		callback.apply(order);
-		List<Order> removedOrder = removeByTickerId(price.tickerId);
-		LOGGER.info("Removed order: " + removedOrder.toString());
 	}
 	
 	@Scheduled(cron="0 0 0 * * ?")
