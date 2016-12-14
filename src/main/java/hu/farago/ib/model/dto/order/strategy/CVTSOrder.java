@@ -1,6 +1,10 @@
 package hu.farago.ib.model.dto.order.strategy;
 
+import java.math.BigInteger;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
 import hu.farago.ib.order.strategy.enums.ActionType;
@@ -12,12 +16,19 @@ import hu.farago.ib.order.strategy.enums.Strategy;
  * @author Balázs
  *
  */
+@Document(collection = "cvts_order")
 public class CVTSOrder extends AbstractStrategyOrder {
 
+	@Id
+	private BigInteger id;
+	
 	private ActionType action;
 	private double previousDayClosePrice;
 	private double limitPrice;
 	private double historicalVolatility;
+	
+	public CVTSOrder() {
+	}
 
 	public ActionType getAction() {
 		return action;
@@ -49,6 +60,14 @@ public class CVTSOrder extends AbstractStrategyOrder {
 
 	public void setHistoricalVolatility(double historicalVolatility) {
 		this.historicalVolatility = historicalVolatility;
+	}
+	
+	public BigInteger getId() {
+		return id;
+	}
+	
+	public void setId(BigInteger id) {
+		this.id = id;
 	}
 	
 	@Override

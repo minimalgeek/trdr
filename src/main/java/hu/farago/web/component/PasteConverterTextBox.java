@@ -56,5 +56,7 @@ public abstract class PasteConverterTextBox<T> extends TextArea {
 	public abstract T convertLine(String line);
 
 	public abstract void populate(List<T> items);
+	
+	public abstract void populate(GridWithActionList toGrid, List<T> items);
 
 }

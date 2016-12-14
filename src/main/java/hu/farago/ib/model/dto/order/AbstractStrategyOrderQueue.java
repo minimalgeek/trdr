@@ -54,6 +54,7 @@ public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder
 		for (Integer key : tickerIdToOrderMap.keySet()) {
 			removeByTickerId(key);
 		}
+		// not necessary, just in case we clear it :)
 		tickerIdToOrderMap.clear();
 	}
 

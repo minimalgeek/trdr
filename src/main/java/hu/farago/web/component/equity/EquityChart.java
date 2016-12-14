@@ -2,6 +2,7 @@ package hu.farago.web.component.equity;
 
 import java.util.List;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +20,6 @@ import com.vaadin.addon.charts.model.LayoutDirection;
 import com.vaadin.addon.charts.model.Legend;
 import com.vaadin.addon.charts.model.PlotOptionsColumn;
 import com.vaadin.addon.charts.model.PlotOptionsSpline;
-import com.vaadin.addon.charts.model.SeriesTooltip;
 import com.vaadin.addon.charts.model.Tooltip;
 import com.vaadin.addon.charts.model.VerticalAlign;
 import com.vaadin.addon.charts.model.XAxis;
@@ -28,7 +28,6 @@ import com.vaadin.addon.charts.model.ZoomType;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.addon.charts.model.style.Style;
 import com.vaadin.addon.charts.util.Util;
-import com.vaadin.shared.ui.colorpicker.Color;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
@@ -132,12 +131,13 @@ public class EquityChart extends VerticalLayout {
 		double sum = 0.0;
 		for (EquityOfOrder equity : equities) {
 			DateTime closeDate = equity.closeDate;
+			Double pnl = equity.accountingPNL == null ? 0.0 : equity.accountingPNL;
 			if (closeDate != null) {
-				DataSeriesItem columnItem = new DataSeriesItem(closeDate.toDate(), equity.profitAndLoss);
+				DataSeriesItem columnItem = new DataSeriesItem(closeDate.toDate(), pnl);
 				columnItem.setName(equity.ticker);
 				series.add(columnItem);
 
-				sum += equity.profitAndLoss;
+				sum += pnl;
 				DataSeriesItem lineItem = new DataSeriesItem(closeDate.toDate(), sum);
 				lineItem.setName(equity.ticker);
 				series2.add(lineItem);

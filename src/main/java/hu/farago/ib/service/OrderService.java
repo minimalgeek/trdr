@@ -72,6 +72,8 @@ public class OrderService {
 		IOrderAssembler<T> orderAssembler = factory.getAssembler();
 		AbstractStrategyOrderQueue<T> queue = factory.getQueue(ocp);
 		
+		// save it, build contract from it, and put orders into a queue for further processing
+		factory.getRepository().save(so);
 		Contract contract = orderAssembler.buildContract(so, ocp);
 		queue.addOrder(orderAssembler.buildOrders(so, ocp), contract);
 
@@ -104,5 +106,10 @@ public class OrderService {
 
 	public void reqExecutions() {
 		wrapper.reqExecutions();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractStrategyOrder> List<T> listOrders(Strategy strat) {
+		return (List<T>) getFactory(strat).getRepository().findAll();
 	}
 }

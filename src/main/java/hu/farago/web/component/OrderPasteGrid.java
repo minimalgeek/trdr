@@ -1,8 +1,6 @@
 package hu.farago.web.component;
 
-import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
-import hu.farago.ib.order.strategy.enums.Strategy;
-import hu.farago.ib.service.OrderService;
+import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -12,6 +10,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
+import hu.farago.ib.order.strategy.enums.Strategy;
+import hu.farago.ib.service.OrderService;
 
 public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends VerticalLayout {
 
@@ -30,6 +32,9 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 	protected OrderCommonPropertiesEditor ocpe;
 	protected abstract PasteConverterTextBox<T> createConverter();
 	protected abstract Strategy createStrategy();
+	
+	protected GridWithActionList oldOrderGrid;
+	protected Button queryOldOrders;
 	
 	public OrderPasteGrid(OrderCommonPropertiesEditor ocpe, OrderService os) {
 		this.ocpe = ocpe;
@@ -59,7 +64,14 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 			}
 		});
 
-		addComponents(converter, grid);
+		this.queryOldOrders = new Button("Show old orders", FontAwesome.AUTOMOBILE);
+		this.oldOrderGrid = new GridWithActionList(queryOldOrders);
+		this.queryOldOrders.addClickListener((e) -> {
+			 List<T> list = os.listOrders(this.strategy);
+			 this.converter.populate(oldOrderGrid, list);
+		});
+		
+		addComponents(converter, grid, oldOrderGrid);
 		setupOrderCommonPropertiesEditor();
 	}
 

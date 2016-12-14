@@ -1,14 +1,5 @@
 package hu.farago.web.component.order;
 
-import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
-import hu.farago.ib.order.strategy.enums.ActionType;
-import hu.farago.ib.order.strategy.enums.Strategy;
-import hu.farago.ib.service.OrderService;
-import hu.farago.web.component.OrderCommonPropertiesEditor;
-import hu.farago.web.component.OrderPasteGrid;
-import hu.farago.web.component.PasteConverterTextBox;
-import hu.farago.web.utils.Formatters;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.Notification;
+
+import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
+import hu.farago.ib.order.strategy.enums.ActionType;
+import hu.farago.ib.order.strategy.enums.Strategy;
+import hu.farago.ib.service.OrderService;
+import hu.farago.web.component.GridWithActionList;
+import hu.farago.web.component.OrderCommonPropertiesEditor;
+import hu.farago.web.component.OrderPasteGrid;
+import hu.farago.web.component.PasteConverterTextBox;
+import hu.farago.web.utils.Formatters;
 
 @SpringComponent
 @UIScope
@@ -56,8 +58,15 @@ public class CVTSPasteGrid extends OrderPasteGrid<CVTSOrder> {
 
 			@Override
 			public void populate(List<CVTSOrder> items) {
-				grid.getGrid().setContainerDataSource(new BeanItemContainer<CVTSOrder>(
+				populate(grid, items);
+			}
+			
+			@Override
+			public void populate(GridWithActionList toGrid, List<CVTSOrder> items) {
+				toGrid.getGrid().setContainerDataSource(new BeanItemContainer<CVTSOrder>(
 						CVTSOrder.class, items));
+				Grid.Column column = toGrid.getGrid().getColumn("id");
+				column.setHidden(true);
 			}
 			
 		};
