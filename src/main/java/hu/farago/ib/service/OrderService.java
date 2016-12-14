@@ -22,6 +22,7 @@ import hu.farago.ib.order.AbstractFactoryForOrder;
 import hu.farago.ib.order.strategy.IOrderAssembler;
 import hu.farago.ib.order.strategy.cvts.CVTSFactory;
 import hu.farago.ib.order.strategy.enums.Strategy;
+import hu.farago.ib.utils.Holidays;
 
 @Component
 public class OrderService {
@@ -36,6 +37,9 @@ public class OrderService {
 
 	@Autowired
 	private OrderCommonPropertiesDAO ocpDAO;
+	
+	@Autowired
+	private Holidays holidays;
 
 	// strategy factories
 	@Autowired
@@ -55,8 +59,8 @@ public class OrderService {
 
 	public <T extends AbstractStrategyOrder> void placeOrder(T so) {
 
-		if (!candidateStartDateIsYesterday(so)) {
-			eventBus.post(new IBError("Start date is not yesterday for the '" + so.getTicker() + "' order"));
+		if (!candidateStartDateIsPreviousTradeDay(so)) {
+			eventBus.post(new IBError("Start date is not the previous trading day for the '" + so.getTicker() + "' order"));
 			return;
 		}
 
@@ -86,8 +90,8 @@ public class OrderService {
 		}
 	}
 
-	private <T extends AbstractStrategyOrder> boolean candidateStartDateIsYesterday(T order) {
-		return DateUtils.isSameDay(order.getStartDateTime().toDate(), DateTime.now().minusDays(1).toDate());
+	private <T extends AbstractStrategyOrder> boolean candidateStartDateIsPreviousTradeDay(T order) {
+		return DateUtils.isSameDay(order.getStartDateTime().toDate(), holidays.previousTradeDay(DateTime.now()).toDate());
 	}
 
 	@SuppressWarnings("unchecked")

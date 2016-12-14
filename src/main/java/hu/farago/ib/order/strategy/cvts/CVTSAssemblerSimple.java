@@ -1,6 +1,5 @@
 package hu.farago.ib.order.strategy.cvts;
 
-import java.time.DayOfWeek;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -18,8 +17,6 @@ import com.ib.client.OrderType;
 import com.ib.client.TimeCondition;
 import com.ib.client.Types.TimeInForce;
 
-import de.jollyday.HolidayCalendar;
-import de.jollyday.HolidayManager;
 import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
@@ -27,6 +24,7 @@ import hu.farago.ib.order.OrderUtils;
 import hu.farago.ib.order.strategy.IOrderAssembler;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.utils.Formatters;
+import hu.farago.ib.utils.Holidays;
 
 @Component
 public class CVTSAssemblerSimple implements IOrderAssembler<CVTSOrder> {
@@ -45,12 +43,8 @@ public class CVTSAssemblerSimple implements IOrderAssembler<CVTSOrder> {
 	@Autowired
 	private EWrapperImpl eWrapper;
 	
-	@SuppressWarnings("deprecation")
-	private HolidayManager holidayManagerNYSE = HolidayManager
-			.getInstance(HolidayCalendar.NYSE);
-	@SuppressWarnings("deprecation")
-	private HolidayManager holidayManagerUS = HolidayManager
-			.getInstance(HolidayCalendar.UNITED_STATES);
+	@Autowired
+	private Holidays holidays;
 
 	@Override
 	public Contract buildContract(CVTSOrder so, OrderCommonProperties ocp) {
@@ -125,13 +119,13 @@ public class CVTSAssemblerSimple implements IOrderAssembler<CVTSOrder> {
 		int nrOfRunningDays = 0;
 
 		while (nrOfRunningDays < ocp.barStop - 1) {
-			if (isHolidayOrWeekend(startDT)) {
+			if (holidays.isHolidayOrWeekend(startDT)) {
 				startDT = startDT.plusDays(1);
 				endDT = startDT;
 				continue;
 			}
 			endDT = endDT.plusDays(1);
-			if (isHolidayOrWeekend(endDT)) {
+			if (holidays.isHolidayOrWeekend(endDT)) {
 				continue;
 			}
 
@@ -192,10 +186,5 @@ public class CVTSAssemblerSimple implements IOrderAssembler<CVTSOrder> {
 		return timeCondition;
 	}
 
-	private boolean isHolidayOrWeekend(DateTime dateTime) {
-		return holidayManagerNYSE.isHoliday(dateTime.toGregorianCalendar())
-				|| holidayManagerUS.isHoliday(dateTime.toGregorianCalendar())
-				|| dateTime.getDayOfWeek() == DayOfWeek.SATURDAY.getValue()
-				|| dateTime.getDayOfWeek() == DayOfWeek.SUNDAY.getValue();
-	}
+	
 }
