@@ -31,7 +31,9 @@ import com.ib.client.ExecutionFilter;
 import com.ib.client.Order;
 import com.ib.client.OrderState;
 import com.ib.client.TagValue;
+import com.ib.client.TickType;
 
+import hu.farago.ib.model.dao.IBOrderDAO;
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.market.RealTimeBar;
 import hu.farago.ib.model.dto.market.StockPrices;
@@ -48,13 +50,13 @@ public class EWrapperImpl implements EWrapper {
 	private EReaderSignal readerSignal;
 	private EClientSocket clientSocket;
 	private Thread thread;
-	
+
 	protected volatile int currentOrderId = -1;
 	protected volatile int currentTickerId = -1;
 	private List<StockPrices.OhlcData> ohlcList;
 	private Map<Integer, Strategy> orderIdToStrategyMap = Maps.newConcurrentMap();
 	private Map<Integer, Integer> orderIdToParentIdMap = Maps.newConcurrentMap();
-	
+
 	@Value("${trdr.tws.host}")
 	private String host;
 	@Value("${trdr.tws.port}")
@@ -63,6 +65,9 @@ public class EWrapperImpl implements EWrapper {
 	@Autowired
 	private EventBus eventBus;
 
+	@Autowired
+	private IBOrderDAO ibOrderDAO;
+
 	@PostConstruct
 	public void initConnection() {
 		LOGGER.info("initConnection");
@@ -70,21 +75,20 @@ public class EWrapperImpl implements EWrapper {
 		clientSocket = new EClientSocket(this, readerSignal);
 		clientSocket.eConnect(host, port, 1);
 
-		thread = new Thread(new MessageReceiver(clientSocket,
-				readerSignal, eventBus));
+		thread = new Thread(new MessageReceiver(clientSocket, readerSignal, eventBus));
 		thread.start();
 	}
-	
+
 	public void reInitConnection() {
 		LOGGER.info("reInitConnection");
-		
+
 		Thread moribund = thread;
-        thread = null;
-        moribund.interrupt();
-		
+		thread = null;
+		moribund.interrupt();
+
 		initConnection();
 	}
-	
+
 	@Scheduled(fixedRate = 60000, initialDelay = 60000)
 	private void scheduledReInit() {
 		if (clientSocket.isConnected()) {
@@ -92,7 +96,7 @@ public class EWrapperImpl implements EWrapper {
 			return;
 		}
 		LOGGER.info("Reinitialize connection!");
-		
+
 		reInitConnection();
 	}
 
@@ -109,7 +113,7 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	// functions to call from services
-	
+
 	public int nextOrderId() {
 		currentOrderId++;
 		return currentOrderId;
@@ -119,7 +123,7 @@ public class EWrapperImpl implements EWrapper {
 		currentTickerId++;
 		return currentTickerId;
 	}
-	
+
 	public void resetTickerId() {
 		this.currentTickerId = -1;
 	}
@@ -129,45 +133,43 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	public void placeOrder(Order order, Contract contract, Strategy strat) {
-		getClientSocket().placeOrder(order.orderId(), contract,
-				order);
+		getClientSocket().placeOrder(order.orderId(), contract, order);
 		orderIdToStrategyMap.put(order.orderId(), strat);
 	}
-	
+
 	public void placeOrderWithParentId(Order order, Contract contract, Strategy strat, int parentId) {
-		getClientSocket().placeOrder(order.orderId(), contract,
-				order);
+		getClientSocket().placeOrder(order.orderId(), contract, order);
 		orderIdToStrategyMap.put(order.orderId(), strat);
 		orderIdToParentIdMap.put(order.orderId(), parentId);
 	}
-	
+
 	public void reqExecutions() {
 		LOGGER.info("reqExecutions");
 		clientSocket.reqExecutions(0, new ExecutionFilter());
 	}
-	
+
 	public void reqIds() {
 		LOGGER.info("reqIds");
 		clientSocket.reqIds(0);
 	}
-	
+
 	public void reqAllOpenOrders() {
 		LOGGER.info("reqAllOpenOrders");
 		clientSocket.reqAllOpenOrders();
 	}
-	
+
 	public int reqMktData(Contract contract) {
 		LOGGER.info("reqMktData");
 		int tickerId = nextTickerId();
-		clientSocket.reqMktData(tickerId, contract, "233,236,258", false, Collections.<TagValue>emptyList());
+		clientSocket.reqMktData(tickerId, contract, "233", false, Collections.<TagValue>emptyList());
 		return tickerId;
 	}
-	
+
 	public void cancelMktData(Integer tickerId) {
 		LOGGER.info("cancelMktData");
 		clientSocket.cancelMktData(tickerId);
 	}
-	
+
 	// end of functions to call from services
 
 	@Override
@@ -177,8 +179,7 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void accountSummary(int arg0, String arg1, String arg2, String arg3,
-			String arg4) {
+	public void accountSummary(int arg0, String arg1, String arg2, String arg3, String arg4) {
 		// TODO Auto-generated method stub
 
 	}
@@ -190,8 +191,7 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void accountUpdateMulti(int arg0, String arg1, String arg2,
-			String arg3, String arg4, String arg5) {
+	public void accountUpdateMulti(int arg0, String arg1, String arg2, String arg3, String arg4, String arg5) {
 		// TODO Auto-generated method stub
 
 	}
@@ -301,12 +301,10 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void historicalData(int arg0, String arg1, double arg2, double arg3,
-			double arg4, double arg5, int arg6, int arg7, double arg8,
-			boolean arg9) {
+	public void historicalData(int arg0, String arg1, double arg2, double arg3, double arg4, double arg5, int arg6,
+			int arg7, double arg8, boolean arg9) {
 		LOGGER.debug("historicalData response");
-		StockPrices.OhlcData data = new StockPrices.OhlcData(
-				NumberUtils.toLong(arg1), arg2, arg3, arg4, arg5);
+		StockPrices.OhlcData data = new StockPrices.OhlcData(NumberUtils.toLong(arg1), arg2, arg3, arg4, arg5);
 		if (data.getOpen() == -1.0) {
 			eventBus.post(ohlcList);
 			resetOhlcList();
@@ -338,15 +336,26 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void openOrder(int arg0, Contract arg1, Order arg2, OrderState arg3) {
-		eventBus.post(new IBOrder(arg0, arg1, arg2, arg3, orderIdToStrategyMap.get(arg0), orderIdToParentIdMap.get(arg0)));
+		eventBus.post(
+				new IBOrder(arg0, arg1, arg2, arg3, orderIdToStrategyMap.get(arg0), orderIdToParentIdMap.get(arg0)));
 	}
 
 	@Override
-	public void orderStatus(int orderId, String status, double filled,
-            double remaining, double avgFillPrice, int permId, int parentId,
-            double lastFillPrice, int clientId, String whyHeld) {
-		eventBus.post(new IBOrderStatus(orderId, status, filled, remaining, avgFillPrice, permId,
-				parentId, lastFillPrice, clientId, whyHeld));
+	public void orderStatus(int orderId, String status, double filled, double remaining, double avgFillPrice,
+			int permId, int parentId, double lastFillPrice, int clientId, String whyHeld) {
+
+		// THIS IS NOT NICE AT ALL!!!
+		// ibOrderDAO should be removed from this class
+
+		IBOrderStatus stat = new IBOrderStatus(orderId, status, filled, remaining, avgFillPrice, permId, parentId,
+				lastFillPrice, clientId, whyHeld);
+		try {
+			String ticker = ibOrderDAO.findOne(orderId).getContract().symbol();
+			stat.setTicker(ticker);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+		}
+		eventBus.post(stat);
 	}
 
 	@Override
@@ -368,8 +377,7 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void positionMulti(int arg0, String arg1, String arg2,
-			Contract arg3, double arg4, double arg5) {
+	public void positionMulti(int arg0, String arg1, String arg2, Contract arg3, double arg4, double arg5) {
 		// TODO Auto-generated method stub
 
 	}
@@ -381,8 +389,8 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void realtimeBar(int arg0, long arg1, double arg2, double arg3,
-			double arg4, double arg5, long arg6, double arg7, int arg8) {
+	public void realtimeBar(int arg0, long arg1, double arg2, double arg3, double arg4, double arg5, long arg6,
+			double arg7, int arg8) {
 		eventBus.post(new RealTimeBar(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
 	}
 
@@ -393,8 +401,8 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void scannerData(int arg0, int arg1, ContractDetails arg2,
-			String arg3, String arg4, String arg5, String arg6) {
+	public void scannerData(int arg0, int arg1, ContractDetails arg2, String arg3, String arg4, String arg5,
+			String arg6) {
 		// TODO Auto-generated method stub
 
 	}
@@ -412,9 +420,8 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void securityDefinitionOptionalParameter(int arg0, String arg1,
-			int arg2, String arg3, String arg4, Set<String> arg5,
-			Set<Double> arg6) {
+	public void securityDefinitionOptionalParameter(int arg0, String arg1, int arg2, String arg3, String arg4,
+			Set<String> arg5, Set<Double> arg6) {
 		// TODO Auto-generated method stub
 
 	}
@@ -426,8 +433,8 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void tickEFP(int arg0, int arg1, double arg2, String arg3,
-			double arg4, int arg5, String arg6, double arg7, double arg8) {
+	public void tickEFP(int arg0, int arg1, double arg2, String arg3, double arg4, int arg5, String arg6, double arg7,
+			double arg8) {
 		// TODO Auto-generated method stub
 
 	}
@@ -439,16 +446,16 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void tickOptionComputation(int arg0, int arg1, double arg2,
-			double arg3, double arg4, double arg5, double arg6, double arg7,
-			double arg8, double arg9) {
+	public void tickOptionComputation(int arg0, int arg1, double arg2, double arg3, double arg4, double arg5,
+			double arg6, double arg7, double arg8, double arg9) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void tickPrice(int arg0, int arg1, double arg2, int arg3) {
-		eventBus.post(new TickPrice(arg0, arg1, arg2, arg3));
+		if (TickType.get(arg1) == TickType.LAST)
+			eventBus.post(new TickPrice(arg0, arg1, arg2, arg3));
 	}
 
 	@Override
@@ -476,22 +483,19 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void updateAccountValue(String arg0, String arg1, String arg2,
-			String arg3) {
+	public void updateAccountValue(String arg0, String arg1, String arg2, String arg3) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void updateMktDepth(int arg0, int arg1, int arg2, int arg3,
-			double arg4, int arg5) {
+	public void updateMktDepth(int arg0, int arg1, int arg2, int arg3, double arg4, int arg5) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void updateMktDepthL2(int arg0, int arg1, String arg2, int arg3,
-			int arg4, double arg5, int arg6) {
+	public void updateMktDepthL2(int arg0, int arg1, String arg2, int arg3, int arg4, double arg5, int arg6) {
 		// TODO Auto-generated method stub
 
 	}
@@ -503,8 +507,8 @@ public class EWrapperImpl implements EWrapper {
 	}
 
 	@Override
-	public void updatePortfolio(Contract arg0, double arg1, double arg2,
-			double arg3, double arg4, double arg5, double arg6, String arg7) {
+	public void updatePortfolio(Contract arg0, double arg1, double arg2, double arg3, double arg4, double arg5,
+			double arg6, String arg7) {
 		// TODO Auto-generated method stub
 
 	}

@@ -14,6 +14,8 @@ public class IBOrderStatus {
 	private double lastFillPrice;
 	private int clientId;
 	private String whyHeld;
+	
+	private String ticker;
 
 	public IBOrderStatus(int orderId, String status, double filled,
 			double remaining, double avgFillPrice, int permId, int parentId,
@@ -110,6 +112,14 @@ public class IBOrderStatus {
 
 	public void setWhyHeld(String whyHeld) {
 		this.whyHeld = whyHeld;
+	}
+	
+	public String getTicker() {
+		return ticker;
+	}
+	
+	public void setTicker(String ticker) {
+		this.ticker = ticker;
 	}
 
 	@Override
