@@ -11,7 +11,7 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 
-import hu.farago.ib.model.dto.order.IBOrderStatus;
+import hu.farago.ib.model.dto.order.IBOrderStatusWrap;
 import hu.farago.ib.service.OrderService;
 import hu.farago.web.component.GridWithActionList;
 
@@ -38,7 +38,7 @@ public class OrderStatusPanel extends VerticalLayout {
 	private OrderService orderService;
 	private EventBus eventBus;
 	
-	private GridWithBackendService<IBOrderStatus> openOrdersBS;
+	private GridWithBackendService<IBOrderStatusWrap> openOrdersBS;
 	private GridWithBackendService<Execution> executionsBS;
 	
 	@Autowired
@@ -47,9 +47,9 @@ public class OrderStatusPanel extends VerticalLayout {
 		this.eventBus = eb;
 		this.eventBus.register(this);
 		
-		this.openOrdersBS = new GridWithBackendService<IBOrderStatus>( new Button("Refresh order status list", (e) -> {
+		this.openOrdersBS = new GridWithBackendService<IBOrderStatusWrap>( new Button("Refresh order status list", (e) -> {
 			this.orderService.reqAllOpenOrders();
-		}), IBOrderStatus.class);
+		}), IBOrderStatusWrap.class);
 		
 		this.executionsBS = new GridWithBackendService<Execution>( new Button("Refresh daily executions", (e) -> {
 			this.orderService.reqExecutions();
@@ -59,7 +59,7 @@ public class OrderStatusPanel extends VerticalLayout {
 	}
 	
 	@Subscribe
-	public void openOrder(IBOrderStatus orderStatus) {
+	public void openOrder(IBOrderStatusWrap orderStatus) {
 		this.openOrdersBS.container.addBean(orderStatus);
 	}
 	

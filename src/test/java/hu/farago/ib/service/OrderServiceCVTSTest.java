@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
@@ -45,6 +46,7 @@ public class OrderServiceCVTSTest extends AbstractOrderServiceTest<CVTSOrder> {
 		order.setLimitPrice(130.0);
 		order.setPreviousDayClosePrice(135.0);
 		order.setTicker("AAPL");
+		order.setStartDateTime(DateTime.now().minusDays(1));
 		
 		return order;
 	}

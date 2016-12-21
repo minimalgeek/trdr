@@ -1,28 +1,36 @@
-package hu.farago.ib.model.dto.order;
+package hu.farago.ib.order;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.ib.client.Contract;
 import com.ib.client.Order;
 
 import hu.farago.ib.EWrapperImpl;
+import hu.farago.ib.model.dto.ConnectAck;
+import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
+import hu.farago.ib.model.dto.order.OrderCommonProperties;
 
 public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder> {
 
-	protected static class OrdersAndContract {
+	public class OrdersAndContract {
+
+		public T abstractOrder;
 		public List<Order> orders;
 		public Contract contract;
 
-		public OrdersAndContract(List<Order> orders, Contract contract) {
+		public OrdersAndContract(List<Order> orders, Contract contract, T abstractOrder) {
 			this.orders = orders;
 			this.contract = contract;
+			this.abstractOrder = abstractOrder;
 		}
 
 	}
-	
+
 	private Map<Integer, OrdersAndContract> tickerIdToOrderMap;
 	protected OrderCommonProperties ocp;
 	protected EWrapperImpl eWrapper;
@@ -36,9 +44,9 @@ public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder
 		this.tickerIdToOrderMap = Maps.newConcurrentMap();
 	}
 
-	public void addOrder(List<Order> order, Contract contract) {
-		int id = eWrapper.reqMktData(contract);
-		tickerIdToOrderMap.put(id, new OrdersAndContract(order, contract));
+	public void addOrder(OrdersAndContract oac) {
+		int id = eWrapper.reqMktData(oac.contract);
+		tickerIdToOrderMap.put(id, oac);
 	}
 
 	public OrdersAndContract findByTickerId(Integer tickerId) {
@@ -56,6 +64,21 @@ public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder
 		}
 		// not necessary, just in case we clear it :)
 		tickerIdToOrderMap.clear();
+	}
+
+	public List<T> getAbstractOrders() {
+		List<T> ret = tickerIdToOrderMap.entrySet().stream().map(x -> x.getValue().abstractOrder)
+				.collect(Collectors.toList());
+		return ret;
+	}
+
+	@Subscribe
+	private void clientReconnected(ConnectAck ack) {
+		for (Integer key : tickerIdToOrderMap.keySet()) {
+			OrdersAndContract oac = findByTickerId(key);
+			addOrder(oac);
+			removeByTickerId(key);
+		}
 	}
 
 	public void setOcp(OrderCommonProperties ocp) {

@@ -3,7 +3,6 @@ package hu.farago.ib.order;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
-import hu.farago.ib.model.dto.order.AbstractStrategyOrderQueue;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.order.strategy.IOrderAssembler;
 

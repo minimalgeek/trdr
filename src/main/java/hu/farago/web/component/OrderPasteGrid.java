@@ -7,6 +7,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -36,6 +37,9 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 	protected GridWithActionList oldOrderGrid;
 	protected Button queryOldOrders;
 	
+	protected GridWithActionList waitingOrderGrid;
+	protected Button querywaitingOrders;
+	
 	public OrderPasteGrid(OrderCommonPropertiesEditor ocpe, OrderService os) {
 		this.ocpe = ocpe;
 		this.ocpe.setChangeHandler(() -> ocpeWindow.close());
@@ -44,11 +48,11 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 		this.ocpeWindowOpener = new Button("Common Properties", FontAwesome.ANGELLIST);
 		this.grid = new GridWithActionList(save, clear, ocpeWindowOpener);
 		
-		this.save.addClickListener((e) -> os.placeOrders(this.converter.getConvertedItems()));
-		this.clear.addClickListener((e) -> {
-			converter.setValue("");
-			converter.populate(Lists.newArrayList());	
+		this.save.addClickListener((e) -> {
+			os.placeOrders(this.converter.getConvertedItems());
+			clearList();
 		});
+		this.clear.addClickListener((e) -> clearList());
 		
 		this.converter = createConverter();
 		this.strategy = createStrategy();
@@ -64,15 +68,29 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 			}
 		});
 
-		this.queryOldOrders = new Button("Show old orders", FontAwesome.AUTOMOBILE);
+		this.queryOldOrders = new Button("Show old orders", FontAwesome.ARCHIVE);
 		this.oldOrderGrid = new GridWithActionList(queryOldOrders);
 		this.queryOldOrders.addClickListener((e) -> {
 			 List<T> list = os.listOrders(this.strategy);
 			 this.converter.populate(oldOrderGrid, list);
 		});
 		
-		addComponents(converter, grid, oldOrderGrid);
+		this.querywaitingOrders = new Button("Show active untriggered orders", FontAwesome.ROAD);
+		this.waitingOrderGrid = new GridWithActionList(querywaitingOrders);
+		this.querywaitingOrders.addClickListener((e) -> {
+			 List<T> list = os.listQueueOrders(this.strategy);
+			 this.converter.populate(waitingOrderGrid, list);
+		});
+		
+		HorizontalLayout gridHL = new HorizontalLayout(waitingOrderGrid, oldOrderGrid);
+		gridHL.setSizeFull();
+		
+		addComponents(converter, grid, gridHL);
 		setupOrderCommonPropertiesEditor();
+	}
+	private void clearList() {
+		converter.setValue("");
+		converter.populate(Lists.newArrayList());
 	}
 
 	private void setupOrderCommonPropertiesEditor() {

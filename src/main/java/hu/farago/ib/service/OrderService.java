@@ -10,15 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.eventbus.EventBus;
-import com.ib.client.Contract;
 
 import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
-import hu.farago.ib.model.dto.order.AbstractStrategyOrderQueue;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.order.AbstractFactoryForOrder;
+import hu.farago.ib.order.AbstractStrategyOrderQueue;
 import hu.farago.ib.order.strategy.IOrderAssembler;
 import hu.farago.ib.order.strategy.cvts.CVTSFactory;
 import hu.farago.ib.order.strategy.enums.Strategy;
@@ -37,7 +36,7 @@ public class OrderService {
 
 	@Autowired
 	private OrderCommonPropertiesDAO ocpDAO;
-	
+
 	@Autowired
 	private Holidays holidays;
 
@@ -60,7 +59,8 @@ public class OrderService {
 	public <T extends AbstractStrategyOrder> void placeOrder(T so) {
 
 		if (!candidateStartDateIsPreviousTradeDay(so)) {
-			eventBus.post(new IBError("Start date is not the previous trading day for the '" + so.getTicker() + "' order"));
+			eventBus.post(
+					new IBError("Start date is not the previous trading day for the '" + so.getTicker() + "' order"));
 			return;
 		}
 
@@ -75,11 +75,13 @@ public class OrderService {
 
 		IOrderAssembler<T> orderAssembler = factory.getAssembler();
 		AbstractStrategyOrderQueue<T> queue = factory.getQueue(ocp);
-		
-		// save it, build contract from it, and put orders into a queue for further processing
+
+		// save it, build contract from it, and put orders into a queue for
+		// further processing
 		factory.getRepository().save(so);
-		Contract contract = orderAssembler.buildContract(so, ocp);
-		queue.addOrder(orderAssembler.buildOrders(so, ocp), contract);
+		AbstractStrategyOrderQueue<T>.OrdersAndContract oac = queue.new OrdersAndContract(
+				orderAssembler.buildOrders(so, ocp), orderAssembler.buildContract(so, ocp), so);
+		queue.addOrder(oac);
 
 		wrapper.reqIds();
 	}
@@ -91,7 +93,8 @@ public class OrderService {
 	}
 
 	private <T extends AbstractStrategyOrder> boolean candidateStartDateIsPreviousTradeDay(T order) {
-		return DateUtils.isSameDay(order.getStartDateTime().toDate(), holidays.previousTradeDay(DateTime.now()).toDate());
+		return DateUtils.isSameDay(order.getStartDateTime().toDate(),
+				holidays.previousTradeDay(DateTime.now()).toDate());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -111,9 +114,16 @@ public class OrderService {
 	public void reqExecutions() {
 		wrapper.reqExecutions();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractStrategyOrder> List<T> listOrders(Strategy strat) {
+		LOGGER.info("listOrders");
 		return (List<T>) getFactory(strat).getRepository().findAll();
+	}
+
+	public <T extends AbstractStrategyOrder> List<T> listQueueOrders(Strategy strat) {
+		LOGGER.info("listQueueOrders");
+		AbstractFactoryForOrder<T> factory = getFactory(strat);
+		return factory.getQueue(loadOcp(strat)).getAbstractOrders();
 	}
 }

@@ -17,9 +17,9 @@ import com.ib.client.Types.Action;
 import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dao.IBOrderDAO;
 import hu.farago.ib.model.dto.market.TickPrice;
-import hu.farago.ib.model.dto.order.AbstractStrategyOrderQueue;
 import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
+import hu.farago.ib.order.AbstractStrategyOrderQueue;
 import hu.farago.ib.order.strategy.enums.Strategy;
 
 /**

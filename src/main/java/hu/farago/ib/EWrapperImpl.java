@@ -33,7 +33,7 @@ import com.ib.client.OrderState;
 import com.ib.client.TagValue;
 import com.ib.client.TickType;
 
-import hu.farago.ib.model.dao.IBOrderDAO;
+import hu.farago.ib.model.dto.ConnectAck;
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.market.RealTimeBar;
 import hu.farago.ib.model.dto.market.StockPrices;
@@ -65,9 +65,6 @@ public class EWrapperImpl implements EWrapper {
 	@Autowired
 	private EventBus eventBus;
 
-	@Autowired
-	private IBOrderDAO ibOrderDAO;
-
 	@PostConstruct
 	public void initConnection() {
 		LOGGER.info("initConnection");
@@ -79,12 +76,19 @@ public class EWrapperImpl implements EWrapper {
 		thread.start();
 	}
 
-	public void reInitConnection() {
+	public synchronized void reInitConnection() {
 		LOGGER.info("reInitConnection");
 
-		Thread moribund = thread;
-		thread = null;
-		moribund.interrupt();
+		if (clientSocket != null) {
+			clientSocket.eDisconnect();
+		}
+		
+		try {
+			thread.join();
+			LOGGER.info("Thread successfully stopped.");
+		} catch (InterruptedException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 
 		initConnection();
 	}
@@ -96,7 +100,6 @@ public class EWrapperImpl implements EWrapper {
 			return;
 		}
 		LOGGER.info("Reinitialize connection!");
-
 		reInitConnection();
 	}
 
@@ -216,8 +219,12 @@ public class EWrapperImpl implements EWrapper {
 
 	@Override
 	public void connectAck() {
-		// TODO Auto-generated method stub
-
+		LOGGER.info("connectAck");
+		eventBus.post(new ConnectAck());
+		if (clientSocket.isAsyncEConnect()) {
+            LOGGER.info("Acknowledging connection");
+            clientSocket.startAPI();
+        }
 	}
 
 	@Override
@@ -343,19 +350,8 @@ public class EWrapperImpl implements EWrapper {
 	@Override
 	public void orderStatus(int orderId, String status, double filled, double remaining, double avgFillPrice,
 			int permId, int parentId, double lastFillPrice, int clientId, String whyHeld) {
-
-		// THIS IS NOT NICE AT ALL!!!
-		// ibOrderDAO should be removed from this class
-
-		IBOrderStatus stat = new IBOrderStatus(orderId, status, filled, remaining, avgFillPrice, permId, parentId,
-				lastFillPrice, clientId, whyHeld);
-		try {
-			String ticker = ibOrderDAO.findOne(orderId).getContract().symbol();
-			stat.setTicker(ticker);
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		}
-		eventBus.post(stat);
+		eventBus.post(new IBOrderStatus(orderId, status, filled, remaining, avgFillPrice, permId, parentId,
+				lastFillPrice, clientId, whyHeld));
 	}
 
 	@Override

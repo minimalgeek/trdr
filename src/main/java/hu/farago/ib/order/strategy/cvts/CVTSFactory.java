@@ -5,10 +5,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Component;
 
 import hu.farago.ib.model.dao.CVTSOrderDAO;
-import hu.farago.ib.model.dto.order.AbstractStrategyOrderQueue;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
 import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
 import hu.farago.ib.order.AbstractFactoryForOrder;
+import hu.farago.ib.order.AbstractStrategyOrderQueue;
 import hu.farago.ib.order.strategy.IOrderAssembler;
 
 @Component
