@@ -151,6 +151,8 @@ public class EWrapperImpl implements EWrapper {
 		clientSocket.reqExecutions(0, new ExecutionFilter());
 	}
 
+	// Sorry for the bruteforce
+	@Scheduled(fixedDelay = 5000)
 	public void reqIds() {
 		LOGGER.info("reqIds");
 		clientSocket.reqIds(0);
