@@ -2,12 +2,16 @@ package hu.farago.web.component.order;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.AbstractRenderer;
 import com.vaadin.ui.Notification;
 
 import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
@@ -18,6 +22,7 @@ import hu.farago.web.component.GridWithActionList;
 import hu.farago.web.component.OrderCommonPropertiesEditor;
 import hu.farago.web.component.OrderPasteGrid;
 import hu.farago.web.component.PasteConverterTextBox;
+import hu.farago.web.utils.Converters;
 import hu.farago.web.utils.Formatters;
 
 @SpringComponent
@@ -66,7 +71,9 @@ public class CVTSPasteGrid extends OrderPasteGrid<CVTSOrder> {
 				toGrid.getGrid().setContainerDataSource(new BeanItemContainer<CVTSOrder>(
 						CVTSOrder.class, items));
 				Grid.Column column = toGrid.getGrid().getColumn("id");
+				Grid.Column startDateTime = toGrid.getGrid().getColumn("startDateTime");
 				column.setHidden(true);
+				startDateTime.setConverter(Converters.DATETIME_TO_STRING);
 			}
 			
 		};
@@ -76,5 +83,5 @@ public class CVTSPasteGrid extends OrderPasteGrid<CVTSOrder> {
 	protected Strategy createStrategy() {
 		return Strategy.CVTS;
 	}
-
+	
 }

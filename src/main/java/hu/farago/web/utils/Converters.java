@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.vaadin.data.util.converter.Converter;
 
@@ -64,5 +66,35 @@ public class Converters {
         public Class<Date> getPresentationType() {
             return Date.class;
         }
+    };
+    
+    public static final Converter<String, DateTime> DATETIME_TO_STRING = new Converter<String, DateTime>() {
+
+		private static final long serialVersionUID = -1297055032782777943L;
+
+		private final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd"); 
+		
+		@Override
+		public DateTime convertToModel(String value, Class<? extends DateTime> targetType, Locale locale)
+				throws com.vaadin.data.util.converter.Converter.ConversionException {
+			return FORMATTER.parseDateTime(value);
+		}
+
+		@Override
+		public String convertToPresentation(DateTime value, Class<? extends String> targetType, Locale locale)
+				throws com.vaadin.data.util.converter.Converter.ConversionException {
+			return FORMATTER.print(value);
+		}
+
+		@Override
+		public Class<DateTime> getModelType() {
+			return DateTime.class;
+		}
+
+		@Override
+		public Class<String> getPresentationType() {
+			return String.class;
+		}
+       
     };
 }

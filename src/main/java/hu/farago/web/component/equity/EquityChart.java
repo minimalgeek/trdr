@@ -2,7 +2,6 @@ package hu.farago.web.component.equity;
 
 import java.util.List;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -131,13 +130,14 @@ public class EquityChart extends VerticalLayout {
 		double sum = 0.0;
 		for (EquityOfOrder equity : equities) {
 			DateTime closeDate = equity.closeDate;
-			Double pnl = equity.accountingPNL == null ? 0.0 : equity.accountingPNL;
-			if (closeDate != null) {
-				DataSeriesItem columnItem = new DataSeriesItem(closeDate.toDate(), pnl);
+			Double pnl = equity.accountingPNL;
+			if (closeDate != null && pnl != null) {
+				double roundOff = Math.round(pnl * 100.0) / 100.0;
+				DataSeriesItem columnItem = new DataSeriesItem(closeDate.toDate(), roundOff);
 				columnItem.setName(equity.ticker);
 				series.add(columnItem);
 
-				sum += pnl;
+				sum += roundOff;
 				DataSeriesItem lineItem = new DataSeriesItem(closeDate.toDate(), sum);
 				lineItem.setName(equity.ticker);
 				series2.add(lineItem);
