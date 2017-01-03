@@ -2,19 +2,18 @@ package hu.farago.web.component.order;
 
 import java.util.List;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.AbstractRenderer;
 import com.vaadin.ui.Notification;
 
 import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
+import hu.farago.ib.order.AbstractStrategyOrderQueue.QueueChanged;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.ib.service.OrderService;
@@ -32,10 +31,11 @@ public class CVTSPasteGrid extends OrderPasteGrid<CVTSOrder> {
 	private static final long serialVersionUID = -797998577130962477L;
 
 	@Autowired
-	public CVTSPasteGrid(OrderCommonPropertiesEditor ocpe, OrderService os) {
-		super(ocpe, os);
+	public CVTSPasteGrid(OrderCommonPropertiesEditor ocpe, OrderService os, EventBus eb) {
+		super(ocpe, os, eb);
+		this.eventBus.register(this);
 	}
-	
+
 	@Override
 	protected PasteConverterTextBox<CVTSOrder> createConverter() {
 		return new PasteConverterTextBox<CVTSOrder>() {
@@ -65,17 +65,16 @@ public class CVTSPasteGrid extends OrderPasteGrid<CVTSOrder> {
 			public void populate(List<CVTSOrder> items) {
 				populate(grid, items);
 			}
-			
+
 			@Override
 			public void populate(GridWithActionList toGrid, List<CVTSOrder> items) {
-				toGrid.getGrid().setContainerDataSource(new BeanItemContainer<CVTSOrder>(
-						CVTSOrder.class, items));
+				toGrid.getGrid().setContainerDataSource(new BeanItemContainer<CVTSOrder>(CVTSOrder.class, items));
 				Grid.Column column = toGrid.getGrid().getColumn("id");
 				Grid.Column startDateTime = toGrid.getGrid().getColumn("startDateTime");
 				column.setHidden(true);
 				startDateTime.setConverter(Converters.DATETIME_TO_STRING);
 			}
-			
+
 		};
 	}
 
@@ -83,5 +82,18 @@ public class CVTSPasteGrid extends OrderPasteGrid<CVTSOrder> {
 	protected Strategy createStrategy() {
 		return Strategy.CVTS;
 	}
-	
+
+	@Override
+	protected Class<CVTSOrder> createTypeClass() {
+		return CVTSOrder.class;
+	}
+
+	@Subscribe
+	private void queueChanged(QueueChanged change) {
+		if (change.strategy == Strategy.CVTS) {
+			this.waitingOrderGrid.refresh();
+			this.triggeredOrderGrid.refresh();
+		}
+	}
+
 }

@@ -3,6 +3,7 @@ package hu.farago.web;
 import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.order.IBOrder;
+import hu.farago.ib.order.AbstractStrategyOrderQueue.QueueChanged;
 import hu.farago.web.component.chart.CandleStick;
 import hu.farago.web.component.equity.EquityTab;
 import hu.farago.web.component.order.CVTSPasteGrid;
@@ -125,6 +126,11 @@ public class VaadinUI extends UI {
 	@Subscribe
 	public void openOrder(IBOrder oo) {
 		addResponseToGrid(oo.toString());
+	}
+	
+	@Subscribe
+	public void queueChanged(QueueChanged qc) {
+		addResponseToGrid("Queue changed in " + qc.strategy.name());
 	}
 
 	private void addResponseToGrid(String responseText) {

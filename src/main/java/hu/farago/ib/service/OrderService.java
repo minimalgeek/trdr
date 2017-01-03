@@ -126,4 +126,10 @@ public class OrderService {
 		AbstractFactoryForOrder<T> factory = getFactory(strat);
 		return factory.getQueue(loadOcp(strat)).getAbstractOrders();
 	}
+	
+	public <T extends AbstractStrategyOrder> List<T> listTriggeredOrders(Strategy strat) {
+		LOGGER.info("listTriggeredOrders");
+		AbstractFactoryForOrder<T> factory = getFactory(strat);
+		return factory.getQueue(loadOcp(strat)).getTriggeredOrders();
+	}
 }

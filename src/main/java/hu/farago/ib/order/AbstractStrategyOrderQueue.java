@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -14,9 +15,21 @@ import hu.farago.ib.EWrapperImpl;
 import hu.farago.ib.model.dto.ConnectAck;
 import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
+import hu.farago.ib.order.strategy.enums.Strategy;
 
 public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder> {
 
+	public static class QueueChanged {
+		public Strategy strategy;
+		
+		public QueueChanged() {
+		}
+		
+		public QueueChanged(Strategy strategy) {
+			this.strategy = strategy;
+		}
+	}
+	
 	public class OrdersAndContract {
 
 		public T abstractOrder;
@@ -32,6 +45,7 @@ public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder
 	}
 
 	private Map<Integer, OrdersAndContract> tickerIdToOrderMap;
+	private List<OrdersAndContract> triggeredOrderList;
 	protected OrderCommonProperties ocp;
 	protected EWrapperImpl eWrapper;
 	protected EventBus eventBus;
@@ -42,34 +56,51 @@ public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder
 		this.eventBus.register(this);
 
 		this.tickerIdToOrderMap = Maps.newConcurrentMap();
+		this.triggeredOrderList = Lists.newCopyOnWriteArrayList();
 	}
 
 	public void addOrder(OrdersAndContract oac) {
 		int id = eWrapper.reqMktData(oac.contract);
 		tickerIdToOrderMap.put(id, oac);
+		fireChangeEvent(oac);
 	}
 
 	public OrdersAndContract findByTickerId(Integer tickerId) {
 		return tickerIdToOrderMap.get(tickerId);
 	}
 
+	public OrdersAndContract removeByTickerIdAndMarkAsPlaced(Integer tickerId) {
+		OrdersAndContract ret = removeByTickerId(tickerId);
+		triggeredOrderList.add(ret);
+		fireChangeEvent(ret);
+		return ret;
+	}
+	
 	public OrdersAndContract removeByTickerId(Integer tickerId) {
+		eventBus.post(new QueueChanged());
 		eWrapper.cancelMktData(tickerId);
-		return tickerIdToOrderMap.remove(tickerId);
+		OrdersAndContract ret = tickerIdToOrderMap.remove(tickerId);
+		fireChangeEvent(ret);
+		return ret;
 	}
 
-	public void removeAll() {
+	public void removeAllFromQueueAndTriggeredOrders() {
 		for (Integer key : tickerIdToOrderMap.keySet()) {
 			removeByTickerId(key);
 		}
 		// not necessary, just in case we clear it :)
 		tickerIdToOrderMap.clear();
+		triggeredOrderList.clear();
 	}
 
 	public List<T> getAbstractOrders() {
 		List<T> ret = tickerIdToOrderMap.entrySet().stream().map(x -> x.getValue().abstractOrder)
 				.collect(Collectors.toList());
 		return ret;
+	}
+	
+	public List<T> getTriggeredOrders() {
+		return triggeredOrderList.stream().map(x -> x.abstractOrder).collect(Collectors.toList());
 	}
 
 	@Subscribe
@@ -79,6 +110,10 @@ public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder
 			addOrder(oac);
 			removeByTickerId(key);
 		}
+	}
+	
+	private void fireChangeEvent(OrdersAndContract oac) {
+		eventBus.post(new QueueChanged(oac.abstractOrder.strategy()));
 	}
 
 	public void setOcp(OrderCommonProperties ocp) {

@@ -65,7 +65,7 @@ public class CVTSQueue extends AbstractStrategyOrderQueue<CVTSOrder> {
 				eWrapper.placeOrder(order, oac.contract, Strategy.CVTS);
 			}
 			
-			OrdersAndContract removedOrder = removeByTickerId(price.tickerId);
+			OrdersAndContract removedOrder = removeByTickerIdAndMarkAsPlaced(price.tickerId);
 			LOGGER.info("Orders placed and removed from the queue: " + removedOrder.orders.toString());
 		} else {
 			LOGGER.info("The strategy reached the maximum amount of orders, order placement is not possible at this time");
@@ -74,6 +74,6 @@ public class CVTSQueue extends AbstractStrategyOrderQueue<CVTSOrder> {
 	
 	@Scheduled(cron="0 0 0 * * ?")
 	private void clearAllAtMidnight() {
-		removeAll();
+		removeAllFromQueueAndTriggeredOrders();
 	}
 }

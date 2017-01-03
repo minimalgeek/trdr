@@ -30,7 +30,7 @@ public class GridWithActionList extends VerticalLayout {
 		this.grid.setColumnReorderingAllowed(true);
 		this.setSizeFull();
 
-		this.addComponents(grid, actions);
+		this.addComponents(actions, grid);
 	}
 	
 	public Grid getGrid() {
