@@ -80,11 +80,12 @@ public class EWrapperImpl implements EWrapper {
 	public synchronized void reInitConnection() {
 		LOGGER.info("reInitConnection");
 
-		if (clientSocket != null) {
+		if (clientSocket != null && clientSocket.isConnected()) {
 			clientSocket.eDisconnect();
 		}
-		
+
 		try {
+			readerSignal.issueSignal();
 			thread.join();
 			LOGGER.info("Thread successfully stopped.");
 		} catch (InterruptedException e) {
@@ -223,9 +224,9 @@ public class EWrapperImpl implements EWrapper {
 		LOGGER.info("connectAck");
 		eventBus.post(new ConnectAck());
 		if (clientSocket.isAsyncEConnect()) {
-            LOGGER.info("Acknowledging connection");
-            clientSocket.startAPI();
-        }
+			LOGGER.info("Acknowledging connection");
+			clientSocket.startAPI();
+		}
 	}
 
 	@Override
@@ -335,7 +336,9 @@ public class EWrapperImpl implements EWrapper {
 	@Override
 	public void nextValidId(int orderId) {
 		LOGGER.info("Next Valid Id: [" + orderId + "]");
-		currentOrderId = orderId;
+		if (orderId > currentOrderId) {
+			currentOrderId = orderId;
+		}
 	}
 
 	// ******************************************************
