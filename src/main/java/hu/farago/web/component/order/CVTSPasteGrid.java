@@ -13,7 +13,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.Notification;
 
 import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
-import hu.farago.ib.order.AbstractStrategyOrderQueue.QueueChanged;
+import hu.farago.ib.order.strategy.AbstractStrategyOrderQueue.QueueChanged;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.ib.service.OrderService;

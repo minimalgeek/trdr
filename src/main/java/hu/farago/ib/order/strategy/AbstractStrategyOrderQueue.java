@@ -1,4 +1,4 @@
-package hu.farago.ib.order;
+package hu.farago.ib.order.strategy;
 
 import java.util.List;
 import java.util.Map;

@@ -16,8 +16,8 @@ import hu.farago.ib.model.dao.OrderCommonPropertiesDAO;
 import hu.farago.ib.model.dto.IBError;
 import hu.farago.ib.model.dto.order.AbstractStrategyOrder;
 import hu.farago.ib.model.dto.order.OrderCommonProperties;
-import hu.farago.ib.order.AbstractFactoryForOrder;
-import hu.farago.ib.order.AbstractStrategyOrderQueue;
+import hu.farago.ib.order.strategy.AbstractFactoryForOrder;
+import hu.farago.ib.order.strategy.AbstractStrategyOrderQueue;
 import hu.farago.ib.order.strategy.IOrderAssembler;
 import hu.farago.ib.order.strategy.cvts.CVTSFactory;
 import hu.farago.ib.order.strategy.enums.Strategy;
@@ -82,8 +82,6 @@ public class OrderService {
 		AbstractStrategyOrderQueue<T>.OrdersAndContract oac = queue.new OrdersAndContract(
 				orderAssembler.buildOrders(so, ocp), orderAssembler.buildContract(so, ocp), so);
 		queue.addOrder(oac);
-
-		wrapper.reqIds();
 	}
 
 	public <T extends AbstractStrategyOrder> void placeOrders(List<T> convertedItems) {

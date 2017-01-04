@@ -19,7 +19,7 @@ import hu.farago.ib.model.dao.IBOrderDAO;
 import hu.farago.ib.model.dto.market.TickPrice;
 import hu.farago.ib.model.dto.order.IBOrder;
 import hu.farago.ib.model.dto.order.strategy.CVTSOrder;
-import hu.farago.ib.order.AbstractStrategyOrderQueue;
+import hu.farago.ib.order.strategy.AbstractStrategyOrderQueue;
 import hu.farago.ib.order.strategy.enums.Strategy;
 
 /**
@@ -66,7 +66,7 @@ public class CVTSQueue extends AbstractStrategyOrderQueue<CVTSOrder> {
 			}
 			
 			OrdersAndContract removedOrder = removeByTickerIdAndMarkAsPlaced(price.tickerId);
-			LOGGER.info("Orders placed and removed from the queue: " + removedOrder.orders.toString());
+			LOGGER.info("Orders placed and removed from the queue: " + removedOrder.abstractOrder.toString());
 		} else {
 			LOGGER.info("The strategy reached the maximum amount of orders, order placement is not possible at this time");
 		}

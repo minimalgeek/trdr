@@ -74,6 +74,7 @@ public class EWrapperImpl implements EWrapper {
 
 		thread = new Thread(new MessageReceiver(clientSocket, readerSignal, eventBus));
 		thread.start();
+		reqIds();
 	}
 
 	public synchronized void reInitConnection() {
@@ -117,12 +118,12 @@ public class EWrapperImpl implements EWrapper {
 
 	// functions to call from services
 
-	public int nextOrderId() {
+	public synchronized int nextOrderId() {
 		currentOrderId++;
 		return currentOrderId;
 	}
 
-	public int nextTickerId() {
+	public synchronized int nextTickerId() {
 		currentTickerId++;
 		return currentTickerId;
 	}
@@ -151,8 +152,6 @@ public class EWrapperImpl implements EWrapper {
 		clientSocket.reqExecutions(0, new ExecutionFilter());
 	}
 
-	// Sorry for the bruteforce
-	@Scheduled(fixedDelay = 5000)
 	public void reqIds() {
 		LOGGER.info("reqIds");
 		clientSocket.reqIds(0);
