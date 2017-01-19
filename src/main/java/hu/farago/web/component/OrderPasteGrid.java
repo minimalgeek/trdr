@@ -43,9 +43,11 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 	// ** Abstract methods **
 	// **********************
 	protected abstract PasteConverterTextBox<T> createConverter();
+
 	protected abstract Strategy createStrategy();
+
 	protected abstract Class<T> createTypeClass();
-	
+
 	public OrderPasteGrid(OrderCommonPropertiesEditor ocpe, OrderService os, EventBus eb) {
 		this.ocpe = ocpe;
 		this.eventBus = eb;
@@ -64,7 +66,7 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 		this.typeParameterClass = createTypeClass();
 		this.converter = createConverter();
 		this.strategy = createStrategy();
-		
+
 		this.addLayoutClickListener(new LayoutClickListener() {
 			private static final long serialVersionUID = 1375505724138035283L;
 
@@ -81,20 +83,22 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 			List<T> list = os.listOrders(this.strategy);
 			this.converter.populate(oldOrderGrid.getGridWAL(), list);
 		}), typeParameterClass);
-		
+
 		this.waitingOrderGrid = new GridWithBackendService<T>(new Button("Show active untriggered orders", (e) -> {
 			List<T> list = os.listQueueOrders(this.strategy);
 			this.converter.populate(waitingOrderGrid.getGridWAL(), list);
+		}), new Button("Clear Queue", (e) -> {
+			os.clearQueueOrders(this.strategy);
 		}), typeParameterClass);
-		
+
 		this.triggeredOrderGrid = new GridWithBackendService<T>(new Button("Show triggered orders", (e) -> {
 			List<T> list = os.listTriggeredOrders(this.strategy);
 			this.converter.populate(triggeredOrderGrid.getGridWAL(), list);
 		}), typeParameterClass);
-		
+
 		HorizontalLayout gridHL = new HorizontalLayout(grid, triggeredOrderGrid.getGridWAL());
 		gridHL.setSizeFull();
-		
+
 		HorizontalLayout gridHLSecond = new HorizontalLayout(waitingOrderGrid.getGridWAL(), oldOrderGrid.getGridWAL());
 		gridHLSecond.setSizeFull();
 

@@ -130,4 +130,10 @@ public class OrderService {
 		AbstractFactoryForOrder<T> factory = getFactory(strat);
 		return factory.getQueue(loadOcp(strat)).getTriggeredOrders();
 	}
+	
+	public <T extends AbstractStrategyOrder> void clearQueueOrders(Strategy strat) {
+		LOGGER.info("clearQueueOrders");
+		AbstractFactoryForOrder<T> factory = getFactory(strat);
+		factory.getQueue(loadOcp(strat)).removeAllFromQueue();
+	}
 }

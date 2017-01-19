@@ -77,19 +77,22 @@ public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder
 	}
 	
 	public OrdersAndContract removeByTickerId(Integer tickerId) {
-		eventBus.post(new QueueChanged());
 		eWrapper.cancelMktData(tickerId);
 		OrdersAndContract ret = tickerIdToOrderMap.remove(tickerId);
 		fireChangeEvent(ret);
 		return ret;
 	}
 
-	public void removeAllFromQueueAndTriggeredOrders() {
+	public void removeAllFromQueue() {
 		for (Integer key : tickerIdToOrderMap.keySet()) {
 			removeByTickerId(key);
 		}
-		// not necessary, just in case we clear it :)
+		// not necessary!
 		tickerIdToOrderMap.clear();
+	}
+	
+	public void removeAllFromQueueAndTriggeredOrders() {
+		removeAllFromQueue();
 		triggeredOrderList.clear();
 	}
 
