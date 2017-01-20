@@ -13000,3 +13000,7 @@ div.v-layout.v-horizontal.v-widget {
 .mytheme .v-tooltip {
 	background-color: white;
 }
+
+.mytheme .v-tooltip .v-tooltip-text {
+	color: black;
+}

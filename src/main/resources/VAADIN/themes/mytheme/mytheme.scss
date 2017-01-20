@@ -35,4 +35,8 @@
 	.v-tooltip {
 		background-color: white;
 	}
+
+	.v-tooltip .v-tooltip-text {
+		color: black;	
+	}
 }

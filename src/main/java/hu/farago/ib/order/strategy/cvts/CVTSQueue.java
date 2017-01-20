@@ -42,6 +42,11 @@ public class CVTSQueue extends AbstractStrategyOrderQueue<CVTSOrder> {
 
 	@Subscribe
 	private void consumePrice(TickPrice price) {
+		
+		if (!isTradingTime()) {
+			return;
+		}
+		
 		LOGGER.info("Tick price arrived. ID: " + price.tickerId + "; price: " + price.price); 
 		OrdersAndContract oac = findByTickerId(price.tickerId);
 		if (oac != null) {

@@ -34,6 +34,7 @@ public class CVTSPasteGrid extends OrderPasteGrid<CVTSOrder> {
 	public CVTSPasteGrid(OrderCommonPropertiesEditor ocpe, OrderService os, EventBus eb) {
 		super(ocpe, os, eb);
 		this.eventBus.register(this);
+		this.waitingOrderGrid.setDescription("Orders waiting in the queue until 9:30 EST");
 	}
 
 	@Override

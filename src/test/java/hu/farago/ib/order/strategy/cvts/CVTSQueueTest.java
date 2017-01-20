@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -119,6 +120,19 @@ public class CVTSQueueTest extends AbstractOrderServiceTest<CVTSOrder> {
 		orderToPlace.setTicker("AAPL");
 
 		return orderToPlace;
+	}
+	
+	@Test
+	public void isTradingTimeTest() {
+		DateTimeUtils.setCurrentMillisFixed(new DateTime(2017, 1, 1, 16, 30).getMillis()); // trading time in UTC+1
+		
+		Assert.assertTrue(queue.isTradingTime());
+		
+		DateTimeUtils.setCurrentMillisFixed(new DateTime(2017, 1, 1, 10, 30).getMillis()); // not trading time in UTC+1
+		
+		Assert.assertFalse(queue.isTradingTime());
+		
+		DateTimeUtils.setCurrentMillisSystem();
 	}
 
 }

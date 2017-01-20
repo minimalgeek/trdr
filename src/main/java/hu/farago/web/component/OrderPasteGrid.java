@@ -35,9 +35,9 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 	protected OrderCommonPropertiesEditor ocpe;
 	protected EventBus eventBus;
 
-	protected GridWithBackendService<T> oldOrderGrid;
-	protected GridWithBackendService<T> waitingOrderGrid;
-	protected GridWithBackendService<T> triggeredOrderGrid;
+	protected GridWithActionListAndContainer<T> oldOrderGrid;
+	protected GridWithActionListAndContainer<T> waitingOrderGrid;
+	protected GridWithActionListAndContainer<T> triggeredOrderGrid;
 
 	// **********************
 	// ** Abstract methods **
@@ -79,27 +79,29 @@ public abstract class OrderPasteGrid<T extends AbstractStrategyOrder> extends Ve
 			}
 		});
 
-		this.oldOrderGrid = new GridWithBackendService<T>(new Button("Show old orders", (e) -> {
+		this.oldOrderGrid = new GridWithActionListAndContainer<T>(typeParameterClass, new Button("Show old orders", (e) -> {
 			List<T> list = os.listOrders(this.strategy);
-			this.converter.populate(oldOrderGrid.getGridWAL(), list);
-		}), typeParameterClass);
+			this.converter.populate(oldOrderGrid, list);
+		}));
 
-		this.waitingOrderGrid = new GridWithBackendService<T>(new Button("Show active untriggered orders", (e) -> {
-			List<T> list = os.listQueueOrders(this.strategy);
-			this.converter.populate(waitingOrderGrid.getGridWAL(), list);
-		}), new Button("Clear Queue", (e) -> {
-			os.clearQueueOrders(this.strategy);
-		}), typeParameterClass);
+		this.waitingOrderGrid = new GridWithActionListAndContainer<T>(typeParameterClass,
+				new Button("Show active untriggered orders", (e) -> {
+					List<T> list = os.listQueueOrders(this.strategy);
+					this.converter.populate(waitingOrderGrid, list);
+				}), new Button("Clear Queue", (e) -> {
+					os.clearQueueOrders(this.strategy);
+				}));
 
-		this.triggeredOrderGrid = new GridWithBackendService<T>(new Button("Show triggered orders", (e) -> {
-			List<T> list = os.listTriggeredOrders(this.strategy);
-			this.converter.populate(triggeredOrderGrid.getGridWAL(), list);
-		}), typeParameterClass);
+		this.triggeredOrderGrid = new GridWithActionListAndContainer<T>(typeParameterClass,
+				new Button("Show triggered orders", (e) -> {
+					List<T> list = os.listTriggeredOrders(this.strategy);
+					this.converter.populate(triggeredOrderGrid, list);
+				}));
 
-		HorizontalLayout gridHL = new HorizontalLayout(grid, triggeredOrderGrid.getGridWAL());
+		HorizontalLayout gridHL = new HorizontalLayout(grid, triggeredOrderGrid);
 		gridHL.setSizeFull();
 
-		HorizontalLayout gridHLSecond = new HorizontalLayout(waitingOrderGrid.getGridWAL(), oldOrderGrid.getGridWAL());
+		HorizontalLayout gridHLSecond = new HorizontalLayout(waitingOrderGrid, oldOrderGrid);
 		gridHLSecond.setSizeFull();
 
 		addComponents(converter, gridHL, gridHLSecond);

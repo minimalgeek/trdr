@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
@@ -121,6 +124,18 @@ public abstract class AbstractStrategyOrderQueue<T extends AbstractStrategyOrder
 
 	public void setOcp(OrderCommonProperties ocp) {
 		this.ocp = ocp;
+	}
+	
+	public boolean isTradingTime() {
+		DateTime startOfTradingTime = 
+				DateTime.now().withZone(DateTimeZone.forID("America/New_York"))
+					.withHourOfDay(9).withMinuteOfHour(30);
+		
+		DateTime endOfTradingTime = 
+				DateTime.now().withZone(DateTimeZone.forID("America/New_York"))
+					.withHourOfDay(16).withMinuteOfHour(00);
+		
+		return startOfTradingTime.isBeforeNow() && endOfTradingTime.isAfterNow();
 	}
 
 }
