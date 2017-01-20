@@ -12,6 +12,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import hu.farago.ib.model.dto.order.IBOrderStatusWrap;
 import hu.farago.ib.service.OrderService;
+import hu.farago.web.VaadinUI.UIDetachedEvent;
 import hu.farago.web.component.GridWithActionListAndContainer;
 
 @SpringComponent
@@ -55,4 +56,8 @@ public class OrderStatusPanel extends VerticalLayout {
 		this.executionsBS.getContainer().addBean(execution);
 	}
 
+	@Subscribe
+	public void uiDetached(UIDetachedEvent e) {
+		eventBus.unregister(this);
+	}
 }

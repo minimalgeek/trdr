@@ -1,16 +1,5 @@
 package hu.farago.web;
 
-import hu.farago.ib.EWrapperImpl;
-import hu.farago.ib.model.dto.IBError;
-import hu.farago.ib.model.dto.order.IBOrder;
-import hu.farago.ib.order.strategy.AbstractStrategyOrderQueue.QueueChanged;
-import hu.farago.web.component.chart.CandleStick;
-import hu.farago.web.component.equity.EquityTab;
-import hu.farago.web.component.order.CVTSPasteGrid;
-import hu.farago.web.component.order.OrderStatusPanel;
-import hu.farago.web.response.Response;
-import hu.farago.web.response.ResponseType;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
@@ -35,6 +24,17 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.renderers.HtmlRenderer;
+
+import hu.farago.ib.EWrapperImpl;
+import hu.farago.ib.model.dto.IBError;
+import hu.farago.ib.model.dto.order.IBOrder;
+import hu.farago.ib.order.strategy.AbstractStrategyOrderQueue.QueueChanged;
+import hu.farago.web.component.chart.CandleStick;
+import hu.farago.web.component.equity.EquityTab;
+import hu.farago.web.component.order.CVTSPasteGrid;
+import hu.farago.web.component.order.OrderStatusPanel;
+import hu.farago.web.response.Response;
+import hu.farago.web.response.ResponseType;
 
 @Push(value = PushMode.AUTOMATIC, transport = Transport.WEBSOCKET)
 @SpringUI
@@ -70,10 +70,15 @@ public class VaadinUI extends UI {
 	private Grid responseGrid;
 	private BeanItemContainer<Response> responses;
 
+	public static class UIDetachedEvent {
+	}
+	
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
 		eventBus.register(this);
+		this.addDetachListener((event) -> eventBus.post(new UIDetachedEvent()));
 		VaadinSession.getCurrent().getSession().setMaxInactiveInterval(-1);
+		
 		tabSheet = new TabSheet();
 
 		buildTabs();
@@ -131,6 +136,11 @@ public class VaadinUI extends UI {
 	@Subscribe
 	public void queueChanged(QueueChanged qc) {
 		addResponseToGrid("Queue changed in " + qc.strategy.name());
+	}
+	
+	@Subscribe
+	public void uiDetached(UIDetachedEvent e) {
+		eventBus.unregister(this);
 	}
 
 	private void addResponseToGrid(String responseText) {

@@ -17,6 +17,7 @@ import hu.farago.ib.order.strategy.AbstractStrategyOrderQueue.QueueChanged;
 import hu.farago.ib.order.strategy.enums.ActionType;
 import hu.farago.ib.order.strategy.enums.Strategy;
 import hu.farago.ib.service.OrderService;
+import hu.farago.web.VaadinUI.UIDetachedEvent;
 import hu.farago.web.component.GridWithActionList;
 import hu.farago.web.component.OrderCommonPropertiesEditor;
 import hu.farago.web.component.OrderPasteGrid;
@@ -95,6 +96,11 @@ public class CVTSPasteGrid extends OrderPasteGrid<CVTSOrder> {
 			this.waitingOrderGrid.refresh();
 			this.triggeredOrderGrid.refresh();
 		}
+	}
+	
+	@Subscribe
+	public void uiDetached(UIDetachedEvent e) {
+		eventBus.unregister(this);
 	}
 
 }

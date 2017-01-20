@@ -1,9 +1,5 @@
 package hu.farago.web.component.chart;
 
-import hu.farago.ib.model.dto.market.StockPrices;
-import hu.farago.ib.model.dto.market.StockQuery;
-import hu.farago.ib.service.StockPriceService;
-
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +22,11 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
+import hu.farago.ib.model.dto.market.StockPrices;
+import hu.farago.ib.model.dto.market.StockQuery;
+import hu.farago.ib.service.StockPriceService;
+import hu.farago.web.VaadinUI.UIDetachedEvent;
 
 @SpringComponent
 @UIScope
@@ -72,6 +73,11 @@ public class CandleStick extends VerticalLayout {
 		this.chart.setHeight("450px");
 		this.chart.setWidth("100%");
 		this.chart.setTimeline(true);
+	}
+	
+	@Subscribe
+	public void uiDetached(UIDetachedEvent e) {
+		eventBus.unregister(this);
 	}
 
 	@Subscribe
